@@ -1,6 +1,6 @@
 import componentMap from '../app/componentMap';
 import { exampleMiddleware } from './middleware'
-import { layout as baseLayout } from '../app/layout';
+import baseLayout from '../app/layout';
 import { createStore } from '@metacell/geppetto-meta-client/common';
 import exampleReducer from './reducer';
 
