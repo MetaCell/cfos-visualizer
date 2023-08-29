@@ -1,26 +1,21 @@
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import logo from './logo.png';
+import Box from '@mui/material/Box';
+import '@metacell/geppetto-meta-ui/flex-layout/style/dark.scss'
+import {CssBaseline} from '@mui/material';
+import MainLayout from './app/showcase';
+import { Header } from './shared/header';
+import './css/main.css';
+
 
 function App() {
-  return (
-    <div>
-      <AppBar position="static" sx={{ background: '#0F0F10'}}>
-        <Toolbar>
-          <Avatar
-            alt="Logo"
-            src={logo} // Replace with the actual path to your logo image
-            sx={{ width: 101, height: 28, marginRight: 2 }}
-          />
-          <Typography variant="h6">
-            CFOS
-          </Typography>
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
+    return (
+        <>
+            <CssBaseline />
+            <Header />
+            <Box p={1.5} sx={{height: 'calc(100vh - 2.75rem)'}}>
+                <MainLayout/>
+            </Box>
+        </>
+    );
 }
 
 export default App;
