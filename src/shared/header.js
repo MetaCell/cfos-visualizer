@@ -3,16 +3,17 @@ import LOGO from '../logo.png';
 import vars from "../theme/variables"
 import { ArticleIcon, DropdownIcon } from '../icons'
 
-const { headerBg, headerButtonColor, headerBorderColor } = vars;
+const { headerBg, headerButtonColor, headerBorderColor, headerBorderLeftColor } = vars;
 
 const classes = {
   root: {
     height: '2.75rem',
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75ren',
+    gap: '0.75rem',
     background: headerBg,
-    padding: '0 0.75ren'
+    padding: '0 0.75rem',
+    borderBottom: `0.0625rem solid ${headerBorderColor}`
   },
 
   button: {
@@ -35,7 +36,7 @@ export const Header = () =>
     <Box sx={classes.root}>
       <img src={ LOGO } alt="Logo" />
 
-      <Box pl={1.5} lineHeight={1} borderLeft={`1px solid ${headerBorderColor}`}>
+      <Box pl={1.5} lineHeight={1} borderLeft={`1px solid ${headerBorderLeftColor}`}>
         <Button disableRipple sx={classes.button}>
           <ArticleIcon />
           Effect of psilocybin on c-Fos-IF in distinct contexts

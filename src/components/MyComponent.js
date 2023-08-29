@@ -38,7 +38,7 @@ export const MyComponent = (props) => {
 
     return (
         <div>
-            <h1>Robert Frost</h1>
+            <h1>Experiment Details</h1>
             <p>{text}</p>
             <div style={{ display: 'flex', justifyContent: 'center'}}>
                 <GraphVisualizationShowcase />

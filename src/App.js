@@ -3,6 +3,7 @@ import '@metacell/geppetto-meta-ui/flex-layout/style/dark.scss'
 import {CssBaseline} from '@mui/material';
 import MainLayout from './app/showcase';
 import { Header } from './shared/header';
+import './css/main.css';
 
 
 function App() {
