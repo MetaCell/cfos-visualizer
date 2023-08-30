@@ -4,11 +4,22 @@ import baseLayout from '../app/layout';
 import { createStore } from '@metacell/geppetto-meta-client/common';
 import exampleReducer from './reducer';
 
-const INIT_STATE = {
-  "exampleState": {
-    instances: []
+export const INIT_STATE = {
+  viewer: {
+    objects: {},
+  },
+  currentExperiment: null,
+  model: {
+    experimentsAtlas: {},
+    atlasActivityMap: {},
+    experimentsActivityMap: {},
+    luts: {}
+  },
+  ui: {
+    isLoading: false,
+    errors: null,
   }
-};
+}
 
 const reducers = {
   "exampleState": exampleReducer
