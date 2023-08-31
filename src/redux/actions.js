@@ -2,7 +2,7 @@
 import {
     ADD_OBJECT_TO_VIEWER, CHANGE_ALL_OBJECTS_OPACITY,
     CHANGE_OBJECT_OPACITY, FETCH_MODEL_DATA,
-    REMOVE_OBJECT_FROM_VIEWER, SET_CURRENT_EXPERIMENT, SET_ERROR, SET_LOADING, SET_VIEWER_MODE,
+    REMOVE_OBJECT_FROM_VIEWER, SET_CURRENT_EXPERIMENT, SET_ERROR, SET_LOADING,
     TOGGLE_OBJECT_VISIBILITY
 } from "./constants";
 
@@ -31,11 +31,6 @@ export const changeObjectOpacity = (objectId, opacity) => ({
 export const changeAllObjectsOpacity = (opacity) => ({
     type: CHANGE_ALL_OBJECTS_OPACITY,
     payload: opacity
-});
-
-export const setViewerMode = (mode) => ({
-    type: SET_VIEWER_MODE,
-    payload: mode
 });
 
 // Experiment Actions

@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable';
 
-class ViewerObject {
+export class ViewerObject {
     constructor(id, type, color, opacity, visibility) {
         return Immutable({
             id,
@@ -12,11 +12,11 @@ class ViewerObject {
     }
 }
 
-class Experiment {
+export class Experiment {
     constructor(id, details) {
         return Immutable({
             id,
-            details
+            details: Immutable(details)
         });
     }
 }

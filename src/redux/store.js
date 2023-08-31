@@ -2,7 +2,7 @@ import componentMap from '../app/componentMap';
 import { exampleMiddleware } from './middleware'
 import baseLayout from '../app/layout';
 import { createStore } from '@metacell/geppetto-meta-client/common';
-import exampleReducer from './reducer';
+import { viewerReducer, currentExperimentReducer, modelReducer, uiReducer } from './reducers'
 
 export const INIT_STATE = {
   viewer: {
@@ -22,7 +22,10 @@ export const INIT_STATE = {
 }
 
 const reducers = {
-  "exampleState": exampleReducer
+  viewer: viewerReducer,
+  currentExperiment: currentExperimentReducer,
+  model: modelReducer,
+  ui: uiReducer
 };
 
 /**
