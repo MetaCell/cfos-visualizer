@@ -18,7 +18,7 @@ export const toolbarMenu = {
         fontFamily: primaryFont,
         margin: '0',
         minWidth: '0.0625rem',
-        padding: '0.9375rem 0.75rem',
+        padding: '11px 0.75rem',
         height: 'auto',
         textTransform: 'capitalize',
         textAlign: 'left',
@@ -26,7 +26,7 @@ export const toolbarMenu = {
         gap: '0.5rem',
         justifyContent: 'center',
         marginTop: '0',
-        lineHeight: '1.125rem',
+        lineHeight: '1',
         fontWeight: 400,
       },
       hover: {
@@ -114,7 +114,7 @@ export const toolbarMenu = {
     {
       label: (
         <Box component='span' display='flex' alignItems='center'>
-          <Typography sx={{ fontSize: '0.875rem', marginRight: '0.5rem' }}>Effect of psilocybin on c-Fos-IF in distinct contexts</Typography>
+          <Typography sx={{ fontSize: '0.875rem', marginRight: '0.5rem', fontWeight: 600, color: '#D6D5D7', lineHeight: '142.857%' }}>Effect of psilocybin on c-Fos-IF in distinct contexts</Typography>
           <DropdownIcon />
         </Box>
       ),
@@ -180,6 +180,7 @@ export const toolbarMenu = {
                 handlerAction: "openNewTab",
                 parameters: []
               },
+              className: 'secondary-color',
               list: [
                 {
                   label: "Atlas metadata",
@@ -193,7 +194,7 @@ export const toolbarMenu = {
                 {
                   label: (
                     <>
-                      <Typography sx={ { fontSize: '0.875rem', marginRight: '0.5rem' } }>
+                      <Typography sx={ { fontSize: '0.875rem', color: '#FCFCFD' } }>
                         gubra_ano_combined_21um.nii.gz
                       </Typography>
                       <Box sx={{ fontSize: '0.875rem', marginTop: '10px', padding: '10px', color: '#8D8D91', borderRadius: '4px', border: '1px solid #302F31' }}>
@@ -216,6 +217,7 @@ export const toolbarMenu = {
                 handlerAction: "openNewTab",
                 parameters: []
               },
+              className: 'secondary-color',
             },
             {
               label: "gubra_template_25um.nii.gz",
@@ -224,6 +226,7 @@ export const toolbarMenu = {
                 handlerAction: "openNewTab",
                 parameters: []
               },
+              className: 'secondary-color',
             }
           ]
         },

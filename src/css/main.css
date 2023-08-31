@@ -50,3 +50,7 @@ body .list-heading {
   margin: 8px 0 7px;
   line-height: 150% !important;
 }
+
+body .secondary-color {
+  color: #FCFCFD !important;
+}
