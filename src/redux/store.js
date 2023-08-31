@@ -1,5 +1,5 @@
 import componentMap from '../app/componentMap';
-import { exampleMiddleware } from './middleware'
+import { middleware } from './middleware'
 import baseLayout from '../app/layout';
 import { createStore } from '@metacell/geppetto-meta-client/common';
 import { viewerReducer, currentExperimentReducer, modelReducer, uiReducer } from './reducers'
@@ -36,7 +36,7 @@ const reducers = {
 const store = createStore(
   reducers,
   INIT_STATE,
-  [exampleMiddleware],
+  [middleware],
   { baseLayout, componentMap }
 )
 

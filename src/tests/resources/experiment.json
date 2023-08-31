@@ -1,0 +1,91 @@
+{
+  "Experiment": [
+    {
+      "type": "text",
+      "content": "Effect of psilocybin on c-Fos-IF in distinct contexts"
+    }
+  ],
+  "Contributor": [
+    {
+      "type": "text",
+      "content": "Boris Heifets at Stanford University"
+    }
+  ],
+  "Publication": [
+    {
+      "type": "text",
+      "content": "Rijsketic DR*, Casey AB*, Barbosa DA, Zhang X, Hietamies TM, Ramirez-Ovalle G, Pomrenze MB, Halpern CH, Williams LM, Malenka RC, Heifets BD (2023)."
+    },
+    {
+      "type": "link",
+      "content": "UNRAVELing the synergistic effects of psilocybin and environment on brain-wide immediate early gene expression in mice",
+      "href": "https://google.com"
+    }
+  ],
+  "Treatment/conditions(s)": [
+    {
+      "type": "text",
+      "content": "psilocybin (2 mg/kg; i.p.) vs. saline; home cage (HC) vs. enriched environment (EE)"
+    }
+  ],
+  "Dose(s)": [
+    {
+      "type": "text",
+      "content": "2 mg/kg, i.p."
+    }
+  ],
+  "Species, strain, gene(s)": [
+    {
+      "type": "text",
+      "content": "TRAP2+/-;Ai14+ mice (bred to C57BL/6)"
+    }
+  ],
+  "Sample sizes(s)": [
+    {
+      "type": "text",
+      "content": "n=9 for saline (HC); n = 8 for psilocybin (HC); n = 9 for saline (EE); n = 7 for psilocybin EE"
+    }
+  ],
+  "Label(s)": [
+    {
+      "type": "chip",
+      "label": "rabbit anti-cFos",
+      "tooltip": "(1:500; Synaptic Systems; 226 003)"
+    },
+    {
+      "type": "chip",
+      "label": "donkey anti-Rabbit Alexa647",
+      "tooltip": "(1:250; ThermoFisher; A32795)"
+    }
+  ],
+  "Clearing method": [
+    {
+      "type": "text",
+      "content": "iDISCO+"
+    }
+  ],
+  "Imaging modality": [
+    {
+      "type": "text",
+      "content": "light sheet fluorescent microscopy"
+    }
+  ],
+  "Experiment details": [
+    {
+      "type": "text",
+      "content": "For c-Fos mapping, mice were injected and placed in their assigned context for 2 hours before fixation. Brains were hemisected, immunostained, cleared, and imaged in 3D with a Zeiss Lightsheet 7 (2.5x objective; 0.52x zoom; 3.5 isotropic resolution; 10.61 µm sheet thickness). 488 nm light excited autofluorescence (8% of 30 mW; 505-530 nm; 50 ms). 638 nm light excited IF (20% of 75 mW; 660 nm long pass; 50 ms). Pivot scanning limited artifacts. Tiled z-stacks (10% overlap) were stitched in Zen Blue."
+    }
+  ],
+  "Image analysis": [
+    {
+      "type": "text",
+      "content": "We developed UNRAVEL to automate c-Fos mapping. Downsampled autofluorescence images were registered (MIRACL) to an iDISCO+/LSFM version of the Allen brain atlas (CCFv3). c-Fos-IF images were rolling ball background subtracted, warped to atlas space, z-scored, and smoothed. Voxel-wise analyses were performed with randomise_parallel (FSL) according to a 2x2 ANOVA design (6,000 permutations). False positives in F-contrast maps were limited by false discovery rate (FDR) correction. Surviving clusters were warped to full resolution tissue space for post hoc cell density comparisons using cell segmentations from Ilastik."
+    }
+  ],
+  "Image metadata": [
+    {
+      "type": "text",
+      "content": "Allow for a ~one sentence description of metadata for each image (Not too detailed in the title, Note marker, etc. in metadata). For example, “Increases in c-Fos-IF from psilocybin across home cage and enriched environment conditions (uncorrected 1-p value map)”"
+    }
+  ]
+}

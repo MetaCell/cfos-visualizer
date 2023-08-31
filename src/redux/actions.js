@@ -1,55 +1,62 @@
 
-import {
-    ADD_OBJECT_TO_VIEWER, CHANGE_ALL_OBJECTS_OPACITY,
-    CHANGE_OBJECT_OPACITY, FETCH_MODEL_DATA,
-    REMOVE_OBJECT_FROM_VIEWER, SET_CURRENT_EXPERIMENT, SET_ERROR, SET_LOADING,
-    TOGGLE_OBJECT_VISIBILITY
-} from "./constants";
+
 
 // Viewer Actions
 
+import {actions} from "./constants";
+
 export const addObjectToViewer = (object) => ({
-    type: ADD_OBJECT_TO_VIEWER,
+    type: actions.ADD_OBJECT_TO_VIEWER,
     payload: object
 });
 
 export const removeObjectFromViewer = (objectId) => ({
-    type: REMOVE_OBJECT_FROM_VIEWER,
+    type: actions.REMOVE_OBJECT_FROM_VIEWER,
     payload: objectId
 });
 
 export const toggleObjectVisibility = (objectId) => ({
-    type: TOGGLE_OBJECT_VISIBILITY,
+    type: actions.TOGGLE_OBJECT_VISIBILITY,
     payload: objectId
 });
 
 export const changeObjectOpacity = (objectId, opacity) => ({
-    type: CHANGE_OBJECT_OPACITY,
+    type: actions.CHANGE_OBJECT_OPACITY,
     payload: { objectId, opacity }
 });
 
 export const changeAllObjectsOpacity = (opacity) => ({
-    type: CHANGE_ALL_OBJECTS_OPACITY,
+    type: actions.CHANGE_ALL_OBJECTS_OPACITY,
     payload: opacity
 });
 
 // Experiment Actions
-export const setCurrentExperiment = (experiment) => ({
-    type: SET_CURRENT_EXPERIMENT,
-    payload: experiment
+export const setCurrentExperiment = (experimentId) => ({
+    type: actions.SET_CURRENT_EXPERIMENT,
+    payload: experimentId
 });
 
 export const fetchModelData = () => ({
-    type: FETCH_MODEL_DATA
+    type: actions.FETCH_MODEL_DATA
+});
+
+export const setModelDataSuccess = data => ({
+    type: actions.FETCH_MODEL_DATA_SUCCESS,
+    payload: data
+});
+
+export const setModelDataFailure = error => ({
+    type: actions.FETCH_MODEL_DATA_FAILURE,
+    payload: error
 });
 
 // UI Actions
 export const setLoading = (isLoading) => ({
-    type: SET_LOADING,
+    type: actions.SET_LOADING,
     payload: isLoading
 });
 
 export const setError = (error) => ({
-    type: SET_ERROR,
+    type: actions.SET_ERROR,
     payload: error
 });

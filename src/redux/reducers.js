@@ -1,13 +1,10 @@
-import {
-    ADD_OBJECT_TO_VIEWER, CHANGE_ALL_OBJECTS_OPACITY,
-    CHANGE_OBJECT_OPACITY, FETCH_MODEL_DATA,
-    REMOVE_OBJECT_FROM_VIEWER, SET_CURRENT_EXPERIMENT, SET_ERROR, SET_LOADING, TOGGLE_OBJECT_VISIBILITY
-} from "./constants";
 import {INIT_STATE} from "./store";
+import {actions} from "./constants";
+
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
     switch (action.type) {
-        case ADD_OBJECT_TO_VIEWER:
+        case actions.ADD_OBJECT_TO_VIEWER:
             return {
                 ...state,
                 objects: {
@@ -15,11 +12,11 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     [action.payload.id]: action.payload
                 }
             };
-        case REMOVE_OBJECT_FROM_VIEWER:
+        case actions.REMOVE_OBJECT_FROM_VIEWER:
             const newObjects = { ...state.objects };
             delete newObjects[action.payload];
             return { ...state, objects: newObjects };
-        case TOGGLE_OBJECT_VISIBILITY:
+        case actions.TOGGLE_OBJECT_VISIBILITY:
             return {
                 ...state,
                 objects: {
@@ -30,7 +27,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     }
                 }
             };
-        case CHANGE_OBJECT_OPACITY:
+        case actions.CHANGE_OBJECT_OPACITY:
             return {
                 ...state,
                 objects: {
@@ -41,7 +38,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     }
                 }
             };
-        case CHANGE_ALL_OBJECTS_OPACITY:
+        case actions.CHANGE_ALL_OBJECTS_OPACITY:
             const updatedObjects = Object.keys(state.objects).reduce((acc, objectId) => {
                 acc[objectId] = {
                     ...state.objects[objectId],
@@ -60,7 +57,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
 
 const currentExperimentReducer = (state = INIT_STATE.currentExperiment, action) => {
     switch (action.type) {
-        case SET_CURRENT_EXPERIMENT:
+        case actions.SET_CURRENT_EXPERIMENT:
             return action.payload;
         default:
             return state;
@@ -69,7 +66,7 @@ const currentExperimentReducer = (state = INIT_STATE.currentExperiment, action) 
 
 const modelReducer = (state = INIT_STATE.model, action) => {
     switch (action.type) {
-        case FETCH_MODEL_DATA:
+        case actions.FETCH_MODEL_DATA_SUCCESS:
             return {
                 ...state,
                 ...action.payload
@@ -81,12 +78,12 @@ const modelReducer = (state = INIT_STATE.model, action) => {
 
 const uiReducer = (state = INIT_STATE.ui, action) => {
     switch (action.type) {
-        case SET_LOADING:
+        case actions.SET_LOADING:
             return {
                 ...state,
                 isLoading: action.payload
             };
-        case SET_ERROR:
+        case actions.SET_ERROR:
             return {
                 ...state,
                 errors: action.payload

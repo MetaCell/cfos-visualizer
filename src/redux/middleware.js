@@ -1,16 +1,18 @@
-import * as GeppettoActions from '@metacell/geppetto-meta-client/common/actions/actions';
-import * as Actions from '../redux/actions';
 
-/**
- * Your own custom middleware that you can use to react to geppetto actions.
- */
-export const exampleMiddleware = store => next => action => {
+import {fetchModelStructure} from "../services/fetchService";
+import {setModelDataFailure, setModelDataSuccess} from "./actions";
+import {actions} from "./constants";
+
+export const middleware = store => next => async action => {
 
     switch (action.type) {
-        case GeppettoActions.clientActions.MODEL_LOADED:
-            break;
-        case Actions.DATA_LOADING_START:
-            next(GeppettoActions.waitData('Load big model ...', Actions.DATA_LOADING_END));
+        case actions.FETCH_MODEL_DATA:
+            try {
+                const data = await fetchModelStructure();
+                store.dispatch(setModelDataSuccess(data));
+            } catch (error) {
+                store.dispatch(setModelDataFailure(error.message));
+            }
             break;
         default:
             break;
