@@ -1,5 +1,6 @@
 import {INIT_STATE} from "./store";
 import {actions} from "./constants";
+import {ViewerObject} from "../model/models";
 
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
@@ -12,48 +13,96 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     [action.payload.id]: action.payload
                 }
             };
+
         case actions.REMOVE_OBJECT_FROM_VIEWER:
             const newObjects = { ...state.objects };
             delete newObjects[action.payload];
             return { ...state, objects: newObjects };
+
         case actions.TOGGLE_OBJECT_VISIBILITY:
+            const objectToToggle = state.objects[action.payload];
             return {
                 ...state,
                 objects: {
                     ...state.objects,
-                    [action.payload]: {
-                        ...state.objects[action.payload],
-                        visibility: !state.objects[action.payload].visibility
-                    }
+                    [action.payload]: new ViewerObject(
+                        objectToToggle.id,
+                        objectToToggle.type,
+                        objectToToggle.color,
+                        objectToToggle.opacity,
+                        !objectToToggle.visibility,
+                        objectToToggle.stack,
+                        objectToToggle.wireframeStack
+                    )
                 }
             };
+
         case actions.CHANGE_OBJECT_OPACITY:
+            const objectForOpacity = state.objects[action.payload.objectId];
             return {
                 ...state,
                 objects: {
                     ...state.objects,
-                    [action.payload.objectId]: {
-                        ...state.objects[action.payload.objectId],
-                        opacity: action.payload.opacity
-                    }
+                    [action.payload.objectId]: new ViewerObject(
+                        objectForOpacity.id,
+                        objectForOpacity.type,
+                        objectForOpacity.color,
+                        action.payload.opacity,
+                        objectForOpacity.visibility,
+                        objectForOpacity.stack,
+                        objectForOpacity.wireframeStack
+                    )
                 }
             };
+
         case actions.CHANGE_ALL_OBJECTS_OPACITY:
             const updatedObjects = Object.keys(state.objects).reduce((acc, objectId) => {
-                acc[objectId] = {
-                    ...state.objects[objectId],
-                    opacity: action.payload
-                };
+                const obj = state.objects[objectId];
+                acc[objectId] = new ViewerObject(
+                    obj.id,
+                    obj.type,
+                    obj.color,
+                    action.payload,
+                    obj.visibility,
+                    obj.stack,
+                    obj.wireframeStack
+                );
                 return acc;
             }, {});
             return {
                 ...state,
                 objects: updatedObjects
             };
+
+        case actions.CHANGE_OBJECT_COLOR:
+            const objectToChangeColor = state.objects[action.payload.objectId];
+            return {
+                ...state,
+                objects: {
+                    ...state.objects,
+                    [action.payload.objectId]: new ViewerObject(
+                        objectToChangeColor.id,
+                        objectToChangeColor.type,
+                        action.payload.color,
+                        objectToChangeColor.opacity,
+                        objectToChangeColor.visibility,
+                        objectToChangeColor.stack,
+                        objectToChangeColor.wireframeStack
+                    )
+                }
+            };
+        case actions.CHANGE_OBJECTS_ORDER:
+            return {
+                ...state,
+                objectsOrder: action.payload.order
+            };
+
+
         default:
             return state;
     }
 };
+
 
 const currentExperimentReducer = (state = INIT_STATE.currentExperiment, action) => {
     switch (action.type) {

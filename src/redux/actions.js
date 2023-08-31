@@ -30,6 +30,16 @@ export const changeAllObjectsOpacity = (opacity) => ({
     payload: opacity
 });
 
+export const changeObjectColor = (objectId, color) => ({
+    type: actions.CHANGE_OBJECT_COLOR,
+    payload: { objectId, color }
+});
+
+export const changeObjectsOrder = (order) => ({
+    type: actions.CHANGE_OBJECTS_ORDER,
+    payload: { order }
+});
+
 // Experiment Actions
 export const fetchExperiment = (experimentId) => ({
     type: actions.FETCH_CURRENT_EXPERIMENT,

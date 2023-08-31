@@ -6,6 +6,7 @@ import { viewerReducer, currentExperimentReducer, modelReducer, uiReducer } from
 
 export const INIT_STATE = {
   viewer: {
+    objectsOrder: [],
     objects: {},
   },
   currentExperiment: null,

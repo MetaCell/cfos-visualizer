@@ -6,7 +6,7 @@ import {
     changeAllObjectsOpacity,
     changeObjectOpacity,
     removeObjectFromViewer, setError, setLoading, setModel,
-    toggleObjectVisibility, setCurrentExperiment
+    toggleObjectVisibility, setCurrentExperiment, changeObjectColor, changeObjectsOrder
 } from "../redux/actions";
 
 
@@ -18,7 +18,7 @@ describe('viewerReducer', () => {
     };
 
     it('should handle ADD_OBJECT_TO_VIEWER', () => {
-        const newObject = new ViewerObject('1', 'Atlas', 'red', 1, true);
+        const newObject = new ViewerObject('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
 
         const expectedState = {
             objects: {
@@ -30,7 +30,7 @@ describe('viewerReducer', () => {
     });
 
     it('should handle REMOVE_OBJECT_FROM_VIEWER', () => {
-        const objectToRemove = new ViewerObject('1', 'Atlas', 'red', 1, true);
+        const objectToRemove = new ViewerObject('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
         const setupState = {
             objects: {
                 '1': objectToRemove
@@ -48,7 +48,7 @@ describe('viewerReducer', () => {
     // ... You can continue to add more tests for other action types
 
     it('should handle TOGGLE_OBJECT_VISIBILITY', () => {
-        const objectToToggle = new ViewerObject('1', 'Atlas', 'red', 1, true);
+        const objectToToggle = new ViewerObject('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
         const setupState = {
             objects: {
                 '1': objectToToggle
@@ -68,7 +68,7 @@ describe('viewerReducer', () => {
     });
 
     it('should handle CHANGE_OBJECT_OPACITY', () => {
-        const objectToUpdate = new ViewerObject('1', 'Atlas', 'red', 1, true);
+        const objectToUpdate = new ViewerObject('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
         const setupState = {
             objects: {
                 '1': objectToUpdate
@@ -88,8 +88,8 @@ describe('viewerReducer', () => {
     });
 
     it('should handle CHANGE_ALL_OBJECTS_OPACITY', () => {
-        const object1 = new ViewerObject('1', 'Atlas', 'red', 1, true);
-        const object2 = new ViewerObject('2', 'Atlas', 'blue', 0.8, true);
+        const object1 = new ViewerObject('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
+        const object2 = new ViewerObject('2', 'Atlas', 'blue', 0.8, true, 'stack', 'wireframeStack');
         const setupState = {
             objects: {
                 '1': object1,
@@ -107,6 +107,42 @@ describe('viewerReducer', () => {
         expect(viewerReducer(setupState, changeAllObjectsOpacity(0.7))).toEqual(expectedState);
     });
 
+    it('should handle CHANGE_OBJECT_COLOR', () => {
+        const initialObject = new ViewerObject('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
+        const setupState = {
+            objects: {
+                '1': initialObject
+            }
+        };
+
+        const expectedState = {
+            objects: {
+                '1': new ViewerObject('1', 'Atlas', 'blue', 1, true, 'stack', 'wireframeStack')
+            }
+        };
+
+        const changeColorAction = changeObjectColor('1', 'blue');
+
+        expect(viewerReducer(setupState, changeColorAction)).toEqual(expectedState);
+    });
+
+
+    it('should handle CHANGE_OBJECTS_ORDER', () => {
+        const setupState = {
+            objects: {},
+            objectsOrder: ['1', '2', '3']
+        };
+
+        const newOrder = ['3', '1', '2'];
+        const expectedState = {
+            objects: {},
+            objectsOrder: newOrder
+        };
+
+        const changeOrderAction = changeObjectsOrder(newOrder)
+
+        expect(viewerReducer(setupState, changeOrderAction)).toEqual(expectedState);
+    });
 });
 
 describe('currentExperimentReducer', () => {

@@ -1,13 +1,15 @@
 import Immutable from 'seamless-immutable';
 
 export class ViewerObject {
-    constructor(id, type, color, opacity, visibility) {
+    constructor(id, type, color, opacity, visibility, stack, wireframeStack = null) {
         return Immutable({
             id,
             type,
             color,
             opacity,
-            visibility
+            visibility,
+            stack,
+            wireframeStack,
         });
     }
 }
