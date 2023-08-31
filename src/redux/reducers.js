@@ -66,7 +66,7 @@ const currentExperimentReducer = (state = INIT_STATE.currentExperiment, action) 
 
 const modelReducer = (state = INIT_STATE.model, action) => {
     switch (action.type) {
-        case actions.FETCH_MODEL_DATA_SUCCESS:
+        case actions.SET_MODEL:
             return {
                 ...state,
                 ...action.payload

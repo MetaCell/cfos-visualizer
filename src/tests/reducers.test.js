@@ -1,12 +1,12 @@
 
 import {Experiment, ViewerObject} from "../model/models";
-import {currentExperimentReducer, modelReducer, viewerReducer} from "../redux/reducers";
+import {currentExperimentReducer, modelReducer, uiReducer, viewerReducer} from "../redux/reducers";
 import {
     addObjectToViewer,
     changeAllObjectsOpacity,
     changeObjectOpacity,
-    removeObjectFromViewer, setModelDataSuccess,
-    toggleObjectVisibility
+    removeObjectFromViewer, setError, setLoading, setModel,
+    toggleObjectVisibility, setCurrentExperiment
 } from "../redux/actions";
 
 
@@ -109,6 +109,31 @@ describe('viewerReducer', () => {
 
 });
 
+describe('currentExperimentReducer', () => {
+
+    // Initial state for the tests
+    const initialState = null;
+
+    it('should handle SET_CURRENT_EXPERIMENT', () => {
+        const mockData = require('./resources/experiment.json');
+
+        const newExperiment = new Experiment('1', mockData);
+
+        expect(currentExperimentReducer(initialState, setCurrentExperiment(newExperiment))).toEqual(newExperiment);
+    });
+
+    it('should return initial state if action type does not match', () => {
+        const action = {
+            type: 'UNKNOWN_ACTION_TYPE',
+            payload: {}
+        };
+
+        expect(currentExperimentReducer(initialState, action)).toEqual(initialState);
+    });
+
+});
+
+
 
 describe('modelReducer', () => {
 
@@ -124,7 +149,7 @@ describe('modelReducer', () => {
         // Mock data fetched from file
         const mockData = require('./resources/index.json');
 
-        expect(modelReducer(initialState, setModelDataSuccess(mockData))).toEqual({
+        expect(modelReducer(initialState, setModel(mockData))).toEqual({
             ...initialState,
             ...mockData
         });
@@ -137,6 +162,42 @@ describe('modelReducer', () => {
         };
 
         expect(modelReducer(initialState, action)).toEqual(initialState);
+    });
+
+});
+
+describe('uiReducer', () => {
+
+    const initialState = {
+        isLoading: false,
+        errors: null
+    };
+
+    it('should handle SET_LOADING', () => {
+        const action = setLoading(true);
+
+        expect(uiReducer(initialState, action)).toEqual({
+            ...initialState,
+            isLoading: true
+        });
+    });
+
+    it('should handle SET_ERROR', () => {
+        const action = setError('Error occurred');
+
+        expect(uiReducer(initialState, action)).toEqual({
+            ...initialState,
+            errors: 'Error occurred'
+        });
+    });
+
+    it('should return initial state if action type does not match', () => {
+        const action = {
+            type: 'UNKNOWN_ACTION_TYPE',
+            payload: {}
+        };
+
+        expect(uiReducer(initialState, action)).toEqual(initialState);
     });
 
 });

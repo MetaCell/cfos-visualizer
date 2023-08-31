@@ -31,24 +31,26 @@ export const changeAllObjectsOpacity = (opacity) => ({
 });
 
 // Experiment Actions
-export const setCurrentExperiment = (experimentId) => ({
-    type: actions.SET_CURRENT_EXPERIMENT,
+export const fetchExperiment = (experimentId) => ({
+    type: actions.FETCH_CURRENT_EXPERIMENT,
     payload: experimentId
 });
 
-export const fetchModelData = () => ({
-    type: actions.FETCH_MODEL_DATA
+export const setCurrentExperiment = (experiment) => ({
+    type: actions.SET_CURRENT_EXPERIMENT,
+    payload: experiment
 });
 
-export const setModelDataSuccess = data => ({
-    type: actions.FETCH_MODEL_DATA_SUCCESS,
+
+export const fetchModel = () => ({
+    type: actions.FETCH_MODEL
+});
+
+export const setModel = data => ({
+    type: actions.SET_MODEL,
     payload: data
 });
 
-export const setModelDataFailure = error => ({
-    type: actions.FETCH_MODEL_DATA_FAILURE,
-    payload: error
-});
 
 // UI Actions
 export const setLoading = (isLoading) => ({
