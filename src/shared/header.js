@@ -1,6 +1,8 @@
 import { Box, Button } from "@mui/material";
 import LOGO from '../logo.png';
 import vars from "../theme/variables"
+import Menu from '@metacell/geppetto-meta-ui/menu/Menu';
+import { toolbarMenu } from "../components/configuration/Toolbar/toolbarMenuConfiguration";
 import { ArticleIcon, DropdownIcon } from '../icons'
 
 const { headerBg, headerButtonColor, headerBorderColor, headerBorderLeftColor } = vars;
@@ -36,12 +38,16 @@ export const Header = () =>
     <Box sx={classes.root}>
       <img src={ LOGO } alt="Logo" />
 
-      <Box pl={1.5} lineHeight={1} borderLeft={`1px solid ${headerBorderLeftColor}`}>
-        <Button disableRipple sx={classes.button}>
+      <Box pl={ 1.5 } lineHeight={ 1 } borderLeft={ `1px solid ${ headerBorderLeftColor }` }>
+        <Menu
+          configuration={toolbarMenu}
+          menuHandler={() => {}}
+        />
+        {/* <Button disableRipple sx={classes.button}>
           <ArticleIcon />
           Effect of psilocybin on c-Fos-IF in distinct contexts
           <DropdownIcon />
-        </Button>
+        </Button> */}
       </Box>
     </Box>
   )
