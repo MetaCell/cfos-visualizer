@@ -6,7 +6,7 @@ import {
     fetchAtlasWireframeStack, fetchActivityMapStack, fetchLUTFile
 } from '../services/fetchService';
 import {
-    addObjectToViewer,
+    addObjectToViewer, downloadAllObjects, downloadObject,
     fetchExperiment,
     fetchModel,
     setCurrentExperiment,
@@ -15,6 +15,7 @@ import {
 } from "../redux/actions";
 import {Experiment, ViewerObject, ViewerObjectType} from "../model/models";
 import {DEFAULT_COLOR, DEFAULT_OPACITY, DEFAULT_VISIBILITY} from "../settings";
+import {downloadAllViewerObjects, downloadViewerObject} from "../services/downloadService";
 
 // Mocking the fetchService functions
 jest.mock('../services/fetchService', () => ({
@@ -24,6 +25,10 @@ jest.mock('../services/fetchService', () => ({
     fetchAtlasStack: jest.fn(),
     fetchAtlasWireframeStack: jest.fn(),
     fetchActivityMapStack: jest.fn(),
+}));
+jest.mock('../services/downloadService', () => ({
+    downloadViewerObject: jest.fn(),
+    downloadAllViewerObjects: jest.fn(),
 }));
 
 describe('Middleware', () => {
@@ -134,6 +139,43 @@ describe('Middleware', () => {
         await middleware(store)(next)(action);
 
         expect(store.dispatch).toHaveBeenCalledWith(setError(errorMessage));
+    });
+
+    it('should handle DOWNLOAD_OBJECT', () => {
+        const mockObjectID = '1';
+        const mockObjectType = 'Atlas';
+        const mockObject = new ViewerObject(mockObjectID, mockObjectType, 'red', 1, true, 'stack', 'wireframeStack');
+
+        // Mock the state of the store
+        store.getState = jest.fn().mockReturnValue({
+            viewer: {
+                objects: {
+                    [mockObjectID]: mockObject
+                }
+            }
+        });
+
+        middleware(store)(next)(downloadObject(mockObjectID));
+
+        expect(downloadViewerObject).toHaveBeenCalledWith(mockObject);
+    });
+
+    it('should handle DOWNLOAD_ALL_OBJECTS', () => {
+        const mockObjects = {
+            '1': new ViewerObject('1', 'Atlas', 'red', 1, true, 'stack1', 'wireframeStack1'),
+            '2': new ViewerObject('2', 'Atlas', 'blue', 1, true, 'stack2', 'wireframeStack2'),
+        };
+
+        // Mock the state of the store
+        store.getState = jest.fn().mockReturnValue({
+            viewer: {
+                objects: mockObjects
+            }
+        });
+
+        middleware(store)(next)(downloadAllObjects());
+
+        expect(downloadAllViewerObjects).toHaveBeenCalledWith(Object.values(mockObjects));
     });
 
 });

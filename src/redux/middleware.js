@@ -6,10 +6,18 @@ import {
     fetchExperimentMetadata, fetchLUTFile,
     fetchModelStructure
 } from "../services/fetchService";
-import {setCurrentExperiment, setError, setModel, setObjectToViewer} from "./actions";
+import {
+    downloadAllObjects,
+    downloadObject,
+    setCurrentExperiment,
+    setError,
+    setModel,
+    setObjectToViewer
+} from "./actions";
 import {actions} from "./constants";
 import {Experiment, ViewerObject, ViewerObjectType} from "../model/models";
 import {DEFAULT_COLOR, DEFAULT_OPACITY, DEFAULT_VISIBILITY} from "../settings";
+import {downloadAllViewerObjects, downloadViewerObject} from "../services/downloadService";
 
 export const middleware = store => next => async action => {
 
@@ -68,6 +76,27 @@ export const middleware = store => next => async action => {
                 store.dispatch(setObjectToViewer(viewerObject));
 
             } catch (error) {
+                store.dispatch(setError(error.message));
+            }
+            break;
+        case actions.DOWNLOAD_OBJECT:
+            const objectToDownload = store.getState().viewer.objects[action.payload];
+            if (objectToDownload) {
+                try{
+                    await downloadViewerObject(objectToDownload);
+                }
+                catch (error) {
+                    store.dispatch(setError(error.message));
+                }
+            } else {
+                store.dispatch(setError(`Object with ID ${action.payload} not found`));
+            }
+            break;
+        case actions.DOWNLOAD_ALL_OBJECTS:
+            const allObjects = Object.values(store.getState().viewer.objects);
+            try {
+                await downloadAllViewerObjects(allObjects);
+            }catch (error) {
                 store.dispatch(setError(error.message));
             }
             break;

@@ -44,6 +44,16 @@ export const changeObjectsOrder = (order) => ({
     payload: { order }
 });
 
+export const downloadObject = (objectId) => ({
+    type: actions.DOWNLOAD_OBJECT,
+    payload: objectId
+})
+
+export const downloadAllObjects = () => ({
+    type: actions.DOWNLOAD_ALL_OBJECTS
+})
+
+
 // Experiment Actions
 export const fetchExperiment = (experimentId) => ({
     type: actions.FETCH_CURRENT_EXPERIMENT,
