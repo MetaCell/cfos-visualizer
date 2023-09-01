@@ -1,20 +1,33 @@
 import Immutable from 'seamless-immutable';
 
-export const ViewerObjectType = {
-    ATLAS: 'ATLAS',
-    ACTIVITY_MAP: 'ACTIVITY_MAP'
-};
+const entities = {
+    ATLAS: 'Atlas',
+    ACTIVITY_MAP: 'ActivityMap',
+    EXPERIMENT: 'experiment',
+    LUT: 'LUT',
+}
 
-export class ViewerObject {
-    constructor(id, type, color, opacity, visibility, stack, wireframeStack = null) {
+export class Atlas {
+    constructor(id, color, opacity, visibility, stack, wireframeStack) {
         return Immutable({
             id,
-            type,
             color,
             opacity,
             visibility,
             stack,
             wireframeStack,
+        });
+    }
+}
+
+export class ActivityMap {
+    constructor(id, color, opacity, visibility, stack) {
+        return Immutable({
+            id,
+            color,
+            opacity,
+            visibility,
+            stack,
         });
     }
 }

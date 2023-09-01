@@ -1,4 +1,5 @@
 import {BASE_URL} from "../settings";
+import entities from "entities";
 
 async function fetchAndDownloadFile(url, filename) {
     try {
@@ -12,23 +13,21 @@ async function fetchAndDownloadFile(url, filename) {
     }
 }
 
-
-export async function downloadViewerObject(object) {
-    const { id, type } = object;
-
-    // Download stack
-    const stackURL = `${BASE_URL}/${type}/${id}.NIFTI`;
-    await fetchAndDownloadFile(stackURL, `${id}.NIFTI`);
-
-    // Download wireframe stack if it exists
-    if (object.wireframeStack !== null) {
-        const wireframeStackURL = `${BASE_URL}/${type}/${id}W.NIFTI`;
-        await fetchAndDownloadFile(wireframeStackURL, `${id}W.NIFTI`);
-    }
+export async function downloadActivityMap(activityMapID) {
+    const stackURL = `${BASE_URL}/${entities.ACTIVITY_MAP}/${activityMapID}.NIFTI`;
+    await fetchAndDownloadFile(stackURL, `${activityMapID}.NIFTI`);
 }
 
-export async function downloadAllViewerObjects(objects) {
-    for (const object of objects) {
-        await downloadViewerObject(object);
-    }
+export async function downloadAtlas(atlasID) {
+    const stackURL = `${BASE_URL}/${entities.ATLAS}/${atlasID}.NIFTI`;
+    const wireframeStackURL = `${BASE_URL}/${entities.ATLAS}W/${atlasID}.NIFTI`;
+    await Promise.all(
+        [fetchAndDownloadFile(stackURL, `${atlasID}.NIFTI`),
+        fetchAndDownloadFile(wireframeStackURL, `${atlasID}W.NIFTI`)]);
+}
+
+export async function downloadAllViewerObjects(activityMapsIDs, atlasID) {
+    const promises = activityMapsIDs.map(activityMapID => downloadActivityMap(activityMapID));
+    promises.push(downloadAtlas(atlasID));
+    await Promise.all(promises);
 }

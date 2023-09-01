@@ -1,103 +1,95 @@
 import {INIT_STATE} from "./store";
 import {actions} from "./constants";
-import {ViewerObject} from "../model/models";
+import {ActivityMap} from "../model/models";
 
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
     switch (action.type) {
-        case actions.SET_OBJECT_TO_VIEWER:
+        case actions.ADD_ACTIVITY_MAP_TO_VIEWER:
             return {
                 ...state,
-                objects: {
-                    ...state.objects,
+                activityMaps: {
+                    ...state.activityMaps,
                     [action.payload.id]: action.payload,
                 },
-                objectsOrder: [...state.objectsOrder, action.payload.id]
+                activityMapsOrder: [...state.activityMapsOrder, action.payload.id]
             };
 
-        case actions.REMOVE_OBJECT_FROM_VIEWER:
-            const newObjects = { ...state.objects };
-            delete newObjects[action.payload];
-            const newOrder = state.objectsOrder.filter(id => id !== action.payload);
+        case actions.REMOVE_ACTIVITY_MAP_FROM_VIEWER:
+            const nextActivityMaps = { ...state.activityMaps };
+            delete nextActivityMaps[action.payload];
 
-            return { ...state, objects: newObjects,objectsOrder: newOrder};
+            const newOrder = state.activityMapsOrder.filter(id => id !== action.payload);
+            return { ...state, activityMaps: nextActivityMaps, activityMapsOrder: newOrder};
 
-        case actions.TOGGLE_OBJECT_VISIBILITY:
-            const objectToToggle = state.objects[action.payload];
+        case actions.TOGGLE_ACTIVITY_MAP_VISIBILITY:
+            const activityMapForVisibility = state.activityMaps[action.payload];
             return {
                 ...state,
-                objects: {
-                    ...state.objects,
-                    [action.payload]: new ViewerObject(
-                        objectToToggle.id,
-                        objectToToggle.type,
-                        objectToToggle.color,
-                        objectToToggle.opacity,
-                        !objectToToggle.visibility,
-                        objectToToggle.stack,
-                        objectToToggle.wireframeStack
+                activityMaps: {
+                    ...state.activityMaps,
+                    [action.payload]: new ActivityMap(
+                        activityMapForVisibility.id,
+                        activityMapForVisibility.color,
+                        activityMapForVisibility.opacity,
+                        !activityMapForVisibility.visibility,
+                        activityMapForVisibility.stack,
                     )
                 }
             };
 
-        case actions.CHANGE_OBJECT_OPACITY:
-            const objectForOpacity = state.objects[action.payload.objectId];
+        case actions.CHANGE_ACTIVITY_MAP_OPACITY:
+            const activityMapForOpacity = state.activityMaps[action.payload.activityMapID];
             return {
                 ...state,
-                objects: {
-                    ...state.objects,
-                    [action.payload.objectId]: new ViewerObject(
-                        objectForOpacity.id,
-                        objectForOpacity.type,
-                        objectForOpacity.color,
+                activityMaps: {
+                    ...state.activityMaps,
+                    [action.payload.activityMapID]: new ActivityMap(
+                        activityMapForOpacity.id,
+                        activityMapForOpacity.color,
                         action.payload.opacity,
-                        objectForOpacity.visibility,
-                        objectForOpacity.stack,
-                        objectForOpacity.wireframeStack
+                        activityMapForOpacity.visibility,
+                        activityMapForOpacity.stack,
                     )
                 }
             };
 
-        case actions.CHANGE_ALL_OBJECTS_OPACITY:
-            const updatedObjects = Object.keys(state.objects).reduce((acc, objectId) => {
-                const obj = state.objects[objectId];
-                acc[objectId] = new ViewerObject(
-                    obj.id,
-                    obj.type,
-                    obj.color,
+        case actions.CHANGE_ALL_ACTIVITY_MAPS_OPACITY:
+            const updatedActivityMaps = Object.keys(state.activityMaps).reduce((acc, activityMapID) => {
+                const activityMap = state.activityMaps[activityMapID];
+                acc[activityMapID] = new ActivityMap(
+                    activityMap.id,
+                    activityMap.color,
                     action.payload,
-                    obj.visibility,
-                    obj.stack,
-                    obj.wireframeStack
+                    activityMap.visibility,
+                    activityMap.stack,
                 );
                 return acc;
             }, {});
             return {
                 ...state,
-                objects: updatedObjects
+                activityMaps: updatedActivityMaps
             };
 
-        case actions.CHANGE_OBJECT_COLOR:
-            const objectToChangeColor = state.objects[action.payload.objectId];
+        case actions.CHANGE_ACTIVITY_MAP_COLOR:
+            const activityMapForColor = state.activityMaps[action.payload.activityMapID];
             return {
                 ...state,
-                objects: {
-                    ...state.objects,
-                    [action.payload.objectId]: new ViewerObject(
-                        objectToChangeColor.id,
-                        objectToChangeColor.type,
+                activityMaps: {
+                    ...state.activityMaps,
+                    [action.payload.activityMapID]: new ActivityMap(
+                        activityMapForColor.id,
                         action.payload.color,
-                        objectToChangeColor.opacity,
-                        objectToChangeColor.visibility,
-                        objectToChangeColor.stack,
-                        objectToChangeColor.wireframeStack
+                        activityMapForColor.opacity,
+                        activityMapForColor.visibility,
+                        activityMapForColor.stack,
                     )
                 }
             };
-        case actions.CHANGE_OBJECTS_ORDER:
+        case actions.CHANGE_ACTIVITY_MAPS_ORDER:
             return {
                 ...state,
-                objectsOrder: action.payload.order
+                activityMapsOrder: action.payload.order
             };
 
 

@@ -1,6 +1,7 @@
 import { decode } from '@msgpack/msgpack';
 import {BASE_URL} from "../settings";
 import {deserializeStack} from "../helpers/stackHelper";
+import entities from "entities";
 
 
 export async function fetchModelStructure() {
@@ -16,7 +17,7 @@ export async function fetchModelStructure() {
 
 export async function fetchExperimentMetadata(experimentID) {
     try {
-        const response = await fetch(`${BASE_URL}/Experiment/${experimentID}.json`);
+        const response = await fetch(`${BASE_URL}/${entities.EXPERIMENT}/${experimentID}.json`);
         if (!response.ok) throw new Error('Network response was not ok');
         return await response.json();
     } catch (error) {
@@ -27,7 +28,7 @@ export async function fetchExperimentMetadata(experimentID) {
 
 export async function fetchAtlasStack(atlasID) {
     try {
-        const response = await fetch(`${BASE_URL}/Atlas/${atlasID}.msgpack`);
+        const response = await fetch(`${BASE_URL}/${entities.ATLAS}/${atlasID}.msgpack`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
@@ -40,7 +41,7 @@ export async function fetchAtlasStack(atlasID) {
 
 export async function fetchAtlasWireframeStack(atlasID) {
     try {
-        const response = await fetch(`${BASE_URL}/Atlas/${atlasID}W.msgpack`);
+        const response = await fetch(`${BASE_URL}/${entities.ATLAS}/${atlasID}W.msgpack`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
@@ -53,7 +54,7 @@ export async function fetchAtlasWireframeStack(atlasID) {
 
 export async function fetchActivityMapStack(activityMapID) {
     try {
-        const response = await fetch(`${BASE_URL}/ActivityMap/${activityMapID}.msgpack`);
+        const response = await fetch(`${BASE_URL}/${entities.ACTIVITY_MAP}/${activityMapID}.msgpack`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
@@ -66,7 +67,7 @@ export async function fetchActivityMapStack(activityMapID) {
 
 export async function fetchLUTFile(lutID) {
     try {
-        const response = await fetch(`${BASE_URL}/LUT/${lutID}.json`);
+        const response = await fetch(`${BASE_URL}/${entities.LUT}/${lutID}.json`);
         if (!response.ok) throw new Error('Network response was not ok');
         return await response.json();
     } catch (error) {

@@ -5,54 +5,53 @@
 
 import {actions} from "./constants";
 
-export const addObjectToViewer = (objectID, type) => ({
-    type: actions.ADD_OBJECT_TO_VIEWER,
-    payload: { objectID, type }
+export const fetchAndAddActivityMapToViewer = (activityMapID) => ({
+    type: actions.FETCH_AND_ADD_ACTIVITY_MAP_TO_VIEWER,
+    payload: activityMapID
 });
-export const setObjectToViewer = (object) => ({
-    type: actions.SET_OBJECT_TO_VIEWER,
-    payload: object
-});
-
-export const removeObjectFromViewer = (objectId) => ({
-    type: actions.REMOVE_OBJECT_FROM_VIEWER,
-    payload: objectId
+export const addActivityMapToViewer = (activityMap) => ({
+    type: actions.ADD_ACTIVITY_MAP_TO_VIEWER,
+    payload: activityMap
 });
 
-export const toggleObjectVisibility = (objectId) => ({
-    type: actions.TOGGLE_OBJECT_VISIBILITY,
-    payload: objectId
+export const removeActivityMapFromViewer = (activityMapID) => ({
+    type: actions.REMOVE_ACTIVITY_MAP_FROM_VIEWER,
+    payload: activityMapID
 });
 
-export const changeObjectOpacity = (objectId, opacity) => ({
-    type: actions.CHANGE_OBJECT_OPACITY,
-    payload: { objectId, opacity }
+export const toggleActivityMapVisibility = (activityMapID) => ({
+    type: actions.TOGGLE_ACTIVITY_MAP_VISIBILITY,
+    payload: activityMapID
 });
 
-export const changeAllObjectsOpacity = (opacity) => ({
-    type: actions.CHANGE_ALL_OBJECTS_OPACITY,
+export const changeActivityMapOpacity = (activityMapID, opacity) => ({
+    type: actions.CHANGE_ACTIVITY_MAP_OPACITY,
+    payload: { activityMapID, opacity }
+});
+
+export const changeAllActivityMapsOpacity = (opacity) => ({
+    type: actions.CHANGE_ALL_ACTIVITY_MAPS_OPACITY,
     payload: opacity
 });
 
-export const changeObjectColor = (objectId, color) => ({
-    type: actions.CHANGE_OBJECT_COLOR,
-    payload: { objectId, color }
+export const changeActivityMapColor = (activityMapID, color) => ({
+    type: actions.CHANGE_ACTIVITY_MAP_COLOR,
+    payload: { activityMapID, color }
 });
 
-export const changeObjectsOrder = (order) => ({
-    type: actions.CHANGE_OBJECTS_ORDER,
+export const changeActivityMapsOrder = (order) => ({
+    type: actions.CHANGE_ACTIVITY_MAPS_ORDER,
     payload: { order }
 });
 
-export const downloadObject = (objectId) => ({
-    type: actions.DOWNLOAD_OBJECT,
-    payload: objectId
+export const triggerActivityMapDownload = (activityMapID) => ({
+    type: actions.DOWNLOAD_ACTIVITY_MAP,
+    payload: activityMapID
 })
 
-export const downloadAllObjects = () => ({
+export const triggerDownloadAllObjects = () => ({
     type: actions.DOWNLOAD_ALL_OBJECTS
 })
-
 
 // Experiment Actions
 export const fetchExperiment = (experimentId) => ({
