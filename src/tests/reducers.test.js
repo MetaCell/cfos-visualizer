@@ -2,7 +2,7 @@
 import {Experiment, ViewerObject} from "../model/models";
 import {currentExperimentReducer, modelReducer, uiReducer, viewerReducer} from "../redux/reducers";
 import {
-    addObjectToViewer,
+    setObjectToViewer,
     changeAllObjectsOpacity,
     changeObjectOpacity,
     removeObjectFromViewer, setError, setLoading, setModel,
@@ -26,7 +26,7 @@ describe('viewerReducer', () => {
             }
         };
 
-        expect(viewerReducer(initialState, addObjectToViewer(newObject))).toEqual(expectedState);
+        expect(viewerReducer(initialState, setObjectToViewer(newObject))).toEqual(expectedState);
     });
 
     it('should handle REMOVE_OBJECT_FROM_VIEWER', () => {

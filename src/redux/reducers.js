@@ -5,7 +5,7 @@ import {ViewerObject} from "../model/models";
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
     switch (action.type) {
-        case actions.ADD_OBJECT_TO_VIEWER:
+        case actions.SET_OBJECT_TO_VIEWER:
             return {
                 ...state,
                 objects: {

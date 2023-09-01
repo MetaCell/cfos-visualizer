@@ -5,8 +5,12 @@
 
 import {actions} from "./constants";
 
-export const addObjectToViewer = (object) => ({
+export const addObjectToViewer = (objectID, type) => ({
     type: actions.ADD_OBJECT_TO_VIEWER,
+    payload: { objectID, type }
+});
+export const setObjectToViewer = (object) => ({
+    type: actions.SET_OBJECT_TO_VIEWER,
     payload: object
 });
 

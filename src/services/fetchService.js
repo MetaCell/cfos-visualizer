@@ -1,5 +1,6 @@
 import { decode } from '@msgpack/msgpack';
 import {BASE_URL} from "../settings";
+import {deserializeStack} from "../helpers/stackHelper";
 
 
 export async function fetchModelStructure() {
@@ -24,39 +25,39 @@ export async function fetchExperimentMetadata(experimentID) {
     }
 }
 
-export async function fetchAtlasData(atlasID) {
+export async function fetchAtlasStack(atlasID) {
     try {
         const response = await fetch(`${BASE_URL}/Atlas/${atlasID}.msgpack`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
-        return decode(buffer);
+        return deserializeStack(decode(buffer));
     } catch (error) {
         console.error(`Failed to fetch and decode atlas data: ${error.message}`);
         throw error;
     }
 }
 
-export async function fetchAtlasWireframeData(atlasID) {
+export async function fetchAtlasWireframeStack(atlasID) {
     try {
         const response = await fetch(`${BASE_URL}/Atlas/${atlasID}W.msgpack`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
-        return decode(buffer);
+        return deserializeStack(decode(buffer));
     } catch (error) {
         console.error(`Failed to fetch and decode atlas wireframe data: ${error.message}`);
         throw error;
     }
 }
 
-export async function fetchActivityMapData(activityMapID) {
+export async function fetchActivityMapStack(activityMapID) {
     try {
         const response = await fetch(`${BASE_URL}/ActivityMap/${activityMapID}.msgpack`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
-        return decode(buffer);
+        return deserializeStack(decode(buffer));
     } catch (error) {
         console.error(`Failed to fetch and decode activity map data: ${error.message}`);
         throw error;
