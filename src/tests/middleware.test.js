@@ -3,7 +3,7 @@ import {
     fetchModelStructure,
     fetchExperimentMetadata,
     fetchAtlasStack,
-    fetchAtlasWireframeStack, fetchActivityMapStack
+    fetchAtlasWireframeStack, fetchActivityMapStack, fetchLUTFile
 } from '../services/fetchService';
 import {
     addObjectToViewer,
@@ -19,6 +19,7 @@ import {DEFAULT_COLOR, DEFAULT_OPACITY, DEFAULT_VISIBILITY} from "../settings";
 // Mocking the fetchService functions
 jest.mock('../services/fetchService', () => ({
     fetchModelStructure: jest.fn(),
+    fetchLUTFile: jest.fn(),
     fetchExperimentMetadata: jest.fn(),
     fetchAtlasStack: jest.fn(),
     fetchAtlasWireframeStack: jest.fn(),
@@ -38,12 +39,22 @@ describe('Middleware', () => {
     it('should handle FETCH_MODEL', async () => {
         const mockData = require('./resources/index.json');
         fetchModelStructure.mockResolvedValueOnce(mockData);
+        const mockLUTData = require('./resources/lut.json');
+
+        mockData.luts.forEach(lutID => {
+            fetchLUTFile.mockResolvedValueOnce(mockLUTData);
+        });
 
         const action = fetchModel()
 
         await middleware(store)(next)(action);
 
-        expect(store.dispatch).toHaveBeenCalledWith(setModel(mockData));
+        const expectedLutsMap = mockData.luts.reduce((acc, lutID) => {
+            acc[lutID] = mockLUTData;
+            return acc;
+        }, {});
+
+        expect(store.dispatch).toHaveBeenCalledWith(setModel({ ...mockData, luts: expectedLutsMap }));
     });
 
     it('should handle error during FETCH_MODEL', async () => {

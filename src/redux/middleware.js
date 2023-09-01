@@ -3,7 +3,7 @@ import {
     fetchActivityMapStack,
     fetchAtlasStack,
     fetchAtlasWireframeStack,
-    fetchExperimentMetadata,
+    fetchExperimentMetadata, fetchLUTFile,
     fetchModelStructure
 } from "../services/fetchService";
 import {setCurrentExperiment, setError, setModel, setObjectToViewer} from "./actions";
@@ -17,8 +17,20 @@ export const middleware = store => next => async action => {
         case actions.FETCH_MODEL:
             try {
                 const data = await fetchModelStructure();
-                // todo: fetch each LUTS
-                store.dispatch(setModel(data));
+
+                const lutPromises = data.luts.map(async lutID => {
+                    const lutData = await fetchLUTFile(lutID);
+                    return { lutID, lutData };
+                });
+
+                const fetchedLuts = await Promise.all(lutPromises);
+
+                const lutsMap = fetchedLuts.reduce((acc, { lutID, lutData }) => {
+                    acc[lutID] = lutData;
+                    return acc;
+                }, {});
+
+                store.dispatch(setModel({ ...data, luts: lutsMap }));
             } catch (error) {
                 store.dispatch(setError(error.message));
             }

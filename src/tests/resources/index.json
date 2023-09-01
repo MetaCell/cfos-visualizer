@@ -35,5 +35,6 @@
     "Experiment3": [
       "ActivityMap5"
     ]
-  }
+  },
+  "luts": ["1"]
 }
