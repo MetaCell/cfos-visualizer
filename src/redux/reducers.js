@@ -10,14 +10,17 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 ...state,
                 objects: {
                     ...state.objects,
-                    [action.payload.id]: action.payload
-                }
+                    [action.payload.id]: action.payload,
+                },
+                objectsOrder: [...state.objectsOrder, action.payload.id]
             };
 
         case actions.REMOVE_OBJECT_FROM_VIEWER:
             const newObjects = { ...state.objects };
             delete newObjects[action.payload];
-            return { ...state, objects: newObjects };
+            const newOrder = state.objectsOrder.filter(id => id !== action.payload);
+
+            return { ...state, objects: newObjects,objectsOrder: newOrder};
 
         case actions.TOGGLE_OBJECT_VISIBILITY:
             const objectToToggle = state.objects[action.payload];

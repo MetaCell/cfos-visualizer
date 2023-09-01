@@ -14,7 +14,8 @@ describe('viewerReducer', () => {
 
     // Initial state for the tests
     const initialState = {
-        objects: {}
+        objects: {},
+        objectsOrder: []
     };
 
     it('should handle ADD_OBJECT_TO_VIEWER', () => {
@@ -23,7 +24,8 @@ describe('viewerReducer', () => {
         const expectedState = {
             objects: {
                 '1': newObject
-            }
+            },
+            objectsOrder: ['1']
         };
 
         expect(viewerReducer(initialState, setObjectToViewer(newObject))).toEqual(expectedState);
@@ -33,13 +35,15 @@ describe('viewerReducer', () => {
         const objectToRemove = new ViewerObject('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
         const setupState = {
             objects: {
-                '1': objectToRemove
-            }
+                '1': objectToRemove,
+            },
+            objectsOrder: ['1']
         };
 
 
         const expectedState = {
-            objects: {}
+            objects: {},
+            objectsOrder: []
         };
 
         expect(viewerReducer(setupState, removeObjectFromViewer('1'))).toEqual(expectedState);
