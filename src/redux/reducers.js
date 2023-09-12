@@ -1,10 +1,18 @@
 import {INIT_STATE} from "./store";
 import {actions} from "./constants";
-import {ActivityMap} from "../model/models";
+import {ActivityMap, Atlas} from "../model/models";
 
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
     switch (action.type) {
+        case actions.SET_VIEWER_ATLAS:
+            return {
+                ...state,
+                atlas: action.payload,
+                activityMaps: {},
+                order: [action.payload.id]
+            };
+
         case actions.ADD_ACTIVITY_MAP_TO_VIEWER:
             return {
                 ...state,
@@ -12,49 +20,87 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state.activityMaps,
                     [action.payload.id]: action.payload,
                 },
-                activityMapsOrder: [...state.activityMapsOrder, action.payload.id]
+                order: [...state.order, action.payload.id]
             };
 
         case actions.REMOVE_ACTIVITY_MAP_FROM_VIEWER:
             const nextActivityMaps = { ...state.activityMaps };
             delete nextActivityMaps[action.payload];
 
-            const newOrder = state.activityMapsOrder.filter(id => id !== action.payload);
-            return { ...state, activityMaps: nextActivityMaps, activityMapsOrder: newOrder};
+            const newOrder = state.order.filter(id => id !== action.payload);
+            return { ...state, activityMaps: nextActivityMaps, order: newOrder};
 
-        case actions.TOGGLE_ACTIVITY_MAP_VISIBILITY:
-            const activityMapForVisibility = state.activityMaps[action.payload];
-            return {
-                ...state,
-                activityMaps: {
-                    ...state.activityMaps,
-                    [action.payload]: new ActivityMap(
-                        activityMapForVisibility.id,
-                        activityMapForVisibility.color,
-                        activityMapForVisibility.opacity,
-                        !activityMapForVisibility.visibility,
-                        activityMapForVisibility.stack,
+        case actions.TOGGLE_VIEWER_OBJECT_VISIBILITY:
+            if (state.activityMaps[action.payload]) {
+                const activityMap = state.activityMaps[action.payload];
+                return {
+                    ...state,
+                    activityMaps: {
+                        ...state.activityMaps,
+                        [action.payload]: new ActivityMap(
+                            activityMap.id,
+                            activityMap.color,
+                            activityMap.opacity,
+                            !activityMap.visibility,
+                            activityMap.stack,
+                        )
+                    }
+                };
+            }
+            else if (state.atlas && state.atlas.id === action.payload) {
+                const atlas = state.atlas;
+                return {
+                    ...state,
+                    atlas: new Atlas(
+                        atlas.id,
+                        atlas.color,
+                        atlas.opacity,
+                        !atlas.visibility,
+                        atlas.stack,
+                        atlas.wireframeStack
                     )
-                }
-            };
+                };
+            }
+            else {
+                return state;
+            }
 
-        case actions.CHANGE_ACTIVITY_MAP_OPACITY:
-            const activityMapForOpacity = state.activityMaps[action.payload.activityMapID];
-            return {
-                ...state,
-                activityMaps: {
-                    ...state.activityMaps,
-                    [action.payload.activityMapID]: new ActivityMap(
-                        activityMapForOpacity.id,
-                        activityMapForOpacity.color,
+        case actions.CHANGE_VIEWER_OBJECT_OPACITY:
+            if (state.activityMaps[action.payload.id]) {
+                const activityMap = state.activityMaps[action.payload.id];
+                return {
+                    ...state,
+                    activityMaps: {
+                        ...state.activityMaps,
+                        [action.payload.id]: new ActivityMap(
+                            activityMap.id,
+                            activityMap.color,
+                            action.payload.opacity,
+                            activityMap.visibility,
+                            activityMap.stack,
+                        )
+                    }
+                };
+            }
+            else if (state.atlas && state.atlas.id === action.payload.id) {
+                const atlas = state.atlas;
+                return {
+                    ...state,
+                    atlas: new Atlas(
+                        atlas.id,
+                        atlas.color,
                         action.payload.opacity,
-                        activityMapForOpacity.visibility,
-                        activityMapForOpacity.stack,
+                        atlas.visibility,
+                        atlas.stack,
+                        atlas.wireframeStack
                     )
-                }
-            };
+                };
+            }
+            else {
+                return state;
+            }
 
-        case actions.CHANGE_ALL_ACTIVITY_MAPS_OPACITY:
+        case actions.CHANGE_ALL_VIEWER_OBJECTS_OPACITY:
             const updatedActivityMaps = Object.keys(state.activityMaps).reduce((acc, activityMapID) => {
                 const activityMap = state.activityMaps[activityMapID];
                 acc[activityMapID] = new ActivityMap(
@@ -66,9 +112,18 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 );
                 return acc;
             }, {});
+            const atlas = state.atlas;
             return {
                 ...state,
-                activityMaps: updatedActivityMaps
+                activityMaps: updatedActivityMaps,
+                atlas: new Atlas(
+                    atlas.id,
+                    atlas.color,
+                    action.payload,
+                    atlas.visibility,
+                    atlas.stack,
+                    atlas.wireframeStack
+                )
             };
 
         case actions.CHANGE_ACTIVITY_MAP_COLOR:
@@ -86,10 +141,10 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     )
                 }
             };
-        case actions.CHANGE_ACTIVITY_MAPS_ORDER:
+        case actions.CHANGE_VIEWER_ORDER:
             return {
                 ...state,
-                activityMapsOrder: action.payload.order
+                order: action.payload.order
             };
 
 

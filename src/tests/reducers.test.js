@@ -1,146 +1,180 @@
 
-import {Experiment, ActivityMap} from "../model/models";
+import {Experiment, ActivityMap, Atlas} from "../model/models";
 import {currentExperimentReducer, modelReducer, uiReducer, viewerReducer} from "../redux/reducers";
 import {
     addActivityMapToViewer,
-    changeAllActivityMapsOpacity,
-    changeActivityMapOpacity,
+    changeAllViewerObjectsOpacity,
+    changeViewerObjectOpacity,
     removeActivityMapFromViewer, setError, setLoading, setModel,
-    toggleActivityMapVisibility, setCurrentExperiment, changeActivityMapColor, changeActivityMapsOrder
+    toggleViewerObjectVisibility, setCurrentExperiment, changeActivityMapColor, changeViewerOrder, setViewerAtlas
 } from "../redux/actions";
+import {INIT_STATE} from "../redux/store";
 
 
 describe('viewerReducer', () => {
 
-    // Initial state for the tests
+    const activityMapID = "ActivityMap1"
+    const atlasID = "Atlas1"
+    const atlas = new Atlas(atlasID, 'red', 1, true, 'stack', 'wireframeStack');
     const initialState = {
-        activityMapsOrder: [],
-        activityMaps: {}
+        atlas: atlas,
+        activityMaps: {},
+        order: [atlas.id]
     };
 
-    it('should handle ADD_ACTIVITY_MAP_TO_VIEWER', () => {
-        const newObject = new ActivityMap('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
-
+    it('should handle SET_VIEWER_ATLAS', () => {
         const expectedState = {
-            activityMaps: {
-                '1': newObject
-            },
-            activityMapsOrder: ['1']
+            atlas: atlas,
+            activityMaps: {},
+            order: [atlas.id]
         };
 
-        expect(viewerReducer(initialState, addActivityMapToViewer(newObject))).toEqual(expectedState);
+        expect(viewerReducer({...INIT_STATE.viewer}, setViewerAtlas(atlas))).toEqual(expectedState);
     });
 
+    it('should handle ADD_ACTIVITY_MAP_TO_VIEWER', () => {
+        const newActivityMap = new ActivityMap(activityMapID, 'red', 1, true, 'stack');
+        const expectedState = {
+            ...initialState,
+            activityMaps: {
+                [activityMapID]: newActivityMap
+            },
+            order: [atlas.id, activityMapID]
+        };
+
+        expect(viewerReducer(initialState, addActivityMapToViewer(newActivityMap))).toEqual(expectedState);
+    });
+
+
+
     it('should handle REMOVE_ACTIVITY_MAP_FROM_VIEWER', () => {
-        const objectToRemove = new ActivityMap('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
+        const objectToRemove = new ActivityMap(activityMapID, 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
         const setupState = {
             activityMaps: {
-                '1': objectToRemove,
+                [activityMapID]: objectToRemove,
             },
-            activityMapsOrder: ['1']
+            order: [activityMapID]
         };
 
 
         const expectedState = {
             activityMaps: {},
-            activityMapsOrder: []
+            order: []
         };
 
-        expect(viewerReducer(setupState, removeActivityMapFromViewer('1'))).toEqual(expectedState);
+        expect(viewerReducer(setupState, removeActivityMapFromViewer(activityMapID))).toEqual(expectedState);
     });
 
-    it('should handle TOGGLE_ACTIVITY_MAP_VISIBILITY', () => {
-        const objectToToggle = new ActivityMap('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
+    it('should handle TOGGLE_VIEWER_OBJECT_VISIBILITY for activityMap', () => {
+        const activityMap = new ActivityMap(activityMapID, 'red', 1, true, 'stack');
         const setupState = {
+            ...initialState,
             activityMaps: {
-                '1': objectToToggle
+                [activityMapID]: activityMap
             }
         };
 
         const expectedState = {
+            ...setupState,
             activityMaps: {
-                '1': {
-                    ...objectToToggle,
-                    visibility: false
-                }
+                [activityMapID]: new ActivityMap(activityMapID, 'red', 1, false, 'stack')
             }
         };
 
-        expect(viewerReducer(setupState, toggleActivityMapVisibility('1'))).toEqual(expectedState);
+        expect(viewerReducer(setupState, toggleViewerObjectVisibility(activityMapID))).toEqual(expectedState);
     });
 
-    it('should handle CHANGE_ACTIVITY_MAP_OPACITY', () => {
-        const objectToUpdate = new ActivityMap('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
+    it('should handle TOGGLE_VIEWER_OBJECT_VISIBILITY for atlas', () => {
+
+        const expectedState = {
+            ...initialState,
+            atlas: new Atlas(atlasID, 'red', 1, false, 'stack', 'wireframeStack')
+        };
+
+        expect(viewerReducer(initialState, toggleViewerObjectVisibility(atlasID))).toEqual(expectedState);
+    });
+
+
+    it('should handle CHANGE_VIEWER_OBJECT_OPACITY for activityMap', () => {
+        const activityMap = new ActivityMap(activityMapID, 'red', 1, true, 'stack');
         const setupState = {
+            ...initialState,
             activityMaps: {
-                '1': objectToUpdate
+                [activityMapID]: activityMap
             }
         };
 
         const expectedState = {
+            ...setupState,
             activityMaps: {
-                '1': {
-                    ...objectToUpdate,
-                    opacity: 0.5
-                }
+                [activityMapID]: new ActivityMap(activityMapID, 'red', 0.5, true, 'stack')
             }
         };
 
-        expect(viewerReducer(setupState, changeActivityMapOpacity('1', 0.5))).toEqual(expectedState);
+        expect(viewerReducer(setupState, changeViewerObjectOpacity(activityMapID, 0.5))).toEqual(expectedState);
     });
 
-    it('should handle CHANGE_ALL_ACTIVITY_MAPS_OPACITY', () => {
-        const object1 = new ActivityMap('1', 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
-        const object2 = new ActivityMap('2', 'Atlas', 'blue', 0.8, true, 'stack', 'wireframeStack');
+    it('should handle CHANGE_VIEWER_OBJECT_OPACITY for atlas', () => {
+
+        const expectedState = {
+            ...initialState,
+            atlas: new Atlas(atlasID, 'red', 0.5, true, 'stack', 'wireframeStack')
+        };
+
+        expect(viewerReducer(initialState, changeViewerObjectOpacity(atlasID, 0.5))).toEqual(expectedState);
+    });
+
+    it('should handle CHANGE_ALL_VIEWER_OBJECTS_OPACITY', () => {
+        const newOpacity = 0.7
+        const object1 = new ActivityMap(activityMapID,  'red', 1, true, 'stack');
         const setupState = {
+            ...initialState,
             activityMaps: {
-                '1': object1,
-                '2': object2
+                [activityMapID]: object1,
             }
         };
 
         const expectedState = {
+            ...initialState,
+            atlas: new Atlas(atlasID, 'red', newOpacity, true, 'stack', 'wireframeStack'),
             activityMaps: {
-                '1': { ...object1, opacity: 0.7 },
-                '2': { ...object2, opacity: 0.7 }
+                [activityMapID]: { ...object1, opacity: newOpacity },
             }
         };
 
-        expect(viewerReducer(setupState, changeAllActivityMapsOpacity(0.7))).toEqual(expectedState);
+        expect(viewerReducer(setupState, changeAllViewerObjectsOpacity(newOpacity))).toEqual(expectedState);
     });
 //
     it('should handle CHANGE_ACTIVITY_MAP_COLOR', () => {
-        const initialObject = new ActivityMap('1', 'red', 1, true, 'stack');
+        const initialObject = new ActivityMap(activityMapID, 'red', 1, true, 'stack');
         const setupState = {
             activityMaps: {
-                '1': initialObject
+                [activityMapID]: initialObject
             }
         };
 
         const expectedState = {
             activityMaps: {
-                '1': new ActivityMap('1', 'blue', 1, true, 'stack')
+               [activityMapID]: new ActivityMap(activityMapID, 'blue', 1, true, 'stack')
             }
         };
 
-        const changeColorAction = changeActivityMapColor('1', 'blue');
+        const changeColorAction = changeActivityMapColor(activityMapID, 'blue');
 
         expect(viewerReducer(setupState, changeColorAction)).toEqual(expectedState);
     });
 
-    it('should handle CHANGE_ACTIVITY_MAPS_ORDER', () => {
+    it('should handle CHANGE_VIEWER_ORDER', () => {
         const setupState = {
-            activityMaps: {},
-            activityMapsOrder: ['1', '2', '3']
+            order: ['1', '2', '3']
         };
 
         const newOrder = ['3', '1', '2'];
         const expectedState = {
-            activityMaps: {},
-            activityMapsOrder: newOrder
+            order: newOrder
         };
 
-        const changeOrderAction = changeActivityMapsOrder(newOrder)
+        const changeOrderAction = changeViewerOrder(newOrder)
 
         expect(viewerReducer(setupState, changeOrderAction)).toEqual(expectedState);
     });

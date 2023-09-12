@@ -6,8 +6,9 @@ import { viewerReducer, currentExperimentReducer, modelReducer, uiReducer } from
 
 export const INIT_STATE = {
   viewer: {
-    activityMapsOrder: [],
+    order: [],
     activityMaps: {},
+    atlas: null,
   },
   currentExperiment: null,
   model: {

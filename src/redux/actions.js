@@ -5,6 +5,16 @@
 
 import {actions} from "./constants";
 
+
+export const fetchAndSetViewerAtlas = (atlasID) => ({
+    type: actions.FETCH_AND_SET_VIEWER_ATLAS,
+    payload: atlasID
+});
+export const setViewerAtlas = (activityMap) => ({
+    type: actions.SET_VIEWER_ATLAS,
+    payload: activityMap
+});
+
 export const fetchAndAddActivityMapToViewer = (activityMapID) => ({
     type: actions.FETCH_AND_ADD_ACTIVITY_MAP_TO_VIEWER,
     payload: activityMapID
@@ -19,18 +29,18 @@ export const removeActivityMapFromViewer = (activityMapID) => ({
     payload: activityMapID
 });
 
-export const toggleActivityMapVisibility = (activityMapID) => ({
-    type: actions.TOGGLE_ACTIVITY_MAP_VISIBILITY,
-    payload: activityMapID
+export const toggleViewerObjectVisibility = (id) => ({
+    type: actions.TOGGLE_VIEWER_OBJECT_VISIBILITY,
+    payload: id
 });
 
-export const changeActivityMapOpacity = (activityMapID, opacity) => ({
-    type: actions.CHANGE_ACTIVITY_MAP_OPACITY,
-    payload: { activityMapID, opacity }
+export const changeViewerObjectOpacity = (id, opacity) => ({
+    type: actions.CHANGE_VIEWER_OBJECT_OPACITY,
+    payload: { id, opacity }
 });
 
-export const changeAllActivityMapsOpacity = (opacity) => ({
-    type: actions.CHANGE_ALL_ACTIVITY_MAPS_OPACITY,
+export const changeAllViewerObjectsOpacity = (opacity) => ({
+    type: actions.CHANGE_ALL_VIEWER_OBJECTS_OPACITY,
     payload: opacity
 });
 
@@ -39,8 +49,8 @@ export const changeActivityMapColor = (activityMapID, color) => ({
     payload: { activityMapID, color }
 });
 
-export const changeActivityMapsOrder = (order) => ({
-    type: actions.CHANGE_ACTIVITY_MAPS_ORDER,
+export const changeViewerOrder = (order) => ({
+    type: actions.CHANGE_VIEWER_ORDER,
     payload: { order }
 });
 
@@ -54,8 +64,8 @@ export const triggerDownloadAllObjects = () => ({
 })
 
 // Experiment Actions
-export const fetchExperiment = (experimentId) => ({
-    type: actions.FETCH_CURRENT_EXPERIMENT,
+export const fetchAndSetExperiment = (experimentId) => ({
+    type: actions.FETCH_AND_SET_CURRENT_EXPERIMENT,
     payload: experimentId
 });
 

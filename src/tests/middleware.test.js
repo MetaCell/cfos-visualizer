@@ -7,13 +7,13 @@ import {
 } from '../services/fetchService';
 import {
     fetchAndAddActivityMapToViewer, triggerDownloadAllObjects, triggerActivityMapDownload,
-    fetchExperiment,
+    fetchAndSetExperiment,
     fetchModel,
     setCurrentExperiment,
     setError,
     setModel, addActivityMapToViewer
 } from "../redux/actions";
-import {Experiment, ActivityMap, ViewerObjectType} from "../model/models";
+import {Experiment, ActivityMap} from "../model/models";
 import {DEFAULT_COLOR, DEFAULT_OPACITY, DEFAULT_VISIBILITY} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 
@@ -29,6 +29,7 @@ jest.mock('../services/fetchService', () => ({
 jest.mock('../services/downloadService', () => ({
     downloadActivityMap: jest.fn(),
     downloadAllViewerObjects: jest.fn(),
+    downloadAtlas: jest.fn(),
 }));
 
 describe('Middleware', () => {
@@ -77,7 +78,7 @@ describe('Middleware', () => {
         const experimentID = "someID";
         fetchExperimentMetadata.mockResolvedValueOnce(mockData);
 
-        const action = fetchExperiment(experimentID)
+        const action = fetchAndSetExperiment(experimentID)
 
         await middleware(store)(next)(action);
 
@@ -116,41 +117,47 @@ describe('Middleware', () => {
     });
 
     it('should handle DOWNLOAD_OBJECT', () => {
-        const mockObjectID = '1';
-        const mockObject = new ActivityMap(mockObjectID, 'red', 1, true, 'stack');
+        const mockActivityMapID = '1';
+        const mockActivityMap = new ActivityMap(mockActivityMapID, 'red', 1, true, 'stack');
 
         // Mock the state of the store
         store.getState = jest.fn().mockReturnValue({
             viewer: {
                 activityMaps: {
-                    [mockObjectID]: mockObject
+                    [mockActivityMapID]: mockActivityMap
                 },
-                activityMapsOrder: [mockObjectID],
+                order: [mockActivityMapID],
 
             }
         });
 
-        middleware(store)(next)(triggerActivityMapDownload(mockObjectID));
+        middleware(store)(next)(triggerActivityMapDownload(mockActivityMapID));
 
-        expect(downloadActivityMap).toHaveBeenCalledWith(mockObject);
+        expect(downloadActivityMap).toHaveBeenCalledWith(mockActivityMap);
     });
 
-    // it('should handle DOWNLOAD_ALL_OBJECTS', () => {
-    //     const mockObjects = {
-    //         '1': new ActivityMap('1', 'Atlas', 'red', 1, true, 'stack1'),
-    //         '2': new ActivityMap('2', 'Atlas', 'blue', 1, true, 'stack2'),
-    //     };
-    //
-    //     // Mock the state of the store
-    //     store.getState = jest.fn().mockReturnValue({
-    //         viewer: {
-    //             objects: mockObjects
-    //         }
-    //     });
-    //
-    //     middleware(store)(next)(triggerDownloadAllObjects());
-    //
-    //     expect(downloadAllViewerObjects).toHaveBeenCalledWith(Object.values(mockObjects));
-    // });
+    it('should handle DOWNLOAD_ALL_OBJECTS', () => {
+        const mockActivityMaps = {
+            '1': new ActivityMap('1', 'Atlas', 'red', 1, true, 'stack1'),
+            '2': new ActivityMap('2', 'Atlas', 'blue', 1, true, 'stack2'),
+        };
+        const mockAtlasID = 'atlas1';
+
+
+        store.getState = jest.fn().mockReturnValue({
+            viewer: {
+                activityMaps: mockActivityMaps,
+                atlas: mockAtlasID
+            }
+        });
+
+        middleware(store)(next)(triggerDownloadAllObjects());
+
+
+        Object.keys(mockActivityMaps).forEach(activityMapID => {
+            expect(downloadActivityMap).toHaveBeenCalledWith(activityMapID);
+        });
+        expect(downloadAtlas).toHaveBeenCalledWith(mockAtlasID);
+    });
 
 });

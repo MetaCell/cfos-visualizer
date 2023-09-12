@@ -6,7 +6,7 @@ import entities from "entities";
 
 export async function fetchModelStructure() {
     try {
-        const response = await fetch(`${BASE_URL}/index.jsom`);
+        const response = await fetch(`${BASE_URL}/index.json`);
         if (!response.ok) throw new Error('Network response was not ok');
         return await response.json();
     } catch (error) {
