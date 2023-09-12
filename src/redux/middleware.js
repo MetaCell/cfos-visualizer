@@ -46,8 +46,8 @@ export const middleware = store => next => async action => {
             store.dispatch(setModel({ ...model, luts: lutsMap }));
             break;
 
-        case actions.FETCH_AND_SET_CURRENT_EXPERIMENT:
-            const experimentID = action.payload;
+        case actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS:
+            const { experimentID, atlasID } = action.payload;
             let data = null
             try {
                 data = await fetchExperimentMetadata(experimentID);
@@ -55,12 +55,7 @@ export const middleware = store => next => async action => {
                 store.dispatch(setError(error.message));
                 return
             }
-            store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
 
-            break;
-
-        case actions.FETCH_AND_SET_VIEWER_ATLAS:
-            const atlasID = action.payload;
             let atlasStack = null
             let atlasWireframeStack = null
             try {
@@ -84,6 +79,8 @@ export const middleware = store => next => async action => {
                 atlasStack,
                 atlasWireframeStack
             );
+
+            store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
             store.dispatch(setViewerAtlas(atlas));
             break;
 

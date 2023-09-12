@@ -6,13 +6,9 @@
 import {actions} from "./constants";
 
 
-export const fetchAndSetViewerAtlas = (atlasID) => ({
-    type: actions.FETCH_AND_SET_VIEWER_ATLAS,
-    payload: atlasID
-});
-export const setViewerAtlas = (activityMap) => ({
+export const setViewerAtlas = (atlas) => ({
     type: actions.SET_VIEWER_ATLAS,
-    payload: activityMap
+    payload: atlas
 });
 
 export const fetchAndAddActivityMapToViewer = (activityMapID) => ({
@@ -64,9 +60,9 @@ export const triggerDownloadAllObjects = () => ({
 })
 
 // Experiment Actions
-export const fetchAndSetExperiment = (experimentId) => ({
-    type: actions.FETCH_AND_SET_CURRENT_EXPERIMENT,
-    payload: experimentId
+export const fetchAndSetExperimentAndAtlas = (experimentID, atlasID) => ({
+    type: actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS,
+    payload: { experimentID, atlasID }
 });
 
 export const setCurrentExperiment = (experiment) => ({
@@ -74,6 +70,7 @@ export const setCurrentExperiment = (experiment) => ({
     payload: experiment
 });
 
+// Model Actions
 
 export const fetchModel = () => ({
     type: actions.FETCH_MODEL
