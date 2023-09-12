@@ -11,9 +11,9 @@ import {
     fetchModel,
     setCurrentExperiment,
     setError,
-    setModel, addActivityMapToViewer
+    setModel, addActivityMapToViewer, fetchAndSetViewerAtlas, setViewerAtlas
 } from "../redux/actions";
-import {Experiment, ActivityMap} from "../model/models";
+import {Experiment, ActivityMap, Atlas} from "../model/models";
 import {DEFAULT_COLOR, DEFAULT_OPACITY, DEFAULT_VISIBILITY} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 
@@ -34,6 +34,8 @@ jest.mock('../services/downloadService', () => ({
 
 describe('Middleware', () => {
     let store, next;
+    const mockActivityMapID = 'ActivityMap1';
+
 
     beforeEach(() => {
         store = {
@@ -85,6 +87,63 @@ describe('Middleware', () => {
         expect(store.dispatch).toHaveBeenCalledWith(setCurrentExperiment(new Experiment(experimentID, mockData)));
     });
 
+    it('should handle error during FETCH_AND_SET_CURRENT_EXPERIMENT', async () => {
+        const errorMessage = 'Experiment Error';
+        fetchExperimentMetadata.mockRejectedValueOnce(new Error(errorMessage));
+
+        const action = fetchAndSetExperiment('ExperimentID');
+        await middleware(store)(next)(action);
+
+        expect(store.dispatch).toHaveBeenCalledWith(setError(errorMessage));
+    });
+
+    it('should handle FETCH_AND_SET_VIEWER_ATLAS', async () => {
+        const atlasID = 'AtlasID';
+        const atlasStackData = require('./resources/atlasStack.msgpack');
+        const atlasWireframeStackData = require('./resources/atlasWireframeStack.msgpack');
+
+        fetchAtlasStack.mockResolvedValueOnce(atlasStackData);
+        fetchAtlasWireframeStack.mockResolvedValueOnce(atlasWireframeStackData);
+
+        const action = fetchAndSetViewerAtlas(atlasID)
+
+        await middleware(store)(next)(action);
+
+        const expectedAtlas = new Atlas(
+            atlasID,
+            DEFAULT_COLOR,
+            DEFAULT_OPACITY,
+            DEFAULT_VISIBILITY,
+            atlasStackData,
+            atlasWireframeStackData
+        );
+
+        expect(store.dispatch).toHaveBeenCalledWith(setViewerAtlas(expectedAtlas));
+    });
+
+    it('should handle error during FETCH_AND_SET_VIEWER_ATLAS for atlasStack', async () => {
+        const errorMessage = 'Atlas Stack Error';
+        fetchAtlasStack.mockRejectedValueOnce(new Error(errorMessage));
+
+        const action = fetchAndSetViewerAtlas('AtlasID')
+        await middleware(store)(next)(action);
+
+        expect(store.dispatch).toHaveBeenCalledWith(setError(errorMessage));
+    });
+
+    it('should handle error during FETCH_AND_SET_VIEWER_ATLAS for atlasWireframeStack', async () => {
+        const errorMessage = 'Atlas Wireframe Stack Error';
+        fetchAtlasWireframeStack.mockRejectedValueOnce(new Error(errorMessage));
+        fetchAtlasStack.mockResolvedValueOnce({}); // Resolve the previous fetch to simulate the next failure
+
+        const action = fetchAndSetViewerAtlas('AtlasID')
+        await middleware(store)(next)(action);
+
+        expect(store.dispatch).toHaveBeenCalledWith(setError(errorMessage));
+    });
+
+
+
     it('should handle ADD_ACTIVITY_MAP_TO_VIEWER', async () => {
         const activityMapStack = require('./resources/activity_map.json');
 
@@ -117,7 +176,6 @@ describe('Middleware', () => {
     });
 
     it('should handle DOWNLOAD_OBJECT', () => {
-        const mockActivityMapID = '1';
         const mockActivityMap = new ActivityMap(mockActivityMapID, 'red', 1, true, 'stack');
 
         // Mock the state of the store
@@ -138,26 +196,24 @@ describe('Middleware', () => {
 
     it('should handle DOWNLOAD_ALL_OBJECTS', () => {
         const mockActivityMaps = {
-            '1': new ActivityMap('1', 'Atlas', 'red', 1, true, 'stack1'),
-            '2': new ActivityMap('2', 'Atlas', 'blue', 1, true, 'stack2'),
+            [mockActivityMapID]: new ActivityMap(mockActivityMapID, 'red', 1, true, 'stack1'),
+            'ActivityMap2': new ActivityMap('ActivityMap2', 'blue', 1, true, 'stack2'),
         };
-        const mockAtlasID = 'atlas1';
+        const atlasID = 'Atlas1'
+        const atlas = new Atlas(atlasID, 'red', 1, true, 'stack', 'wireframeStack');
+
 
 
         store.getState = jest.fn().mockReturnValue({
             viewer: {
                 activityMaps: mockActivityMaps,
-                atlas: mockAtlasID
+                atlas: atlas
             }
         });
 
         middleware(store)(next)(triggerDownloadAllObjects());
 
-
-        Object.keys(mockActivityMaps).forEach(activityMapID => {
-            expect(downloadActivityMap).toHaveBeenCalledWith(activityMapID);
-        });
-        expect(downloadAtlas).toHaveBeenCalledWith(mockAtlasID);
+        expect(downloadAllViewerObjects).toHaveBeenCalledWith(Object.keys(mockActivityMaps), atlasID)
     });
 
 });

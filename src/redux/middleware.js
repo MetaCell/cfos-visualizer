@@ -122,8 +122,9 @@ export const middleware = store => next => async action => {
             break;
         case actions.DOWNLOAD_ALL_OBJECTS:
             const allActivityMapsIDs = Object.keys(store.getState().viewer.activityMaps);
+
             try {
-                await downloadAllViewerObjects(allActivityMapsIDs, null);
+                await downloadAllViewerObjects(allActivityMapsIDs, store.getState().viewer.atlas.id);
             }catch (error) {
                 store.dispatch(setError(error.message));
             }
