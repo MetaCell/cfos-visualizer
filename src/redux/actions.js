@@ -50,9 +50,9 @@ export const changeViewerOrder = (order) => ({
     payload: { order }
 });
 
-export const triggerActivityMapDownload = (activityMapID) => ({
-    type: actions.DOWNLOAD_ACTIVITY_MAP,
-    payload: activityMapID
+export const triggerViewerObjectDownload = (id) => ({
+    type: actions.DOWNLOAD_VIEWER_OBJECT,
+    payload: id
 })
 
 export const triggerDownloadAllObjects = () => ({

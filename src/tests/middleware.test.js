@@ -6,7 +6,7 @@ import {
     fetchAtlasWireframeStack, fetchActivityMapStack, fetchLUTFile
 } from '../services/fetchService';
 import {
-    fetchAndAddActivityMapToViewer, triggerDownloadAllObjects, triggerActivityMapDownload,
+    fetchAndAddActivityMapToViewer, triggerDownloadAllObjects, triggerViewerObjectDownload,
     fetchAndSetExperimentAndAtlas,
     fetchModel,
     setCurrentExperiment,
@@ -178,7 +178,7 @@ describe('Middleware', () => {
         expect(store.dispatch).toHaveBeenCalledWith(setError(errorMessage));
     });
 
-    it('should handle DOWNLOAD_OBJECT', () => {
+    it('should handle DOWNLOAD_OBJECT Activity Map', () => {
         const mockActivityMap = new ActivityMap(mockActivityMapID, 'red', 1, true, 'stack');
 
         // Mock the state of the store
@@ -192,9 +192,26 @@ describe('Middleware', () => {
             }
         });
 
-        middleware(store)(next)(triggerActivityMapDownload(mockActivityMapID));
+        middleware(store)(next)(triggerViewerObjectDownload(mockActivityMapID));
 
-        expect(downloadActivityMap).toHaveBeenCalledWith(mockActivityMap);
+        expect(downloadActivityMap).toHaveBeenCalledWith(mockActivityMapID);
+    });
+
+    it('should handle DOWNLOAD_OBJECT Atlas', () => {
+        const atlasID = 'Atlas1'
+        const atlas = new Atlas(atlasID, 1, true, 'stack', 'wireframeStack');
+
+        // Mock the state of the store
+        store.getState = jest.fn().mockReturnValue({
+            viewer: {
+                activityMaps: {},
+                atlas: atlas,
+            }
+        });
+
+        middleware(store)(next)(triggerViewerObjectDownload(atlasID));
+
+        expect(downloadAtlas).toHaveBeenCalledWith(atlasID);
     });
 
     it('should handle DOWNLOAD_ALL_OBJECTS', () => {
@@ -203,7 +220,7 @@ describe('Middleware', () => {
             'ActivityMap2': new ActivityMap('ActivityMap2', 'blue', 1, true, 'stack2'),
         };
         const atlasID = 'Atlas1'
-        const atlas = new Atlas(atlasID, 'red', 1, true, 'stack', 'wireframeStack');
+        const atlas = new Atlas(atlasID,  1, true, 'stack', 'wireframeStack');
 
 
 

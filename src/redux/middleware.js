@@ -8,7 +8,7 @@ import {
 } from "../services/fetchService";
 import {
     triggerDownloadAllObjects,
-    triggerActivityMapDownload,
+    triggerViewerObjectDownload,
     setCurrentExperiment,
     setError,
     setModel,
@@ -104,19 +104,27 @@ export const middleware = store => next => async action => {
             store.dispatch(addActivityMapToViewer(activityMapObject));
             break;
 
-        case actions.DOWNLOAD_ACTIVITY_MAP:
-            const activityMap = store.getState().viewer.activityMaps[action.payload];
+        case actions.DOWNLOAD_VIEWER_OBJECT:
+            const viewerState = store.getState().viewer
+            const activityMap = viewerState.activityMaps[action.payload];
             if (activityMap) {
                 try{
-                    await downloadActivityMap(activityMap);
+                    await downloadActivityMap(action.payload);
                 }
                 catch (error) {
+                    store.dispatch(setError(error.message));
+                }
+            } else if (viewerState.atlas && viewerState.atlas.id === action.payload) {
+                try {
+                    await downloadAtlas(action.payload);
+                } catch (error) {
                     store.dispatch(setError(error.message));
                 }
             } else {
                 store.dispatch(setError(`Object with ID ${action.payload} not found`));
             }
             break;
+
         case actions.DOWNLOAD_ALL_OBJECTS:
             const allActivityMapsIDs = Object.keys(store.getState().viewer.activityMaps);
 
