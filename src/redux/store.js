@@ -1,17 +1,33 @@
 import componentMap from '../app/componentMap';
-import { exampleMiddleware } from './middleware'
+import { middleware } from './middleware'
 import baseLayout from '../app/layout';
 import { createStore } from '@metacell/geppetto-meta-client/common';
-import exampleReducer from './reducer';
+import { viewerReducer, currentExperimentReducer, modelReducer, uiReducer } from './reducers'
 
-const INIT_STATE = {
-  "exampleState": {
-    instances: []
+export const INIT_STATE = {
+  viewer: {
+    order: [],
+    activityMaps: {},
+    atlas: null,
+  },
+  currentExperiment: null,
+  model: {
+    experimentsAtlas: {},
+    atlasActivityMap: {},
+    experimentsActivityMap: {},
+    luts: {}
+  },
+  ui: {
+    isLoading: false,
+    errors: null,
   }
-};
+}
 
 const reducers = {
-  "exampleState": exampleReducer
+  viewer: viewerReducer,
+  currentExperiment: currentExperimentReducer,
+  model: modelReducer,
+  ui: uiReducer
 };
 
 /**
@@ -22,7 +38,7 @@ const reducers = {
 const store = createStore(
   reducers,
   INIT_STATE,
-  [exampleMiddleware],
+  [middleware],
   { baseLayout, componentMap }
 )
 
