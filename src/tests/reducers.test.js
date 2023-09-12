@@ -6,7 +6,7 @@ import {
     changeAllViewerObjectsOpacity,
     changeViewerObjectOpacity,
     removeActivityMapFromViewer, setError, setLoading, setModel,
-    toggleViewerObjectVisibility, setCurrentExperiment, changeActivityMapColor, changeViewerOrder, setViewerAtlas
+    toggleViewerObjectVisibility, setCurrentExperiment, changeActivityMapLUT, changeViewerOrder, setViewerAtlas
 } from "../redux/actions";
 import {INIT_STATE} from "../redux/store";
 
@@ -15,7 +15,7 @@ describe('viewerReducer', () => {
 
     const activityMapID = "ActivityMap1"
     const atlasID = "Atlas1"
-    const atlas = new Atlas(atlasID, 'red', 1, true, 'stack', 'wireframeStack');
+    const atlas = new Atlas(atlasID, 1, true, 'stack', 'wireframeStack');
     const initialState = {
         atlas: atlas,
         activityMaps: {},
@@ -48,7 +48,7 @@ describe('viewerReducer', () => {
 
 
     it('should handle REMOVE_ACTIVITY_MAP_FROM_VIEWER', () => {
-        const objectToRemove = new ActivityMap(activityMapID, 'Atlas', 'red', 1, true, 'stack', 'wireframeStack');
+        const objectToRemove = new ActivityMap(activityMapID, 'red', 1, true, 'stack', 'wireframeStack');
         const setupState = {
             activityMaps: {
                 [activityMapID]: objectToRemove,
@@ -88,7 +88,7 @@ describe('viewerReducer', () => {
 
         const expectedState = {
             ...initialState,
-            atlas: new Atlas(atlasID, 'red', 1, false, 'stack', 'wireframeStack')
+            atlas: new Atlas(atlasID, 1, false, 'stack', 'wireframeStack')
         };
 
         expect(viewerReducer(initialState, toggleViewerObjectVisibility(atlasID))).toEqual(expectedState);
@@ -118,7 +118,7 @@ describe('viewerReducer', () => {
 
         const expectedState = {
             ...initialState,
-            atlas: new Atlas(atlasID, 'red', 0.5, true, 'stack', 'wireframeStack')
+            atlas: new Atlas(atlasID, 0.5, true, 'stack', 'wireframeStack')
         };
 
         expect(viewerReducer(initialState, changeViewerObjectOpacity(atlasID, 0.5))).toEqual(expectedState);
@@ -136,7 +136,7 @@ describe('viewerReducer', () => {
 
         const expectedState = {
             ...initialState,
-            atlas: new Atlas(atlasID, 'red', newOpacity, true, 'stack', 'wireframeStack'),
+            atlas: new Atlas(atlasID, newOpacity, true, 'stack', 'wireframeStack'),
             activityMaps: {
                 [activityMapID]: { ...object1, opacity: newOpacity },
             }
@@ -159,7 +159,7 @@ describe('viewerReducer', () => {
             }
         };
 
-        const changeColorAction = changeActivityMapColor(activityMapID, 'blue');
+        const changeColorAction = changeActivityMapLUT(activityMapID, 'blue');
 
         expect(viewerReducer(setupState, changeColorAction)).toEqual(expectedState);
     });

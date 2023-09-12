@@ -39,7 +39,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload]: new ActivityMap(
                             activityMap.id,
-                            activityMap.color,
+                            activityMap.lutID,
                             activityMap.opacity,
                             !activityMap.visibility,
                             activityMap.stack,
@@ -53,7 +53,6 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state,
                     atlas: new Atlas(
                         atlas.id,
-                        atlas.color,
                         atlas.opacity,
                         !atlas.visibility,
                         atlas.stack,
@@ -74,7 +73,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload.id]: new ActivityMap(
                             activityMap.id,
-                            activityMap.color,
+                            activityMap.lutID,
                             action.payload.opacity,
                             activityMap.visibility,
                             activityMap.stack,
@@ -88,7 +87,6 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state,
                     atlas: new Atlas(
                         atlas.id,
-                        atlas.color,
                         action.payload.opacity,
                         atlas.visibility,
                         atlas.stack,
@@ -105,7 +103,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 const activityMap = state.activityMaps[activityMapID];
                 acc[activityMapID] = new ActivityMap(
                     activityMap.id,
-                    activityMap.color,
+                    activityMap.lutID,
                     action.payload,
                     activityMap.visibility,
                     activityMap.stack,
@@ -118,7 +116,6 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 activityMaps: updatedActivityMaps,
                 atlas: new Atlas(
                     atlas.id,
-                    atlas.color,
                     action.payload,
                     atlas.visibility,
                     atlas.stack,
@@ -126,18 +123,18 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 )
             };
 
-        case actions.CHANGE_ACTIVITY_MAP_COLOR:
-            const activityMapForColor = state.activityMaps[action.payload.activityMapID];
+        case actions.CHANGE_ACTIVITY_MAP_LUT:
+            const activityMap = state.activityMaps[action.payload.activityMapID];
             return {
                 ...state,
                 activityMaps: {
                     ...state.activityMaps,
                     [action.payload.activityMapID]: new ActivityMap(
-                        activityMapForColor.id,
-                        action.payload.color,
-                        activityMapForColor.opacity,
-                        activityMapForColor.visibility,
-                        activityMapForColor.stack,
+                        activityMap.id,
+                        action.payload.lutID,
+                        activityMap.opacity,
+                        activityMap.visibility,
+                        activityMap.stack,
                     )
                 }
             };

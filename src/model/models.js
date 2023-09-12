@@ -8,10 +8,9 @@ const entities = {
 }
 
 export class Atlas {
-    constructor(id, color, opacity, visibility, stack, wireframeStack) {
+    constructor(id, opacity, visibility, stack, wireframeStack) {
         return Immutable({
             id,
-            color,
             opacity,
             visibility,
             stack,
@@ -21,10 +20,10 @@ export class Atlas {
 }
 
 export class ActivityMap {
-    constructor(id, color, opacity, visibility, stack) {
+    constructor(id, lutID, opacity, visibility, stack) {
         return Immutable({
             id,
-            color,
+            lutID,
             opacity,
             visibility,
             stack,
