@@ -1,5 +1,6 @@
 import {BASE_URL} from "../settings";
-import entities from "entities";
+import {Entities} from "../model/models";
+import {downloadBlob} from "../helpers/downloadHelper";
 
 async function fetchAndDownloadFile(url, filename) {
     try {
@@ -14,13 +15,13 @@ async function fetchAndDownloadFile(url, filename) {
 }
 
 export async function downloadActivityMap(activityMapID) {
-    const stackURL = `${BASE_URL}/${entities.ACTIVITY_MAP}/${activityMapID}.NIFTI`;
+    const stackURL = `${BASE_URL}/${Entities.ACTIVITY_MAP}/${activityMapID}.NIFTI`;
     await fetchAndDownloadFile(stackURL, `${activityMapID}.NIFTI`);
 }
 
 export async function downloadAtlas(atlasID) {
-    const stackURL = `${BASE_URL}/${entities.ATLAS}/${atlasID}.NIFTI`;
-    const wireframeStackURL = `${BASE_URL}/${entities.ATLAS}W/${atlasID}.NIFTI`;
+    const stackURL = `${BASE_URL}/${Entities.ATLAS}/${atlasID}.NIFTI`;
+    const wireframeStackURL = `${BASE_URL}/${Entities.ATLAS}W/${atlasID}.NIFTI`;
     await Promise.all(
         [fetchAndDownloadFile(stackURL, `${atlasID}.NIFTI`),
         fetchAndDownloadFile(wireframeStackURL, `${atlasID}W.NIFTI`)]);

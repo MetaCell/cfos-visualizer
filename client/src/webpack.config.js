@@ -51,7 +51,11 @@ module.exports = function webpacking(envVariables) {
       },
       {
         test: /\.ts|tsx?$/,
-        loader: "awesome-typescript-loader"
+        loader: "awesome-typescript-loader",
+        include: [
+          path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, 'node_modules/ami.js')
+        ]
       },
       {
         test: /\.(css)$/,

@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable';
 
-const entities = {
+export const Entities = {
     ATLAS: 'Atlas',
     ACTIVITY_MAP: 'ActivityMap',
     EXPERIMENT: 'experiment',

@@ -66,7 +66,6 @@ export const toolbarMenu = {
         top: '0.0625rem',
         padding: '0 8px',
         backgroundColor: headerBorderColor,
-        borderRadius: '0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03)',
         borderRadius: '0.125rem',
         color: headerButtonColor,
         fontSize: '0.875rem',
