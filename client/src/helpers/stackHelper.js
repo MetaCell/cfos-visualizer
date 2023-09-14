@@ -1,5 +1,7 @@
-import {StackModel} from "ami.js/src/models/models";
+import * as AMI from 'ami.js';
 import * as THREE from 'three';
+
+const StackModel = AMI.StackModel;
 
 export function deserializeStack(decodedData) {
     const stack = new StackModel();
