@@ -29,6 +29,11 @@ tolerations: []
 
 affinity: {}
 
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+
 ingress:
   enabled: true
   annotations:
