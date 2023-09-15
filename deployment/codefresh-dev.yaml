@@ -1,0 +1,44 @@
+version: '1.0'
+stages:
+  - prepare
+  - build
+  - deploy
+steps:
+  main_clone:
+    title: 'Cloning main repository...'
+    type: git-clone
+    stage: prepare
+    repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
+    revision: '${{CF_BRANCH}}'
+    git: github
+  build_application_images:
+    type: build
+    stage: build
+    dockerfile: './client/deploy/Dockerfile'
+    registry: '${{CODEFRESH_REGISTRY}}'
+    buildkit: true
+    image_name: cfos-visualizer
+    title: CFOS-Visualizer
+    working_directory: './'
+    tag: '${{CF_BRANCH_TAG_NORMALIZED}}'
+  deployment:
+    stage: deploy
+    type: helm
+    working_directory: './'
+    title: Installing chart
+    arguments:
+      helm_version: 3.6.2
+      chart_name: deployment/helm
+      release_name: '${{NAMESPACE}}'
+      kube_context: '${{CLUSTER_NAME}}'
+      namespace: '${{NAMESPACE}}'
+      chart_version: '${{CF_BUILD_ID}}'
+      cmd_ps: --wait --timeout 600s --create-namespace
+      custom_value_files:
+        - deployment/helm/values.yaml
+      custom_values:
+        - image.repository=${{CODEFRESH_REGISTRY}}/cfos-visualizer
+        - image.tag=${{CF_BRANCH_TAG_NORMALIZED}}
+        - ingress.hosts[0].host=${{DOMAIN}}
+
+
