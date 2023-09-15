@@ -20,7 +20,7 @@ steps:
     image_name: cfos-visualizer
     title: CFOS-Visualizer
     working_directory: './'
-    tag: '${{CF_BRANCH_TAG_NORMALIZED}}'
+    tag: '${{DEPLOYMENT_PUBLISH_TAG}}'
   deployment:
     stage: deploy
     type: helm
@@ -36,8 +36,8 @@ steps:
       custom_value_files:
         - deployment/helm/values.yaml
       custom_values:
-        - image.repository=${{CODEFRESH_REGISTRY}}/cfos-visualizer
-        - image.tag=${{CF_BRANCH_TAG_NORMALIZED}}
+        - image.repository=${{REGISTRY}}/cfos-visualizer
+        - image.tag=${{DEPLOYMENT_PUBLISH_TAG}}
         - ingress.hosts[0].host=${{DOMAIN}}
 
 

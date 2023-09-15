@@ -9,7 +9,7 @@ image:
   tag: ""  # Will be overridden by pipeline
 
 imagePullSecrets: []
-nameOverride: ""
+nameOverride: "client"
 fullnameOverride: ""
 
 podAnnotations: {}
@@ -43,3 +43,6 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
+
+app:
+  port: 3000
