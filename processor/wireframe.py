@@ -76,7 +76,7 @@ transformed_img = nib.Nifti1Image(transformed_data, img.affine)
 
 
 # Save the transformed NIfTI image to a different file
-output_nifti_file = os.path.join(current_directory, 'output_transformed.nii.gz')
+output_nifti_file = os.path.join(data_directory, 'output_transformed.nii.gz')
 nib.save(transformed_img, output_nifti_file)
 
 # Render a certain slice at the end (change slice_idx_to_render)
