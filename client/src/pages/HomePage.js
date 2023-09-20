@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {useDispatch, useStore} from 'react-redux';
 
 import {addWidget} from "@metacell/geppetto-meta-client/common/layout/actions";
-import {widget1} from "./widgets";
+import {widget1} from "../widgets";
 import {makeStyles} from "@mui/styles";
 
 const useStyles = makeStyles({

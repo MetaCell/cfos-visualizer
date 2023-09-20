@@ -1,6 +1,6 @@
-import componentMap from '../app/componentMap';
+import componentMap from './componentMap';
 import { middleware } from './middleware'
-import baseLayout from '../app/layout';
+import baseLayout from './layout';
 import { createStore } from '@metacell/geppetto-meta-client/common';
 import { viewerReducer, currentExperimentReducer, modelReducer, uiReducer } from './reducers'
 

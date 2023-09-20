@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import '@metacell/geppetto-meta-ui/flex-layout/style/dark.scss'
 import {CssBaseline} from '@mui/material';
-import MainLayout from './app/showcase';
+import MainLayout from './pages/HomePage';
 import { Header } from './shared/header';
 import 'font-awesome/css/font-awesome.min.css';
 import './css/main.css';
