@@ -13,11 +13,12 @@ export default {
     children: [
         {
           type: "row",
-          weight: 50,
+          weight: 100,
           children: [
               {
                   type: "tabset",
                   id: "leftPanel",
+                  weight: 100,
                   enableDeleteWhenEmpty: false,
                   children: []
               }
@@ -25,11 +26,11 @@ export default {
         },
         {
           type: "row",
-          weight: 50,
+          weight: 0,
           children: [
               {
                   type: "tabset",
-                  weight: 100,
+                  weight: 0,
                   id: "rightPanel",
                   enableDeleteWhenEmpty: false,
                   children: []

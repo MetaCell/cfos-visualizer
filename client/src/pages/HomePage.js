@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {useDispatch, useStore} from 'react-redux';
 
 import {addWidget} from "@metacell/geppetto-meta-client/common/layout/actions";
-import {widget1} from "../widgets";
+import {widget1} from "../layout/widgets";
 import {makeStyles} from "@mui/styles";
 
 const useStyles = makeStyles({
@@ -23,13 +23,13 @@ const MainLayout = () => {
     const classes = useStyles();
     const store = useStore();
     const dispatch = useDispatch();
-    const [Component, setComponent] = useState(undefined);
+    const [LayoutComponent, setLayoutComponent] = useState(undefined);
 
   useEffect(() => {
-    if (Component === undefined) {
+    if (LayoutComponent === undefined) {
       const myManager = getLayoutManagerInstance();
       if (myManager) {
-        setComponent(
+        setLayoutComponent(
           myManager.getComponent()
         );
       }
@@ -38,14 +38,14 @@ const MainLayout = () => {
 
     useEffect(() => {
         dispatch(addWidget(widget1()));
-    }, [Component])
+    }, [LayoutComponent])
 
   return (
     <div className={classes.layoutContainer}>
-      {Component === undefined ? (
+      {LayoutComponent === undefined ? (
         <CircularProgress />
       ) : (
-        <Component />
+        <LayoutComponent />
       )}
     </div>
   );
