@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from skimage import measure
 import os
 
-def process_nifti_file(nifti_file_name):
+def process_nifti_file(nifti_file_name, target):
     # Get the current directory
     data_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
 
@@ -72,7 +72,7 @@ def process_nifti_file(nifti_file_name):
     transformed_img = nib.Nifti1Image(transformed_data, img.affine)
 
     # Save the transformed NIfTI image to a different file
-    output_nifti_file = os.path.join(data_directory, 'output_transformed.nii.gz')
+    output_nifti_file = os.path.join(data_directory, target)
     nib.save(transformed_img, output_nifti_file)
 
     print(f"Transformed slices saved to {output_nifti_file}")

@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
-          link.download = 'exported-stack.msgpack';
+          link.download = fileParam.replace('nii.gz', '-compressed.nii.gz');
           link.click();
       }
     } catch (error) {

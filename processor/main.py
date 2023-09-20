@@ -38,11 +38,13 @@ if __name__ == "__main__":
         #sys.exit(1)
 
     file_name = sys.argv[1]
+    wireframe_file_name  = file_name.replace("nii.gz", "-wireframe.nii.gz")
+    compressed_file_name = file_name.replace("nii.gz", "-compressed.nii.gz")
 
-    process_nifti_file(file_name)
+    process_nifti_file(file_name, wireframe_file_name)
 
     #start the server
-    http_file_path = "http://localhost:8888/website/index.html?file=" + file_name
+    http_file_path = "http://localhost:8888/website/index.html?file=" + wireframe_file_name
     directory = os.path.dirname(os.path.abspath(__file__))
     website_dir = directory + "/website"
     download_dir = directory + "/process"
