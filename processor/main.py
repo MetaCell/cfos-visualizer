@@ -5,6 +5,7 @@ import os
 import http.server
 import socketserver
 import threading
+from helpers.wireframe import process_nifti_file
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -38,6 +39,8 @@ if __name__ == "__main__":
 
     file_name = sys.argv[1]
 
+    process_nifti_file(file_name)
+
     #start the server
     http_file_path = "http://localhost:8888/website/index.html?file=" + file_name
     directory = os.path.dirname(os.path.abspath(__file__))
@@ -51,7 +54,6 @@ if __name__ == "__main__":
   
     #wait for the server to start
     server_started_event.wait()
-
 
     options = Options()
     options.add_argument("--window-size=1920x1080")
