@@ -5,15 +5,14 @@ import os
 import http.server
 import socketserver
 import threading
+import time 
+
 from helpers.wireframe import process_nifti_file
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
-
-from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
 
 server_started_event = threading.Event()
 
@@ -34,24 +33,25 @@ if __name__ == "__main__":
     # Check if the number of arguments is correct
     if len(sys.argv) != 2:
         sys.argv.append("gubra_ano_combined_25um_boundary.nii.gz")
+        sys.argv.append("False")
         #print("Usage: python script.py arg1 arg2 arg3")
         #sys.exit(1)
 
     file_name = sys.argv[1]
-    wireframe_file_name  = file_name.replace("nii.gz", "-wireframe.nii.gz")
-    compressed_file_name = file_name.replace("nii.gz", "-compressed.nii.gz")
+    process_wireframe = not (sys.argv[2] == "False")
 
-    process_nifti_file(file_name, wireframe_file_name)
+    wireframe_file_name  = file_name.replace(".nii.gz", "-wireframe.nii.gz")
+    compressed_file_name = file_name.replace(".nii.gz", "-compressed.msgpack")
 
-    #start the server
-    http_file_path = "http://localhost:8888/website/index.html?file=" + wireframe_file_name
-    directory = os.path.dirname(os.path.abspath(__file__))
-    website_dir = directory + "/website"
-    download_dir = directory + "/process"
+    if process_wireframe:
+        process_nifti_file(file_name, wireframe_file_name)
+
     port = 8888
+    web_directory = os.path.dirname(os.path.abspath(__file__))
+    download_dir = web_directory + "/process"
 
     # Create a thread for the HTTP server
-    http_server_thread = threading.Thread(target=start_http_server, args=(directory, port))
+    http_server_thread = threading.Thread(target=start_http_server, args=(web_directory, port))
     http_server_thread.start()
   
     #wait for the server to start
@@ -71,7 +71,44 @@ if __name__ == "__main__":
     })
 
     driver = webdriver.Chrome(options=options)
-    driver.get(http_file_path)
+
+    #start the server
+    files_directory = os.path.dirname(os.path.abspath(__file__)) + "/data/sample_dataset/Atlas"
+
+    # List all files in the folder
+    files = [f for f in os.listdir(files_directory) if os.path.isfile(os.path.join(files_directory, f))]
+
+    prev_file = None 
+
+    def wait_for_new_files(directory_path, timeout=None):
+      start_time = time.time()
+      prev_file_list = [] 
+
+      while True:
+          files = os.listdir(directory_path)
+          if len(files) > len(prev_file_list):
+              print("New file(s) detected:")
+              for file in files:
+                  print(os.path.join(directory_path, file))
+              prev_file_list = files
+              return  # Return when new files are found
+          else:
+              print("Waiting for new files...")
+              time.sleep(1)  # Wait for 1 second before checking again
+
+          # Check for timeout (optional)
+          if timeout is not None and time.time() - start_time >= timeout:
+              print("Timeout reached. No new files found.")
+              return
+
+    for file in files:
+      #driver.send_keys(Keys.CONTROL + 't')
+      #if prev_file: 
+        #wait_for_new_files(download_dir)
+
+      http_file_path = "http://localhost:8888/website/index.html?file=/sample_dataset/Atlas/" + file
+      driver.get(http_file_path)
+      prev_file = file 
 
     print()
 

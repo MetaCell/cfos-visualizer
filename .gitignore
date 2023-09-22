@@ -1,2 +1,6 @@
 client/node_modules/
+processor/data/*
+processor/process/*
 data/
+application_default_credentials.json
+server/.env

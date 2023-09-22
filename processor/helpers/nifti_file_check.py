@@ -2,18 +2,28 @@ import nibabel as nib
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from wireframe import process_nifti_file
 
 # Define the NIfTI file name
-nifti_file_name = 'output_transformed.nii.gz'
+nifti_file_name = 'gubra_ano_combined_25um_boundary.nii.gz'
 
 # Get the current directory
-data_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+data_directory = os.path.join(base_dir, '..', 'data')
+process_directory = os.path.join(base_dir, '..', 'process')
 
 # Define the full path to the NIfTI file
-nifti_file_path = os.path.join(current_directory, nifti_file_name)
+nifti_file_path = os.path.join(data_directory, nifti_file_name)
+
+wireframe_file_name  = nifti_file_name.replace(".nii.gz", "-wireframe.nii.gz")
+
+wireframe_file_path = os.path.join(process_directory, wireframe_file_name)
+
+process_nifti_file(nifti_file_path, wireframe_file_path)
 
 # Load the NIfTI file
-nifti_data = nib.load(nifti_file_path)
+nifti_data = nib.load(wireframe_file_path)
 
 # Specify the slice you want to display (e.g., slice 50 along the axial plane)
 slice_number = 120

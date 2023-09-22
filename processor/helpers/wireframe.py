@@ -5,13 +5,10 @@ import matplotlib.pyplot as plt
 from skimage import measure
 import os
 
-def process_nifti_file(nifti_file_name, target):
-    # Get the current directory
-    data_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
+def process_nifti_file(nifti_file_location, target_file_location):
 
     # Define the NIfTI file name (assuming it's in the current directory)
-    nifti_file = os.path.join(data_directory, nifti_file_name)
-    img = nib.load(nifti_file)
+    img = nib.load(nifti_file_location)
     data = img.get_fdata()
 
     # Determine the image orientation
@@ -30,7 +27,7 @@ def process_nifti_file(nifti_file_name, target):
         # Sagittal orientation (Right-to-Left, Superior-to-Inferior)
         transformation = lambda data: np.rot90(data, 2)  # Rotate 180 degrees
     else:
-        print("Unknown orientation")
+        transformation = lambda data: np.rot90(np.flipud(data), 1)  # Rotate 90 degrees and flip horizontally
 
     # Define a custom color transformation function to create a wireframe
     def transform_slice(data_slice, transformation, wireframe):
@@ -72,7 +69,6 @@ def process_nifti_file(nifti_file_name, target):
     transformed_img = nib.Nifti1Image(transformed_data, img.affine)
 
     # Save the transformed NIfTI image to a different file
-    output_nifti_file = os.path.join(data_directory, target)
-    nib.save(transformed_img, output_nifti_file)
+    nib.save(transformed_img, target_file_location)
 
-    print(f"Transformed slices saved to {output_nifti_file}")
+    print(f"Transformed slices saved to {target_file_location}")
