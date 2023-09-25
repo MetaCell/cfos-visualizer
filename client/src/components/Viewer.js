@@ -138,7 +138,7 @@ export const Viewer = ( props ) =>
 							background: headerBorderColor
 						}
 					}
-				} } aria-describedby={ id } variant="contained" onClick={ handleClick }>
+				} } aria-describedby={ id } variant="contained" onClick={ handleClick } disableRipple>
 					Statistical maps
 					<KeyboardArrowDownIcon sx={ { fontSize: '1.25rem', color: headerButtonColor } } />
 				</Button>
