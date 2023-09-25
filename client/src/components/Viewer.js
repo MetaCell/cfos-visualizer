@@ -159,7 +159,7 @@ export const Viewer = ( props ) =>
 					horizontal: 'right',
 				} }
 			>
-				<Box p={ 2 }>
+				<Box px={ 2 } pt={1.25}>
 					{Array(3).fill(undefined).map((item, index) => (
 						<Box>
 							{index !== 0 && <Divider sx={{ mt: 1.5, mb: 1, background: headerBorderLeftColor }} />}
@@ -168,10 +168,7 @@ export const Viewer = ( props ) =>
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: 'space-between',
-								position: 'sticky',
 								background: headerBorderColor,
-								zIndex: 9,
-								top: 0,
 								'& .MuiTypography-root': {
 									fontSize: '0.75rem',
 									fontWeight: 400,
@@ -200,7 +197,7 @@ export const Viewer = ( props ) =>
 										'&:before': {
 											content: '""',
 											height: '100%',
-											width: '0.0625rem',
+											width: '0.125rem',
 											background: headerBorderColor,
 											position: 'absolute',
 											left: 0,

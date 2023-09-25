@@ -137,7 +137,20 @@ theme = createTheme( {
           right: '0.75rem',
           background: headerBorderColor,
           border: `0.0625rem solid ${headerBorderLeftColor}`,
-          boxShadow: '0rem 0.0625rem 0.125rem 0rem rgba(16, 24, 40, 0.05)'
+          boxShadow: '0rem 0.0625rem 0.125rem 0rem rgba(16, 24, 40, 0.05)',
+
+          '&:after': {
+            content: '""',
+            position: 'sticky',
+            bottom: 0,
+            left: 0,
+            zIndex: 999,
+            display: 'block',
+            height: '2rem',
+            pointerEvents: 'none',
+            background: 'linear-gradient(180deg, rgba(30, 30, 31, 0.00) 0%, rgba(30, 30, 31, 0.40) 19.79%, #1E1E1F 100%)',
+            borderRadius: '0 0 0.5rem 0.5rem',
+          }
         }
       }
     }
