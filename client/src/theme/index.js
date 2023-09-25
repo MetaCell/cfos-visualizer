@@ -1,7 +1,7 @@
 import vars from "./variables";
 import { createTheme } from "@mui/material/styles";
 
-const { primaryFont, primaryBgColor } = vars;
+const { primaryFont, primaryBgColor, primaryActiveColor, headerBorderLeftColor, switchTrackColor, headerBorderColor, switchTrackActiveBg, labelColor, chipBg } = vars;
 
 let theme = createTheme();
 
@@ -24,6 +24,123 @@ theme = createTheme( {
         }
       `,
     },
+
+    MuiBadge: {
+      styleOverrides: {
+        root: {
+          position: 'static'
+        },
+        badge: {
+          height: '1.375rem',
+          minWidth: '1.375rem',
+          transform: 'none',
+          zIndex: 9,
+          right: '0.375rem',
+          top: '0.375rem',
+        },
+
+        colorPrimary: {
+          backgroundColor: primaryActiveColor
+        }
+      }
+    },
+
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          width: '1.75rem',
+          height: '1rem',
+          padding: 0,
+        },
+        track: {
+          borderRadius: '0.75rem',
+          background: headerBorderLeftColor,
+          opacity: 1,
+        },
+        input: {
+          width: '100%',
+          left: 0
+        },
+        thumb: {
+          width: '100%',
+          height: '100%',
+          background: switchTrackColor,
+          filter: 'drop-shadow(0rem 0.0625rem 0.125rem rgba(16, 24, 40, 0.06)) drop-shadow(0rem 0.0625rem 0.1875rem rgba(16, 24, 40, 0.10))'
+        },
+        switchBase: {
+          position: 'absolute !important',
+          width: '0.75rem',
+          height: '0.75rem',
+          top: '0.125rem !important',
+          left: '0.125rem !important',
+
+          '&.Mui-checked': {
+            transform: 'translateX(0.75rem)',
+
+            '& + .MuiSwitch-track': {
+              background: switchTrackActiveBg,
+              opacity: 1,
+            }
+          }
+        }
+      }
+    },
+
+    MuiFormControlLabel: {
+      styleOverrides: {
+        root: {
+          width: '100%',
+          margin: 0,
+          padding: '0.3125rem 0.75rem',
+          borderRadius: '0.5rem',
+          border: '0.0625rem solid transparent',
+          '&:hover': {
+            borderColor: 'rgba(48, 47, 49, 0.60)',
+          }
+        },
+        label: {
+          overflow: 'hidden',
+          color: labelColor,
+          textOverflow: 'ellipsis',
+          fontSize: '0.875rem',
+          fontWeight: 400,
+          width: '100%',
+          lineHeight: '142.857%'
+        }
+      }
+    },
+
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          height: '1.25rem',
+          borderRadius: '0.25rem',
+          mixBlendMode: 'screen',
+          background: chipBg,
+        },
+        label: {
+          padding: '0 0.625rem',
+          fontWeight: 500,
+          color: primaryActiveColor,
+          fontSize: '0.75rem',
+          lineHeight: '150%'
+        }
+      }
+    },
+
+    MuiPopover: {
+      styleOverrides: {
+        paper: {
+          marginTop: '0.25rem',
+          width: '28.125rem',
+          borderRadius: '0.5rem',
+          right: '0.75rem',
+          background: headerBorderColor,
+          border: `0.0625rem solid ${headerBorderLeftColor}`,
+          boxShadow: '0rem 0.0625rem 0.125rem 0rem rgba(16, 24, 40, 0.05)'
+        }
+      }
+    }
   }
 } );
 

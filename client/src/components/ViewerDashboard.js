@@ -7,16 +7,16 @@ export const ViewerDashboard = (props) => {
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
 
             {/* Header */}
-            <Typography sx={{ flexShrink: 0, backgroundColor: 'darkgrey', p: 1 }}> Header </Typography>
+            {/* <Typography sx={{ flexShrink: 0, backgroundColor: 'darkgrey', p: 1 }}> Header </Typography> */}
 
             {/* Main Content */}
             <Box sx={{ flex: 1, display: 'flex' }}>
 
                 {/* Sidebar */}
-                <Typography sx={{ flexShrink: 0, width: '10rem', backgroundColor: 'rosybrown', p: 1 }}> Sidebar </Typography>
+                {/* <Typography sx={{ flexShrink: 0, width: '10rem', backgroundColor: 'rosybrown', p: 1 }}> Sidebar </Typography> */}
 
                 {/* Viewer */}
-                <Box sx={{ flex: '0 0 90%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', p: 1 }}>
+                <Box sx={{ flex: '1', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
                     <Viewer />
                 </Box>
             </Box>
