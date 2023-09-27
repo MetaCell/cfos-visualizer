@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://storage.googleapis.com/your-bucket-name';
+export const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 export const DEFAULT_COLOR = 'white';
 export const DEFAULT_OPACITY = 1;

@@ -5,6 +5,9 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/user-event": "^12.8.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.9",
@@ -15,9 +18,6 @@
     "@mui/icons-material": "^5.14.9",
     "@mui/material": "^5.14.10",
     "@mui/styles": "^5.14.6",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^12.1.4",
-    "@testing-library/user-event": "^12.8.3",
     "ami.js": "^0.33.0",
     "font-awesome": "^4.7.0",
     "postcss-flexbugs-fixes": "^5.0.2",
@@ -37,11 +37,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "node_modules/*.js"
-    ]
   },
   "eslintConfig": {
     "extends": [
