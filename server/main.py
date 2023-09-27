@@ -59,13 +59,23 @@ def download_as_json(object_name):
 def init_webapp_routes(app):
     www_path = os.path.dirname(os.path.abspath(__file__)) + "/www"
 
-    @app.route('/download_atlas/<id>')
+    @app.route('/atlas/<id>')
     def download_atlas(id):
         return download_as_stream("Atlas", id)
 
     @app.route('/activity_map/<id>')
     def activity_map(id):
         return download_as_stream("ActivityMap", id)
+
+    # TODO: update to no longer be a placeholder
+    @app.route('/experiment/<id>')
+    def experiment(id):
+        # Dummy response for the new route
+        response_data = {
+            "experiment_name": f"Experiment {id}",
+            "contributor": "John Doe"
+        }
+        return jsonify(response_data)
 
     @app.route('/index')
     def index():

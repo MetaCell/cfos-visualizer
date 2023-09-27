@@ -40,9 +40,9 @@ export const changeAllViewerObjectsOpacity = (opacity) => ({
     payload: opacity
 });
 
-export const changeActivityMapLUT = (activityMapID, lutID) => ({
-    type: actions.CHANGE_ACTIVITY_MAP_LUT,
-    payload: { activityMapID, lutID }
+export const changeActivityMapColor = (activityMapID, color) => ({
+    type: actions.CHANGE_ACTIVITY_MAP_COLOR,
+    payload: { activityMapID, color }
 });
 
 export const changeViewerOrder = (order) => ({
@@ -83,9 +83,14 @@ export const setModel = data => ({
 
 
 // UI Actions
-export const setLoading = (isLoading) => ({
-    type: actions.SET_LOADING,
-    payload: isLoading
+export const startLoading = (message) => ({
+    type: actions.START_LOADING,
+    payload: message
+});
+
+export const stopLoading = (message) => ({
+    type: actions.STOP_LOADING,
+    payload: message
 });
 
 export const setError = (error) => ({

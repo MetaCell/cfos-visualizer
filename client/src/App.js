@@ -5,26 +5,9 @@ import MainLayout from './pages/HomePage';
 import { Header } from './shared/header';
 import 'font-awesome/css/font-awesome.min.css';
 import './css/main.css';
-import {BASE_URL} from "./settings";
-import {useEffect} from "react";
 
 
 function App() {
-
-    useEffect(() => {
-        // Get server URL from environment variables
-        console.log(BASE_URL)
-        // Fetch data from server
-        fetch(BASE_URL)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Data from server:", data);
-            })
-            .catch(error => {
-                console.error("Error fetching data from server:", error);
-            });
-    }, []);  //
-
     return (
         <>
             <CssBaseline />

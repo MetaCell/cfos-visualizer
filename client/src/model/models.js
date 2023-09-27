@@ -1,33 +1,28 @@
 import Immutable from 'seamless-immutable';
 
 export const Entities = {
-    ATLAS: 'Atlas',
-    ACTIVITY_MAP: 'ActivityMap',
+    ATLAS: 'atlas',
+    ACTIVITY_MAP: 'activityMap',
     EXPERIMENT: 'experiment',
-    LUT: 'LUT',
+    LUT: 'lut',
 }
 
 export class Atlas {
     constructor(id, opacity, visibility, stack, wireframeStack) {
-        return Immutable({
-            id,
-            opacity,
-            visibility,
+        return {
+            ...Immutable({id, opacity, visibility}, {deep: true}),
             stack,
-            wireframeStack,
-        });
+            wireframeStack
+        };
     }
 }
 
 export class ActivityMap {
-    constructor(id, lutID, opacity, visibility, stack) {
-        return Immutable({
-            id,
-            lutID,
-            opacity,
-            visibility,
+    constructor(id, color, opacity, visibility, stack) {
+        return {
+            ...Immutable({id, color, opacity, visibility}, {deep: true}),
             stack,
-        });
+        };
     }
 }
 
@@ -35,7 +30,7 @@ export class Experiment {
     constructor(id, details) {
         return Immutable({
             id,
-            details: Immutable(details)
+            details
         });
     }
 }

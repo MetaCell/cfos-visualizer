@@ -8,3 +8,7 @@ export const VIEWER_CLEAR_COLOR = 0x00000000
 export const STACK_HELPER_BORDER_COLOR = 0x353535
 
 export const ORIENTATION = 'axial'
+
+export const SNACKBAR_TIMEOUT = 3000
+
+export const DEFAULT_LOADING_MESSAGE = "Loading..."
