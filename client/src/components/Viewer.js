@@ -9,7 +9,8 @@ import {useSelector, useDispatch} from "react-redux";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import * as viewerHelper from '../helpers/viewerHelper';
 import vars from "../theme/variables";
-import {addActivityMapToViewer, fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
+import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
+import {STACK_HELPER_BORDER_COLOR} from "../settings";
 
 
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
@@ -65,11 +66,11 @@ export const Viewer = (props) => {
     };
 
     const subscribeEvents = () => {
-        containerRef.current.addEventListener('wheel', handleScroll);
+        containerRef?.current.addEventListener('wheel', handleScroll);
     };
 
     const unSubscribeEvents = () => {
-        containerRef.current.removeEventListener('wheel', handleScroll);
+        containerRef?.current.removeEventListener('wheel', handleScroll);
     };
 
     const handleScroll = (event) => {
@@ -77,28 +78,28 @@ export const Viewer = (props) => {
     };
 
     // On atlas changes
-    // useEffect( () =>
-    // {
-    // 	if ( atlas )
-    // 	{
-    // 		const stackHelper = new StackHelper( atlas.stack );
-    // 		stackHelper.bbox.visible = false;
-    // 		stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-    // 		stackHelper.index = Math.floor( stackHelper.stack._frame.length / 2 );
-    //
-    // 		sceneRef.current.add( stackHelper );
-    // 		viewerHelper.updateCamera( containerRef.current, cameraRef.current, stackHelper );
-    //
-    // 		stackHelper.orientation = cameraRef.current.stackOrientation;
-    //
-    // 		atlasRefs.current = {
-    // 			...atlasRefs.current,
-    // 			stackHelper
-    // 		};
-    // 	}
-    //
-    //
-    // }, [ atlas ] );
+    useEffect( () =>
+    {
+    	if ( atlas )
+    	{
+    		const stackHelper = new StackHelper( atlas.stack );
+    		stackHelper.bbox.visible = false;
+    		stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
+    		stackHelper.index = Math.floor( stackHelper.stack._frame.length / 2 );
+
+    		sceneRef.current.add( stackHelper );
+    		viewerHelper.updateCamera( containerRef.current, cameraRef.current, atlas.stack );
+
+    		stackHelper.orientation = cameraRef.current.stackOrientation;
+
+    		atlasRefs.current = {
+    			...atlasRefs.current,
+    			stackHelper
+    		};
+    	}
+
+
+    }, [ atlas ] );
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
