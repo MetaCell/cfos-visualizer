@@ -61,7 +61,6 @@ export const Header = () => {
   };
 
   const menuHandler = (event) => {
-    console.log(event)
     if(event.handlerAction === actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS){
       const [experimentID, atlasID] = event.parameters
       dispatch(fetchAndSetExperimentAndAtlas(experimentID, atlasID))

@@ -86,15 +86,14 @@ export const middleware = store => next => async action => {
                 let atlasStack = null;
                 let atlasWireframeStack = null;
 
-                // TODO: uncomment
-                // try {
-                //     store.dispatch(startLoading('Fetching atlas...'));
-                //     atlasStack = await fetchAtlasStack(atlasID);
-                // } catch (error) {
-                //     store.dispatch(setError(error.message));
-                //     store.dispatch(stopLoading());
-                //     return;
-                // }
+                try {
+                    store.dispatch(startLoading('Fetching atlas...'));
+                    atlasStack = await fetchAtlasStack(atlasID);
+                } catch (error) {
+                    store.dispatch(setError(error.message));
+                    store.dispatch(stopLoading());
+                    return;
+                }
                 // TODO: uncomment when we get the wireframe version of the atlas
                 // try {
                 //     atlasWireframeStack = await fetchAtlasWireframeStack(atlasID);
@@ -116,12 +115,14 @@ export const middleware = store => next => async action => {
             break;
 
         case actions.FETCH_AND_ADD_ACTIVITY_MAP_TO_VIEWER:
+            store.dispatch(startLoading('Fetching activity map...'))
             const activityMapID = action.payload;
             let stack = null
             try {
                 stack = await fetchActivityMapStack(activityMapID);
             } catch (error) {
                 store.dispatch(setError(error.message));
+                store.dispatch(stopLoading());
                 return
             }
 
@@ -133,6 +134,7 @@ export const middleware = store => next => async action => {
                 stack,
             );
             store.dispatch(addActivityMapToViewer(activityMapObject));
+            store.dispatch(stopLoading());
             break;
 
         case actions.DOWNLOAD_VIEWER_OBJECT:

@@ -63,7 +63,7 @@ def init_webapp_routes(app):
     def download_atlas(id):
         return download_as_stream("Atlas", id)
 
-    @app.route('/activity_map/<id>')
+    @app.route('/activityMap/<id>')
     def activity_map(id):
         return download_as_stream("ActivityMap", id)
 

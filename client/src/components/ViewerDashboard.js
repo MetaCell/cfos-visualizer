@@ -23,6 +23,7 @@ export const ViewerDashboard = (props) => {
         if (error) {
             setOpenSnackbar(true);
             setTimeout(() => {
+                setOpenSnackbar(false)
                 dispatch(setError(null));
             }, SNACKBAR_TIMEOUT + 1);
         }

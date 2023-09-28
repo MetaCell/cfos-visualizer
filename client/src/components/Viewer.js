@@ -1,220 +1,217 @@
 import * as THREE from "three";
 import * as AMI from 'ami.js';
 
-import React, { useEffect, useRef, useState } from "react";
-import { Badge, Box, Button, Chip, Divider, FormControlLabel, FormGroup, Popover, Switch, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
-import * as viewerHelper from '../helpers/viewerHelper';
-import { STACK_HELPER_BORDER_COLOR } from "../settings";
+import React, {useEffect, useRef, useState} from "react";
+import {
+    Badge, Box, Button, Chip, Divider, FormControlLabel, FormGroup, Popover, Switch, Typography
+} from "@mui/material";
+import {useSelector, useDispatch} from "react-redux";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import * as viewerHelper from '../helpers/viewerHelper';
 import vars from "../theme/variables";
-
-const { primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor } = vars;
-
-const StackHelper = AMI.stackHelperFactory( THREE );
+import {addActivityMapToViewer, fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
 
 
-export const Viewer = ( props ) =>
-{
-	const [ anchorEl, setAnchorEl ] = React.useState( null );
+const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
 
-	const [ filterApplied, setFilterApplied ] = useState( true );
+const StackHelper = AMI.stackHelperFactory(THREE);
 
-	const handleClick = ( event ) =>
-	{
-		setAnchorEl( event.currentTarget );
-	};
 
-	const handleClose = () =>
-	{
-		setAnchorEl( null );
-	};
+export const Viewer = (props) => {
 
-	const open = Boolean( anchorEl );
-	const id = open ? 'simple-popover' : undefined;
-	const atlas = useSelector( state => state.viewer.atlas );
-	const activityMaps = useSelector( state => state.viewer.activityMaps );
+    const dispatch = useDispatch();
 
-	const containerRef = useRef( null );
-	const rendererRef = useRef( null );
-	const sceneRef = useRef( null );
-	const cameraRef = useRef( null );
-	const contronsRef = useRef( null );
+    const atlas = useSelector(state => state.viewer.atlas);
+    const activityMaps = useSelector(state => state.viewer.activityMaps);
+    const experimentsActivityMap = useSelector(state => state.model.ExperimentsActivityMap);
+    const currentExperiment = useSelector(state => state.currentExperiment);
 
-	const atlasRefs = useRef( null );
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
-	// On Mount
-	useEffect( () =>
-	{
-		initViewer();
-		animate();
-		subscribeEvents();
-		return () =>
-		{
-			unSubscribeEvents();
-		};
-	}, [] );
+    const containerRef = useRef(null);
+    const rendererRef = useRef(null);
+    const sceneRef = useRef(null);
+    const cameraRef = useRef(null);
+    const contronsRef = useRef(null);
 
-	const initViewer = () =>
-	{
-		rendererRef.current = viewerHelper.initRenderer( containerRef );
-		sceneRef.current = viewerHelper.initScene();
-		cameraRef.current = viewerHelper.getOrthographicCamera( containerRef );
-		sceneRef.current.add( cameraRef.current );
-		contronsRef.current = viewerHelper.getControls( cameraRef.current, containerRef.current );
-		cameraRef.current.controls = contronsRef.current;
-	};
+    const atlasRefs = useRef(null);
 
-	const animate = () =>
-	{
-		contronsRef.current.update();
-		rendererRef.current.render( sceneRef.current, cameraRef.current );
+    // On Mount
+    useEffect(() => {
+        initViewer();
+        animate();
+        subscribeEvents();
+        return () => {
+            unSubscribeEvents();
+        };
+    }, []);
 
-		requestAnimationFrame( function ()
-		{
-			animate();
-		} );
-	};
+    const initViewer = () => {
+        rendererRef.current = viewerHelper.initRenderer(containerRef);
+        sceneRef.current = viewerHelper.initScene();
+        cameraRef.current = viewerHelper.getOrthographicCamera(containerRef);
+        sceneRef.current.add(cameraRef.current);
+        contronsRef.current = viewerHelper.getControls(cameraRef.current, containerRef.current);
+        cameraRef.current.controls = contronsRef.current;
+    };
 
-	const subscribeEvents = () =>
-	{
-		containerRef.current.addEventListener( 'wheel', handleScroll );
-	};
+    const animate = () => {
+        contronsRef.current.update();
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
 
-	const unSubscribeEvents = () =>
-	{
-		containerRef.current.removeEventListener( 'wheel', handleScroll );
-	};
+        requestAnimationFrame(function () {
+            animate();
+        });
+    };
 
-	const handleScroll = ( event ) =>
-	{
-		// todo:
-	};
+    const subscribeEvents = () => {
+        containerRef.current.addEventListener('wheel', handleScroll);
+    };
 
-	// On atlas changes
-	// useEffect( () =>
-	// {
-	// 	if ( atlas )
-	// 	{
-	// 		const stackHelper = new StackHelper( atlas.stack );
-	// 		stackHelper.bbox.visible = false;
-	// 		stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-	// 		stackHelper.index = Math.floor( stackHelper.stack._frame.length / 2 );
-	//
-	// 		sceneRef.current.add( stackHelper );
-	// 		viewerHelper.updateCamera( containerRef.current, cameraRef.current, stackHelper );
-	//
-	// 		stackHelper.orientation = cameraRef.current.stackOrientation;
-	//
-	// 		atlasRefs.current = {
-	// 			...atlasRefs.current,
-	// 			stackHelper
-	// 		};
-	// 	}
-	//
-	//
-	// }, [ atlas ] );
+    const unSubscribeEvents = () => {
+        containerRef.current.removeEventListener('wheel', handleScroll);
+    };
 
-	const isActive = filterApplied ? primaryActiveColor : headerBorderColor;
-	return (
-		<Box sx={ { position: "relative", height: "100%", width: "100%" } }>
-			<Badge badgeContent={ 4 } color="primary">
-				<Button sx={ {
-					'&.MuiButton-root': {
-						position: 'absolute',
-						right: '0.75rem',
-						height: '2.25rem',
-						borderRadius: '0.5rem',
-						border: `0.0625rem solid ${ isActive }`,
-						fontSize: '0.875rem',
-						fontWeight: 600,
-						textTransform: 'none',
-						background: headerBg,
-						boxShadow: '0rem 0.0625rem 0.125rem 0rem rgba(16, 24, 40, 0.05)',
-						top: '0.75rem',
-						zIndex: 9,
-						gap: '0.5rem',
-						'&:hover': {
-							background: headerBorderColor
-						}
-					}
-				} } aria-describedby={ id } variant="contained" onClick={ handleClick } disableRipple>
-					Statistical maps
-					<KeyboardArrowDownIcon sx={ { fontSize: '1.25rem', color: headerButtonColor } } />
-				</Button>
-			</Badge>
+    const handleScroll = (event) => {
+        // todo:
+    };
 
-			<Popover
-				id={ id }
-				sx={{maxHeight: '20rem'}}
-				open={ open }
-				anchorEl={ anchorEl }
-				onClose={ handleClose }
-				anchorOrigin={ {
-					vertical: 'bottom',
-					horizontal: 'right',
-				} }
-				transformOrigin={ {
-					vertical: 'top',
-					horizontal: 'right',
-				} }
-			>
-				<Box px={ 2 } pt={1.25}>
-					{Array(3).fill(undefined).map((item, index) => (
-						<Box>
-							{index !== 0 && <Divider sx={{ mt: 1.5, mb: 1, background: headerBorderLeftColor }} />}
-							<Box sx={ {
-								height: '1.875rem',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								background: headerBorderColor,
-								'& .MuiTypography-root': {
-									fontSize: '0.75rem',
-									fontWeight: 400,
-									lineHeight: '150%',
-									color: headingColor
-								}
-							}}>
-								<Typography>
-									Effect of psilocybin on c-Fos-IF in distinct contexts
-								</Typography>
+    // On atlas changes
+    // useEffect( () =>
+    // {
+    // 	if ( atlas )
+    // 	{
+    // 		const stackHelper = new StackHelper( atlas.stack );
+    // 		stackHelper.bbox.visible = false;
+    // 		stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
+    // 		stackHelper.index = Math.floor( stackHelper.stack._frame.length / 2 );
+    //
+    // 		sceneRef.current.add( stackHelper );
+    // 		viewerHelper.updateCamera( containerRef.current, cameraRef.current, stackHelper );
+    //
+    // 		stackHelper.orientation = cameraRef.current.stackOrientation;
+    //
+    // 		atlasRefs.current = {
+    // 			...atlasRefs.current,
+    // 			stackHelper
+    // 		};
+    // 	}
+    //
+    //
+    // }, [ atlas ] );
 
-								{index === 0 && <Chip label="Current Experiment" />}
-							</Box>
-							<FormGroup>
-								{ Array( 10 ).fill( { label: 'c-Fos__avg__saline.nii.gz' } ).map( ( item, index ) => (
-									<Box sx={ {
-										position: 'relative',
-										paddingLeft: '0.25rem',
+    const handlePopoverOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-										'&:hover': {
-											'&:before': {
-												background: primaryActiveColor,
-											}
-										},
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
 
-										'&:before': {
-											content: '""',
-											height: '100%',
-											width: '0.125rem',
-											background: headerBorderColor,
-											position: 'absolute',
-											left: 0,
-											top: 0,
-										},
-									} }>
-										<FormControlLabel key={ index } control={ <Switch /> } labelPlacement="start" label={ item.label } />
-									</Box>
-								) ) }
-							</FormGroup>
-						</Box>
-					))}
-				</Box>
-			</Popover>
-			<Box sx={ { position: "absolute", top: 0, left: 0, height: "100%", width: "100%", } } ref={ containerRef }>
-				{/* <Typography> Viewer </Typography> */ }
-			</Box>
-		</Box>
-	);
+    const orderedExperiments = [currentExperiment?.id, ...Object.keys(experimentsActivityMap).filter(experiment => experiment !== currentExperiment?.id)];
+
+    const isOpen = Boolean(anchorEl);
+    const popoverID = isOpen ? 'simple-popover' : undefined;
+
+    return (<Box sx={{position: "relative", height: "100%", width: "100%"}}>
+            <Badge badgeContent={activityMaps.length} color="primary">
+                <Button sx={{
+                    '&.MuiButton-root': {
+                        position: 'absolute',
+                        right: '0.75rem',
+                        height: '2.25rem',
+                        borderRadius: '0.5rem',
+                        border: `0.0625rem solid ${activityMaps.length > 0}`,
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        textTransform: 'none',
+                        background: headerBg,
+                        boxShadow: '0rem 0.0625rem 0.125rem 0rem rgba(16, 24, 40, 0.05)',
+                        top: '0.75rem',
+                        zIndex: 9,
+                        gap: '0.5rem',
+                        '&:hover': {
+                            background: headerBorderColor
+                        }
+                    }
+                }} aria-describedby={popoverID} variant="contained" onClick={handlePopoverOpen} disableRipple>
+                    Statistical maps
+                    <KeyboardArrowDownIcon sx={{fontSize: '1.25rem', color: headerButtonColor}}/>
+                </Button>
+            </Badge>
+
+            <Popover
+                id={popoverID}
+                sx={{maxHeight: '20rem'}}
+                open={isOpen}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: 'bottom', horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top', horizontal: 'right',
+                }}
+            >
+                <Box px={2} pt={1.25}>
+                    {orderedExperiments.map((experimentName, experimentIndex) => {
+                        const activityMaps = experimentsActivityMap[experimentName] || [];
+                        return (<Box key={experimentName}>
+                                {experimentIndex !== 0 &&
+                                    <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
+                                <Box sx={{
+                                    height: '1.875rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    background: headerBorderColor,
+                                    '& .MuiTypography-root': {
+                                        fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
+                                    }
+                                }}>
+                                    <Typography>{experimentName}</Typography>
+                                    {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
+                                </Box>
+                                <FormGroup>
+                                    {activityMaps.map((activityMapID, mapIndex) => (<Box key={activityMapID} sx={{
+                                            position: 'relative', paddingLeft: '0.25rem', '&:hover': {
+                                                '&:before': {
+                                                    background: primaryActiveColor,
+                                                }
+                                            }, '&:before': {
+                                                content: '""',
+                                                height: '100%',
+                                                width: '0.125rem',
+                                                background: headerBorderColor,
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 0,
+                                            },
+                                        }}>
+                                            <FormControlLabel
+                                                key={activityMapID}
+                                                control={
+                                                <Switch
+                                                    onChange={(event) => {
+                                                        if (event.target.checked) {
+                                                            dispatch(fetchAndAddActivityMapToViewer(activityMapID));
+                                                        } else {
+                                                            dispatch(removeActivityMapFromViewer(activityMapID));
+                                                        }
+                                                    }}
+                                                /> }
+                                                labelPlacement="start"
+                                                label={activityMapID}
+                                            />
+                                        </Box>))}
+                                </FormGroup>
+                            </Box>)
+                    })}
+                </Box>
+            </Popover>
+            <Box sx={{position: "absolute", top: 0, left: 0, height: "100%", width: "100%",}}
+                 ref={containerRef}>
+                {/* <Typography> Viewer </Typography> */}
+            </Box>
+        </Box>);
 };
