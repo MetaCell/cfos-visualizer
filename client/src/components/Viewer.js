@@ -11,6 +11,8 @@ import * as viewerHelper from '../helpers/viewerHelper';
 import vars from "../theme/variables";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
+import {DIRECTIONS} from "../constants";
+import {updateSlice} from "../helpers/viewerHelper";
 
 
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
@@ -74,7 +76,8 @@ export const Viewer = (props) => {
     };
 
     const handleScroll = (event) => {
-        // todo:
+        const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP
+        updateSlice(atlasRefs?.current.stackHelper, direction)
     };
 
     // On atlas changes
