@@ -19,15 +19,16 @@ export function postProcessActivityMap(stackHelper, activityMap, orientation, in
 }
 
 export function getActivtyMapsDiff(activityMaps, activityMapsStackHelpersRef) {
-    const currentActivityMapIDs = Object.keys(activityMaps);
+    const newActivityMapsState = Object.keys(activityMaps);
 
     // Get the current activityMap IDs from the ref
-    const currentRefActivityMapIDs = Object.keys(activityMapsStackHelpersRef.current);
+    const oldActivityMapState = Object.keys(activityMapsStackHelpersRef.current);
 
     // Determine which activityMaps are new and need to be added
-    const activityMapsToAdd = currentActivityMapIDs.filter(amId => !currentRefActivityMapIDs.includes(amId));
+    const activityMapsToAdd = newActivityMapsState.filter(amId => !oldActivityMapState.includes(amId));
 
     // Determine which activityMaps are no longer in state and need to be removed
-    const activityMapsToRemove = currentRefActivityMapIDs.filter(amId => !currentActivityMapIDs.includes(amId));
+    const activityMapsToRemove = oldActivityMapState.filter(amId => !newActivityMapsState.includes(amId));
+
     return {activityMapsToAdd, activityMapsToRemove};
 }

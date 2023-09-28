@@ -123,7 +123,7 @@ export const Viewer = (props) => {
 
         // Process removals first
         activityMapsToRemove.forEach(amIdToRemove => {
-            const stackHelperToRemove = sceneRef.current.children.find(child => child.id === amIdToRemove);
+            const stackHelperToRemove = activityMapsStackHelpersRef.current[amIdToRemove];
             if(stackHelperToRemove) {
                 sceneRef.current.remove(stackHelperToRemove);
                 delete activityMapsStackHelpersRef.current[amIdToRemove];
@@ -143,7 +143,6 @@ export const Viewer = (props) => {
         });
 
     }, [activityMaps]);
-
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
