@@ -16,7 +16,7 @@ import {
 } from "./actions";
 import {actions} from "./constants";
 import {Experiment, ActivityMap, ViewerObjectType, Atlas} from "../model/models";
-import {DEFAULT_COLOR, DEFAULT_OPACITY, DEFAULT_VISIBILITY} from "../settings";
+import {DEFAULT_COLOR, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY, DEFAULT_ACTIVITY_MAP_OPACITY} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 
 export const middleware = store => next => async action => {
@@ -104,7 +104,7 @@ export const middleware = store => next => async action => {
 
                 const atlas = new Atlas(
                     atlasID,
-                    DEFAULT_OPACITY,
+                    DEFAULT_ATLAS_OPACITY,
                     DEFAULT_VISIBILITY,
                     atlasStack,
                     atlasWireframeStack
@@ -129,7 +129,7 @@ export const middleware = store => next => async action => {
             const activityMapObject = new ActivityMap(
                 activityMapID,
                 DEFAULT_COLOR,
-                DEFAULT_OPACITY,
+                DEFAULT_ACTIVITY_MAP_OPACITY,
                 DEFAULT_VISIBILITY,
                 stack,
             );

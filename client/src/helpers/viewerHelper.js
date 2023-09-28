@@ -2,7 +2,6 @@ import * as THREE from "three";
 import * as AMI from 'ami.js';
 
 import {ORIENTATION} from "../settings";
-import {DIRECTIONS} from "../constants";
 
 const TrackballOrthoControl = AMI.trackballOrthoControlFactory(THREE);
 const OrthographicCamera = AMI.orthographicCameraFactory(THREE);
@@ -73,21 +72,4 @@ const updateCameraDimensions = (camera, container) => {
         height: container.clientHeight,
     };
     return camera
-}
-
-
-export const updateSlice = (stackHelper, direction) => {
-    if (stackHelper) {
-        if (direction === DIRECTIONS.UP) {
-            if (stackHelper.index >= stackHelper.orientationMaxIndex - 1) {
-                return
-            }
-            stackHelper.index = stackHelper.index + 1;
-        } else {
-            if (stackHelper.index <= 0) {
-                return
-            }
-            stackHelper.index = stackHelper.index - 1;
-        }
-    }
 }
