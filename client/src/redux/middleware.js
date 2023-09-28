@@ -12,7 +12,7 @@ import {
     setCurrentExperiment,
     setError,
     setModel,
-    addActivityMapToViewer, setViewerAtlas
+    addActivityMapToViewer, setViewerAtlas, fetchAndSetExperimentAndAtlas, startLoading, stopLoading
 } from "./actions";
 import {actions} from "./constants";
 import {Experiment, ActivityMap, ViewerObjectType, Atlas} from "../model/models";
@@ -24,73 +24,105 @@ export const middleware = store => next => async action => {
     switch (action.type) {
         case actions.FETCH_MODEL:
             let model = null
-            let fetchedLuts = null
+            // let fetchedLuts = null
+
             try {
+                store.dispatch(startLoading('Fetching model...'))
                 model = await fetchModelStructure();
 
-                const lutPromises = model.luts.map(async lutID => {
-                    const lutData = await fetchLUTFile(lutID);
-                    return { lutID, lutData };
-                });
+                // TODO: to be added later @afonsobspinto
 
-                fetchedLuts = await Promise.all(lutPromises);
+                // const lutPromises = model.luts.map(async lutID => {
+                //     const lutData = await fetchLUTFile(lutID);
+                //     return { lutID, lutData };
+                // });
+                //
+                // fetchedLuts = await Promise.all(lutPromises);
             } catch (error) {
                 store.dispatch(setError(error.message));
+                store.dispatch(stopLoading());
                 return
             }
-            const lutsMap = fetchedLuts.reduce((acc, { lutID, lutData }) => {
-                acc[lutID] = lutData;
-                return acc;
-            }, {});
+            // const lutsMap = fetchedLuts.reduce((acc, { lutID, lutData }) => {
+            //     acc[lutID] = lutData;
+            //     return acc;
+            // }, {});
 
-            store.dispatch(setModel({ ...model, luts: lutsMap }));
+            store.dispatch(setModel({ ...model, Luts: {} }));
+
+            // Extract default experimentID and atlasID
+            const experimentAtlasEntries = Object.entries(model.ExperimentsAtlas);
+            if (experimentAtlasEntries.length > 0) {
+                const experimentID = experimentAtlasEntries[0][0];
+                const atlasEntries = experimentAtlasEntries[0][1];
+                if (atlasEntries.length > 0) {
+                    const atlasID = atlasEntries[0];
+                    store.dispatch(fetchAndSetExperimentAndAtlas(experimentID, atlasID));
+                }else{
+                    store.dispatch(stopLoading());
+                }
+            }
+
             break;
 
         case actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS:
             const { experimentID, atlasID } = action.payload;
-            let data = null
-            try {
-                data = await fetchExperimentMetadata(experimentID);
-            } catch (error) {
-                store.dispatch(setError(error.message));
-                return
+            const currentExperiment = store.getState().currentExperiment;
+            const currentAtlas = store.getState().viewer.atlas;
+
+            if (currentExperiment?.id !== experimentID) {
+                let data = null
+                try {
+                    store.dispatch(startLoading('Fetching experiment metadata...'))
+                    data = await fetchExperimentMetadata(experimentID);
+                } catch (error) {
+                    store.dispatch(setError(error.message));
+                    return
+                }
+                store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
             }
 
-            let atlasStack = null
-            let atlasWireframeStack = null
-            try {
-                atlasStack = await fetchAtlasStack(atlasID);
-            } catch (error) {
-                store.dispatch(setError(error.message));
-                return
-            }
-            try {
-                atlasWireframeStack = await fetchAtlasWireframeStack(atlasID);
-            } catch (error) {
-                store.dispatch(setError(error.message));
-                return
-            }
+            if (currentAtlas?.id !== atlasID) {
+                let atlasStack = null;
+                let atlasWireframeStack = null;
 
-            const atlas = new Atlas(
-                atlasID,
-                DEFAULT_COLOR,
-                DEFAULT_OPACITY,
-                DEFAULT_VISIBILITY,
-                atlasStack,
-                atlasWireframeStack
-            );
+                try {
+                    store.dispatch(startLoading('Fetching atlas...'));
+                    atlasStack = await fetchAtlasStack(atlasID);
+                } catch (error) {
+                    store.dispatch(setError(error.message));
+                    store.dispatch(stopLoading());
+                    return;
+                }
+                // TODO: uncomment when we get the wireframe version of the atlas
+                // try {
+                //     atlasWireframeStack = await fetchAtlasWireframeStack(atlasID);
+                // } catch (error) {
+                //     store.dispatch(setError(error.message));
+                //     return;
+                // }
 
-            store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
-            store.dispatch(setViewerAtlas(atlas));
+                const atlas = new Atlas(
+                    atlasID,
+                    DEFAULT_OPACITY,
+                    DEFAULT_VISIBILITY,
+                    atlasStack,
+                    atlasWireframeStack
+                );
+                store.dispatch(setViewerAtlas(atlas));
+            }
+            store.dispatch(stopLoading());
             break;
 
         case actions.FETCH_AND_ADD_ACTIVITY_MAP_TO_VIEWER:
+            store.dispatch(startLoading('Fetching activity map...'))
             const activityMapID = action.payload;
             let stack = null
             try {
                 stack = await fetchActivityMapStack(activityMapID);
             } catch (error) {
                 store.dispatch(setError(error.message));
+                store.dispatch(stopLoading());
                 return
             }
 
@@ -102,6 +134,7 @@ export const middleware = store => next => async action => {
                 stack,
             );
             store.dispatch(addActivityMapToViewer(activityMapObject));
+            store.dispatch(stopLoading());
             break;
 
         case actions.DOWNLOAD_VIEWER_OBJECT:

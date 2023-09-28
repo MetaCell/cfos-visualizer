@@ -3,6 +3,7 @@ import { middleware } from './middleware'
 import baseLayout from '../layout/layout';
 import { createStore } from '@metacell/geppetto-meta-client/common';
 import { viewerReducer, currentExperimentReducer, modelReducer, uiReducer } from './reducers'
+import {DEFAULT_LOADING_MESSAGE} from "../settings";
 
 export const INIT_STATE = {
   viewer: {
@@ -12,13 +13,14 @@ export const INIT_STATE = {
   },
   currentExperiment: null,
   model: {
-    experimentsAtlas: {},
-    atlasActivityMap: {},
-    experimentsActivityMap: {},
-    luts: {}
+    ExperimentsAtlas: {},
+    AtlasActivityMap: {},
+    ExperimentsActivityMap: {},
+    Luts: {}
   },
   ui: {
     isLoading: false,
+    loadingMessage: DEFAULT_LOADING_MESSAGE,
     errors: null,
   }
 }

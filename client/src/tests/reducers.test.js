@@ -5,8 +5,15 @@ import {
     addActivityMapToViewer,
     changeAllViewerObjectsOpacity,
     changeViewerObjectOpacity,
-    removeActivityMapFromViewer, setError, setLoading, setModel,
-    toggleViewerObjectVisibility, setCurrentExperiment, changeActivityMapLUT, changeViewerOrder, setViewerAtlas
+    removeActivityMapFromViewer,
+    setError,
+    setModel,
+    toggleViewerObjectVisibility,
+    setCurrentExperiment,
+    changeActivityMapColor,
+    changeViewerOrder,
+    setViewerAtlas,
+    startLoading
 } from "../redux/actions";
 import {INIT_STATE} from "../redux/store";
 
@@ -159,7 +166,7 @@ describe('viewerReducer', () => {
             }
         };
 
-        const changeColorAction = changeActivityMapLUT(activityMapID, 'blue');
+        const changeColorAction = changeActivityMapColor(activityMapID, 'blue');
 
         expect(viewerReducer(setupState, changeColorAction)).toEqual(expectedState);
     });
@@ -244,12 +251,13 @@ describe('uiReducer', () => {
         errors: null
     };
 
-    it('should handle SET_LOADING', () => {
-        const action = setLoading(true);
+    it('should handle START_LOADING', () => {
+        const action = startLoading('Test');
 
         expect(uiReducer(initialState, action)).toEqual({
             ...initialState,
-            isLoading: true
+            isLoading: true,
+            loadingMessage: 'Test'
         });
     });
 

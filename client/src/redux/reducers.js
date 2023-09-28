@@ -1,6 +1,7 @@
 import {INIT_STATE} from "./store";
 import {actions} from "./constants";
 import {ActivityMap, Atlas} from "../model/models";
+import {DEFAULT_LOADING_MESSAGE} from "../settings";
 
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
@@ -39,7 +40,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload]: new ActivityMap(
                             activityMap.id,
-                            activityMap.lutID,
+                            activityMap.color,
                             activityMap.opacity,
                             !activityMap.visibility,
                             activityMap.stack,
@@ -73,7 +74,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload.id]: new ActivityMap(
                             activityMap.id,
-                            activityMap.lutID,
+                            activityMap.color,
                             action.payload.opacity,
                             activityMap.visibility,
                             activityMap.stack,
@@ -103,7 +104,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 const activityMap = state.activityMaps[activityMapID];
                 acc[activityMapID] = new ActivityMap(
                     activityMap.id,
-                    activityMap.lutID,
+                    activityMap.color,
                     action.payload,
                     activityMap.visibility,
                     activityMap.stack,
@@ -123,7 +124,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 )
             };
 
-        case actions.CHANGE_ACTIVITY_MAP_LUT:
+        case actions.CHANGE_ACTIVITY_MAP_COLOR:
             const activityMap = state.activityMaps[action.payload.activityMapID];
             return {
                 ...state,
@@ -131,7 +132,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state.activityMaps,
                     [action.payload.activityMapID]: new ActivityMap(
                         activityMap.id,
-                        action.payload.lutID,
+                        action.payload.color,
                         activityMap.opacity,
                         activityMap.visibility,
                         activityMap.stack,
@@ -174,10 +175,18 @@ const modelReducer = (state = INIT_STATE.model, action) => {
 
 const uiReducer = (state = INIT_STATE.ui, action) => {
     switch (action.type) {
-        case actions.SET_LOADING:
+        case actions.START_LOADING:
             return {
                 ...state,
-                isLoading: action.payload
+                isLoading: true,
+                loadingMessage: action.payload,
+            };
+
+        case actions.STOP_LOADING:
+            return {
+                ...state,
+                isLoading: false,
+                loadingMessage: DEFAULT_LOADING_MESSAGE,
             };
         case actions.SET_ERROR:
             return {
