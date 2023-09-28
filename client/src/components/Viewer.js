@@ -92,28 +92,28 @@ export const Viewer = ( props ) =>
 	};
 
 	// On atlas changes
-	useEffect( () =>
-	{
-		if ( atlas )
-		{
-			const stackHelper = new StackHelper( atlas.stack );
-			stackHelper.bbox.visible = false;
-			stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-			stackHelper.index = Math.floor( stackHelper.stack._frame.length / 2 );
-
-			sceneRef.current.add( stackHelper );
-			viewerHelper.updateCamera( containerRef.current, cameraRef.current, stackHelper );
-
-			stackHelper.orientation = cameraRef.current.stackOrientation;
-
-			atlasRefs.current = {
-				...atlasRefs.current,
-				stackHelper
-			};
-		}
-
-
-	}, [ atlas ] );
+	// useEffect( () =>
+	// {
+	// 	if ( atlas )
+	// 	{
+	// 		const stackHelper = new StackHelper( atlas.stack );
+	// 		stackHelper.bbox.visible = false;
+	// 		stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
+	// 		stackHelper.index = Math.floor( stackHelper.stack._frame.length / 2 );
+	//
+	// 		sceneRef.current.add( stackHelper );
+	// 		viewerHelper.updateCamera( containerRef.current, cameraRef.current, stackHelper );
+	//
+	// 		stackHelper.orientation = cameraRef.current.stackOrientation;
+	//
+	// 		atlasRefs.current = {
+	// 			...atlasRefs.current,
+	// 			stackHelper
+	// 		};
+	// 	}
+	//
+	//
+	// }, [ atlas ] );
 
 	const isActive = filterApplied ? primaryActiveColor : headerBorderColor;
 	return (

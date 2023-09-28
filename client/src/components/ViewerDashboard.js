@@ -28,8 +28,6 @@ export const ViewerDashboard = (props) => {
         }
     }, [error, dispatch]);
 
-    console.log("Loading Message:", loadingMessage);
-
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
 

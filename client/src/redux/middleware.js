@@ -67,43 +67,51 @@ export const middleware = store => next => async action => {
 
         case actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS:
             const { experimentID, atlasID } = action.payload;
-            let data = null
-            try {
-                store.dispatch(startLoading('Fetching experiment metadata...'))
-                data = await fetchExperimentMetadata(experimentID);
-            } catch (error) {
-                store.dispatch(setError(error.message));
-                return
+            const currentExperiment = store.getState().currentExperiment;
+            const currentAtlas = store.getState().viewer.atlas;
+
+            if (currentExperiment?.id !== experimentID) {
+                let data = null
+                try {
+                    store.dispatch(startLoading('Fetching experiment metadata...'))
+                    data = await fetchExperimentMetadata(experimentID);
+                } catch (error) {
+                    store.dispatch(setError(error.message));
+                    return
+                }
+                store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
             }
 
-            let atlasStack = null
-            let atlasWireframeStack = null
-            try {
-                store.dispatch(startLoading('Fetching atlas...'))
-                atlasStack = await fetchAtlasStack(atlasID);
-            } catch (error) {
-                store.dispatch(setError(error.message));
-                store.dispatch(stopLoading());
-                return
+            if (currentAtlas?.id !== atlasID) {
+                let atlasStack = null;
+                let atlasWireframeStack = null;
+
+                // TODO: uncomment
+                // try {
+                //     store.dispatch(startLoading('Fetching atlas...'));
+                //     atlasStack = await fetchAtlasStack(atlasID);
+                // } catch (error) {
+                //     store.dispatch(setError(error.message));
+                //     store.dispatch(stopLoading());
+                //     return;
+                // }
+                // TODO: uncomment when we get the wireframe version of the atlas
+                // try {
+                //     atlasWireframeStack = await fetchAtlasWireframeStack(atlasID);
+                // } catch (error) {
+                //     store.dispatch(setError(error.message));
+                //     return;
+                // }
+
+                const atlas = new Atlas(
+                    atlasID,
+                    DEFAULT_OPACITY,
+                    DEFAULT_VISIBILITY,
+                    atlasStack,
+                    atlasWireframeStack
+                );
+                store.dispatch(setViewerAtlas(atlas));
             }
-            // TODO: uncomment when we get the wireframe version of the atlas
-            // try {
-            //     atlasWireframeStack = await fetchAtlasWireframeStack(atlasID);
-            // } catch (error) {
-            //     store.dispatch(setError(error.message));
-            //     return
-            // }
-
-            const atlas = new Atlas(
-                atlasID,
-                DEFAULT_OPACITY,
-                DEFAULT_VISIBILITY,
-                atlasStack,
-                atlasWireframeStack
-            );
-
-            store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
-            store.dispatch(setViewerAtlas(atlas));
             store.dispatch(stopLoading());
             break;
 
