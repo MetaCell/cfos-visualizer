@@ -63,7 +63,7 @@ export const updateCamera = (container, camera, stack) => {
     camera.box = box;
     camera.orientation = ORIENTATION;
     camera.update();
-    camera.fitBox(2,1);
+    camera.fitBox(2, 1);
 }
 
 const updateCameraDimensions = (camera, container) => {
