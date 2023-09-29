@@ -10,7 +10,8 @@ const vars = {
   switchTrackColor: '#EFEFF0',
   switchTrackActiveBg: '#2918AF',
   labelColor: '#B1B1B4',
-  chipBg: '#090628'
+  chipBg: '#090628',
+  tooltipBgColor: '#030203'
 };
 
 export default vars;

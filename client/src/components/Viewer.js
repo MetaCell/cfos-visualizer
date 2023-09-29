@@ -8,6 +8,7 @@ import * as viewerHelper from '../helpers/viewerHelper';
 import { STACK_HELPER_BORDER_COLOR } from "../settings";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import vars from "../theme/variables";
+import { ViewerToolbar } from "./ViewerToolbar";
 
 const { primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor } = vars;
 
@@ -118,6 +119,9 @@ export const Viewer = ( props ) =>
 	const isActive = filterApplied ? primaryActiveColor : headerBorderColor;
 	return (
 		<Box sx={ { position: "relative", height: "100%", width: "100%" } }>
+			<Box sx={{ position: 'absolute',top: '0.75rem', left: '0.75rem', zIndex: 9 }}>
+				<ViewerToolbar/>
+             </Box>
 			<Badge badgeContent={ 4 } color="primary">
 				<Button sx={ {
 					'&.MuiButton-root': {
