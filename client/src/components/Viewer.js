@@ -109,7 +109,6 @@ export const Viewer = (props) => {
 
             if (currentAtlasStackHelperRef.current?.stackHelper) {
                 sceneRef.current.remove(currentAtlasStackHelperRef.current.stackHelper);
-                // TODO: Remove activity maps too?
             }
 
             sceneRef.current.add(stackHelper);
