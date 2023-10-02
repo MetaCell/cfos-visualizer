@@ -3,7 +3,10 @@ import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import matplotlib.pyplot as plt
 from skimage import measure
+from scipy import ndimage
+
 import os
+import cv2
 
 def process_nifti_file(nifti_file_location, target_file_location):
 
@@ -17,17 +20,17 @@ def process_nifti_file(nifti_file_location, target_file_location):
     # Define transformations based on orientation
     transformation = None
 
-    if orientation == ('R', 'A', 'S'):
-        # Axial orientation (Right-to-Left, Anterior-to-Posterior, Superior-to-Inferior)
-        transformation = lambda data: np.rot90(data, 2)  # Rotate 180 degrees
-    elif orientation == ('P', 'I', 'S'):
-        # Coronal orientation (Posterior-to-Anterior, Inferior-to-Superior)
-        transformation = lambda data: np.rot90(np.fliplr(data), 1)  # Rotate 90 degrees and flip horizontally
-    elif orientation == ('R', 'S', 'I'):
-        # Sagittal orientation (Right-to-Left, Superior-to-Inferior)
-        transformation = lambda data: np.rot90(data, 2)  # Rotate 180 degrees
-    else:
-        transformation = lambda data: np.rot90(np.flipud(data), 1)  # Rotate 90 degrees and flip horizontally
+    # if orientation == ('R', 'A', 'S'):
+    #     # Axial orientation (Right-to-Left, Anterior-to-Posterior, Superior-to-Inferior)
+    #     transformation = lambda data: np.rot90(data, 2)  # Rotate 180 degrees
+    # elif orientation == ('P', 'I', 'S'):
+    #     # Coronal orientation (Posterior-to-Anterior, Inferior-to-Superior)
+    #     transformation = lambda data: np.rot90(np.fliplr(data), 1)  # Rotate 90 degrees and flip horizontally
+    # elif orientation == ('R', 'S', 'I'):
+    #     # Sagittal orientation (Right-to-Left, Superior-to-Inferior)
+    #     transformation = lambda data: np.rot90(data, 2)  # Rotate 180 degrees
+    # else:
+    #     transformation = lambda data: np.rot90(np.flipud(data), 1)  # Rotate 90 degrees and flip horizontally
 
     # Define a custom color transformation function to create a wireframe
     def transform_slice(data_slice, transformation, wireframe):
@@ -36,17 +39,14 @@ def process_nifti_file(nifti_file_location, target_file_location):
             data_slice = transformation(data_slice)
 
         if wireframe:
-            # Find contours to identify edges
-            contours = measure.find_contours(data_slice, 0.5)  # 0.5 threshold for binary values
+            #blurred_slice = ndimage.gaussian_filter(data_slice, sigma=1)
+            slice1Copy = np.uint8(data_slice)
+            blurred_slice = cv2.GaussianBlur(slice1Copy, (5, 5), 0)
 
-            # Create a black canvas
-            wireframe_slice = np.zeros_like(data_slice)
+            # Apply Canny edge detection
+            edges = cv2.Canny(blurred_slice, 250, 250)  # Adjust thresholds as needed
 
-            # Draw the wireframe lines on the canvas
-            for contour in contours:
-                wireframe_slice[np.round(contour[:, 0]).astype(int), np.round(contour[:, 1]).astype(int)] = 1
-
-            data_slice = wireframe_slice
+            data_slice = edges
 
         return data_slice
 
