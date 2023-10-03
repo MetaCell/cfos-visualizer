@@ -25,6 +25,18 @@ theme = createTheme( {
       `,
     },
 
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          '&.Mui-disabled': {
+            '& .MuiSvgIcon-root': {
+              color: headerBorderLeftColor
+            }
+          }
+        }
+      }
+    },
+
     MuiBadge: {
       styleOverrides: {
         root: {
