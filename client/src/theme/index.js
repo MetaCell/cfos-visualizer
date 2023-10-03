@@ -1,7 +1,7 @@
 import vars from "./variables";
 import { createTheme } from "@mui/material/styles";
 
-const { primaryFont, primaryBgColor, primaryActiveColor, headerBorderLeftColor, switchTrackColor, headerBorderColor, switchTrackActiveBg, labelColor, chipBg, tooltipBgColor } = vars;
+const { primaryFont, primaryBgColor, primaryActiveColor, headerBorderLeftColor, switchTrackColor, headerBorderColor, switchTrackActiveBg, labelColor, chipBg, tooltipBgColor, whiteColor } = vars;
 
 let theme = createTheme();
 
@@ -124,6 +124,41 @@ theme = createTheme( {
           color: primaryActiveColor,
           fontSize: '0.75rem',
           lineHeight: '150%'
+        }
+      }
+    },
+
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none'
+        }
+      }
+    },
+
+    MuiSlider: {
+      styleOverrides: {
+        root: {
+          color: whiteColor,
+        },
+        thumb: {
+          width: '0.75rem',
+          height: '0.75rem',
+
+          '&:hover': {
+            boxShadow: 'none'
+          },
+          '&.Mui-focusVisible': {
+            boxShadow: 'none'
+          }
+        },
+        rail: {
+          opacity: 1,
+          background: 'linear-gradient(90deg, #FFF 0%, #030203 100%)'
+        },
+        track: {
+          border: 'none',
+          background: 'transparent'
         }
       }
     },

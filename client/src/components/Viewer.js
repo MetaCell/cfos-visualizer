@@ -1,19 +1,23 @@
 import * as THREE from "three";
 import * as AMI from 'ami.js';
 
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef } from "react";
 import {
     Badge, Box, Button, Chip, Divider, FormControlLabel, FormGroup, Popover, Switch, Typography
 } from "@mui/material";
-import {useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import * as viewerHelper from '../helpers/viewerHelper';
 import vars from "../theme/variables";
-import {addActivityMapToViewer, fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
 import { ViewerToolbar } from "./ViewerToolbar";
+import { fetchAndAddActivityMapToViewer, removeActivityMapFromViewer } from "../redux/actions";
+import { STACK_HELPER_BORDER_COLOR } from "../settings";
+import { DIRECTIONS } from "../constants";
+import { updateSlice, makeSliceTransparent } from "../helpers/stackHelper";
+import { getActivtyMapsDiff, postProcessActivityMap } from "../helpers/activityMapHelper";
 
 
-const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
+const { primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor } = vars;
 
 const StackHelper = AMI.stackHelperFactory(THREE);
 
@@ -35,7 +39,10 @@ export const Viewer = (props) => {
     const cameraRef = useRef(null);
     const contronsRef = useRef(null);
 
-    const atlasRefs = useRef(null);
+    const currentAtlasStackHelperRef = useRef(null);
+    const activityMapsStackHelpersRef = useRef({});
+
+    const activityMapsRef = useRef(activityMaps);
 
     // On Mount
     useEffect(() => {
@@ -70,36 +77,72 @@ export const Viewer = (props) => {
     };
 
     const unSubscribeEvents = () => {
-        containerRef.current.removeEventListener('wheel', handleScroll);
+        containerRef.current?.removeEventListener('wheel', handleScroll);
     };
 
     const handleScroll = (event) => {
-        // todo:
+        const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP
+        updateSlice(currentAtlasStackHelperRef?.current, direction)
+        Object.keys(activityMapsStackHelpersRef.current).forEach(activityMapID => {
+            const stackHelper = activityMapsStackHelpersRef.current[activityMapID];
+            const activityMap = activityMapsRef.current[activityMapID];
+            updateSlice(stackHelper, direction);
+            makeSliceTransparent(stackHelper, activityMap.opacity);
+        });
     };
 
+    // needed for the handle wheel event listener
+    useEffect(() => {
+        activityMapsRef.current = activityMaps;
+    }, [activityMaps]);
+
+
     // On atlas changes
-    // useEffect( () =>
-    // {
-    // 	if ( atlas )
-    // 	{
-    // 		const stackHelper = new StackHelper( atlas.stack );
-    // 		stackHelper.bbox.visible = false;
-    // 		stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-    // 		stackHelper.index = Math.floor( stackHelper.stack._frame.length / 2 );
-    //
-    // 		sceneRef.current.add( stackHelper );
-    // 		viewerHelper.updateCamera( containerRef.current, cameraRef.current, stackHelper );
-    //
-    // 		stackHelper.orientation = cameraRef.current.stackOrientation;
-    //
-    // 		atlasRefs.current = {
-    // 			...atlasRefs.current,
-    // 			stackHelper
-    // 		};
-    // 	}
-    //
-    //
-    // }, [ atlas ] );
+    useEffect(() => {
+        if (atlas) {
+            viewerHelper.updateCamera(containerRef.current, cameraRef.current, atlas.stack);
+
+            const stackHelper = new StackHelper(atlas.stack);
+            stackHelper.bbox.visible = false;
+            stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
+            stackHelper.index = Math.floor(stackHelper.stack._frame.length / 2);
+            stackHelper.orientation = cameraRef.current.stackOrientation;
+
+            if (currentAtlasStackHelperRef.current?.stackHelper) {
+                sceneRef.current.remove(currentAtlasStackHelperRef.current.stackHelper);
+            }
+
+            sceneRef.current.add(stackHelper);
+            currentAtlasStackHelperRef.current = stackHelper
+        }
+    }, [atlas]);
+
+    // Handle activityMap changes
+    useEffect(() => {
+        const { activityMapsToAdd, activityMapsToRemove } = getActivtyMapsDiff(activityMaps, activityMapsStackHelpersRef);
+
+        // Process removals first
+        activityMapsToRemove.forEach(amIdToRemove => {
+            const stackHelperToRemove = activityMapsStackHelpersRef.current[amIdToRemove];
+            if (stackHelperToRemove) {
+                sceneRef.current.remove(stackHelperToRemove);
+                delete activityMapsStackHelpersRef.current[amIdToRemove];
+            }
+        });
+
+        // Process additions next
+        activityMapsToAdd.forEach(amIdToAdd => {
+            const activityMap = activityMaps[amIdToAdd];
+            let stackHelper = new StackHelper(activityMap.stack);
+            stackHelper = postProcessActivityMap(stackHelper, activityMap, cameraRef.current.stackOrientation,
+                currentAtlasStackHelperRef.current.index);
+
+            sceneRef.current.add(stackHelper);
+            // Store the stackHelper in the ref object
+            activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
+        });
+
+    }, [activityMaps]);
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -114,10 +157,11 @@ export const Viewer = (props) => {
     const isOpen = Boolean(anchorEl);
     const popoverID = isOpen ? 'simple-popover' : undefined;
 
-    return (<Box sx={{position: "relative", height: "100%", width: "100%"}}>
-			<Box sx={{ position: 'absolute',top: '0.75rem', left: '0.75rem', zIndex: 9 }}>
-				<ViewerToolbar/>
-             </Box>
+    return (
+        <Box sx={{ position: "relative", height: "100%", width: "100%" }}>
+            <Box sx={{ position: 'absolute', top: '0.75rem', left: '0.75rem', zIndex: 9 }}>
+                <ViewerToolbar />
+            </Box>
             <Badge badgeContent={activityMaps.length} color="primary">
                 <Button sx={{
                     '&.MuiButton-root': {
@@ -138,15 +182,16 @@ export const Viewer = (props) => {
                             background: headerBorderColor
                         }
                     }
-                }} aria-describedby={popoverID} variant="contained" onClick={handlePopoverOpen} disableRipple>
+                }
+                } aria-describedby={popoverID} variant="contained" onClick={handlePopoverOpen} disableRipple>
                     Statistical maps
-                    <KeyboardArrowDownIcon sx={{fontSize: '1.25rem', color: headerButtonColor}}/>
+                    <KeyboardArrowDownIcon sx={{ fontSize: '1.25rem', color: headerButtonColor }} />
                 </Button>
             </Badge>
 
             <Popover
                 id={popoverID}
-                sx={{maxHeight: '20rem'}}
+                sx={{ maxHeight: '20rem' }}
                 open={isOpen}
                 anchorEl={anchorEl}
                 onClose={handlePopoverClose}
@@ -159,63 +204,65 @@ export const Viewer = (props) => {
             >
                 <Box px={2} pt={1.25}>
                     {orderedExperiments.map((experimentName, experimentIndex) => {
-                        const activityMaps = experimentsActivityMap[experimentName] || [];
+                        const experimentActivityMaps = experimentsActivityMap[experimentName] || [];
                         return (<Box key={experimentName}>
-                                {experimentIndex !== 0 &&
-                                    <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
-                                <Box sx={{
-                                    height: '1.875rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    background: headerBorderColor,
-                                    '& .MuiTypography-root': {
-                                        fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
-                                    }
+                            {experimentIndex !== 0 &&
+                                <Divider sx={{ mt: 1.5, mb: 1, background: headerBorderLeftColor }} />}
+                            <Box sx={{
+                                height: '1.875rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                background: headerBorderColor,
+                                '& .MuiTypography-root': {
+                                    fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
+                                }
+                            }}>
+                                <Typography>{experimentName}</Typography>
+                                {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment" />}
+                            </Box>
+                            <FormGroup>
+                                {experimentActivityMaps.map((activityMapID, mapIndex) => (<Box key={activityMapID} sx={{
+                                    position: 'relative', paddingLeft: '0.25rem', '&:hover': {
+                                        '&:before': {
+                                            background: primaryActiveColor,
+                                        }
+                                    }, '&:before': {
+                                        content: '""',
+                                        height: '100%',
+                                        width: '0.125rem',
+                                        background: headerBorderColor,
+                                        position: 'absolute',
+                                        left: 0,
+                                        top: 0,
+                                    },
                                 }}>
-                                    <Typography>{experimentName}</Typography>
-                                    {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
-                                </Box>
-                                <FormGroup>
-                                    {activityMaps.map((activityMapID, mapIndex) => (<Box key={activityMapID} sx={{
-                                            position: 'relative', paddingLeft: '0.25rem', '&:hover': {
-                                                '&:before': {
-                                                    background: primaryActiveColor,
-                                                }
-                                            }, '&:before': {
-                                                content: '""',
-                                                height: '100%',
-                                                width: '0.125rem',
-                                                background: headerBorderColor,
-                                                position: 'absolute',
-                                                left: 0,
-                                                top: 0,
-                                            },
-                                        }}>
-                                            <FormControlLabel
-                                                key={activityMapID}
-                                                control={
-                                                <Switch
-                                                    onChange={(event) => {
-                                                        if (event.target.checked) {
-                                                            dispatch(fetchAndAddActivityMapToViewer(activityMapID));
-                                                        } else {
-                                                            dispatch(removeActivityMapFromViewer(activityMapID));
-                                                        }
-                                                    }}
-                                                /> }
-                                                labelPlacement="start"
-                                                label={activityMapID}
-                                            />
-                                        </Box>))}
-                                </FormGroup>
-                            </Box>)
+                                    <FormControlLabel
+                                        key={activityMapID}
+                                        control={
+                                            <Switch
+                                                checked={!!activityMaps[activityMapID]}
+                                                onChange={(event) => {
+                                                    if (event.target.checked) {
+                                                        dispatch(fetchAndAddActivityMapToViewer(activityMapID));
+                                                    } else {
+                                                        dispatch(removeActivityMapFromViewer(activityMapID));
+                                                    }
+                                                }}
+                                            />}
+                                        labelPlacement="start"
+                                        label={activityMapID}
+                                    />
+                                </Box>))}
+                            </FormGroup>
+                        </Box>)
                     })}
                 </Box>
             </Popover>
-            <Box sx={{position: "absolute", top: 0, left: 0, height: "100%", width: "100%",}}
-                 ref={containerRef}>
+            <Box sx={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%", }}
+                ref={containerRef}>
                 {/* <Typography> Viewer </Typography> */}
             </Box>
-        </Box>);
+        </Box >
+    );
 };

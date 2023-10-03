@@ -14,7 +14,7 @@ import {
     setModel, addActivityMapToViewer, fetchAndSetViewerAtlas, setViewerAtlas
 } from "../redux/actions";
 import {Experiment, ActivityMap, Atlas} from "../model/models";
-import {DEFAULT_COLOR, DEFAULT_OPACITY, DEFAULT_VISIBILITY} from "../settings";
+import {DEFAULT_COLOR, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 import {actions} from "../redux/constants";
 
@@ -159,7 +159,7 @@ describe('Middleware', () => {
         const expectedObject = new ActivityMap(
             'activityMapID',
             DEFAULT_COLOR,
-            DEFAULT_OPACITY,
+            DEFAULT_ATLAS_OPACITY,
             DEFAULT_VISIBILITY,
             activityMapStack,
         );
