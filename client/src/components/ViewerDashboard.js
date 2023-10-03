@@ -9,6 +9,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import ColorLensOutlinedIcon from '@mui/icons-material/ColorLensOutlined';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import vars from '../theme/variables';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const {
     headerBorderLeftColor,
@@ -155,55 +156,67 @@ export const ViewerDashboard = ( props ) =>
 
                         '& .body': {
                             '& .row': {
-                                p: '0.5rem 0',
+                                p: '0.375rem 0',
                                 display: 'flex',
                                 borderRadius: '0.5rem',
                                 border: '0.0625rem solid transparent',
-                                '&:hover': {
-                                    background: headerBorderColor,
-                                    borderColor: headerBorderLeftColor,
+
+
+                                '& .MuiIconButton-root': {
+                                    padding: '0.375rem'
                                 },
+
+                                '& .MuiTypography-body1': {
+                                    color: headerButtonColor,
+                                    fontSize: '0.875rem',
+                                    fontWeight: 400,
+                                    lineHeight: '142.857%',
+                                },
+                                '& .MuiTypography-body2': {
+                                    color: accordianTextColor,
+                                    fontSize: '0.75rem',
+                                    fontWeight: 400,
+                                    lineHeight: '150%',
+                                },
+                                '& .ellipses': {
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                },
+
+                                '&.secondary': {
+                                    mt: 1,
+                                    padding: '0.75rem',
+                                },
+
                                 '& > .MuiBox-root': {
-                                    width: 'calc(65% - 5.625rem)',
-                                    px: '0.75rem',
                                     display: 'flex',
                                     alignItems: 'center',
                                     minWidth: 0,
-                                    gap: '0.5rem',
+                                },
 
+                                '&:not(.secondary)': {
+                                    '&:hover': {
+                                        background: headerBorderColor,
+                                        borderColor: headerBorderLeftColor,
+                                    },
+                                    '& > .MuiBox-root': {
+                                        width: 'calc(65% - 5.625rem)',
+                                        gap: '0.5rem',
+                                        px: '0.75rem',
 
-                                    '&:first-of-type': {
-                                        width: '11.25rem'
-                                    },
-                                    '&:last-of-type': {
-                                        width: 'calc(35% - 5.625rem)'
-                                    },
-
-                                    '& .MuiIconButton-root': {
-                                        padding: '0.375rem'
-                                    },
-
-                                    '& .MuiTypography-body1': {
-                                        color: headerButtonColor,
-                                        fontSize: '0.875rem',
-                                        fontWeight: 400,
-                                        lineHeight: '142.857%',
-                                    },
-                                    '& .MuiTypography-body2': {
-                                        color: accordianTextColor,
-                                        fontSize: '0.75rem',
-                                        fontWeight: 400,
-                                        lineHeight: '150%',
-                                    },
-                                    '& .ellipses': {
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis'
-                                    },
-                                    '& + .MuiBox-root': {
-                                        borderLeft: `0.0625rem solid ${headerBorderLeftColor}`
+                                        '&:first-of-type': {
+                                            width: '11.25rem'
+                                        },
+                                        '&:last-of-type': {
+                                            width: 'calc(35% - 5.625rem)'
+                                        },
+                                        '& + .MuiBox-root': {
+                                            borderLeft: `0.0625rem solid ${headerBorderLeftColor}`
+                                        },
                                     },
                                 },
+
 
                             },
                             '& .MuiTypography-root': {
@@ -231,14 +244,14 @@ export const ViewerDashboard = ( props ) =>
                                     <IconButton>
                                         <DragIndicatorIcon sx={ { color: headerButtonColor, fontSize: '1rem' } } />
                                     </IconButton>
-                                    <IconButton>
+                                    <IconButton disabled={index === experiments.length - 1}>
                                         <RemoveCircleOutlineIcon sx={ { color: headerButtonColor, fontSize: '1rem' } } />
                                     </IconButton>
                                     <Divider sx={ { background: headerBorderLeftColor, width: '0.0625rem', height: '100%' } } />
                                     <IconButton>
                                         <VisibilityOutlinedIcon sx={ { color: headerButtonColor, fontSize: '1rem' } } />
                                     </IconButton>
-                                    <IconButton>
+                                    <IconButton disabled={index === experiments.length - 1}>
                                         <ColorLensOutlinedIcon sx={ { color: colorPaletteExampleColors[index], fontSize: '1rem' } } />
                                     </IconButton>
                                     <IconButton>
@@ -272,28 +285,30 @@ export const ViewerDashboard = ( props ) =>
                                 </Box>
                             </Box>
                             )}
-                             {/* <Box className="row" sx={{ background: headerBorderColor , border: `0.0625rem solid ${headerBorderLeftColor}`}}>
-                                <Box>
-                                    <Typography variant='body2' className='ellipses'>
-                                        No active statistical maps
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Button disableRipple sx={ {
-                                        '&.MuiButton-text': {
-                                            textTransform: 'none !important',
-                                            color: resetButtonActiveColor,
-                                            padding: 0,
-                                            fontSize: '0.75rem',
-                                            flexShrink: 0,
-                                            lineHeight: '150%',
-                                            fontWeight: 400,
-                                            minWidth: '0.0625rem'
-                                        },
-                                    }}>Add statistical map(s) to viewer</Button>
-                                </Box>
-                            </Box> */}
+
+                            <Box className="row secondary" justifyContent='space-between' sx={{ background: headerBorderColor , border: `0.0625rem solid ${headerBorderLeftColor}`}}>
+                                <Typography variant='body2' className='ellipses'>
+                                    No active statistical maps
+                                </Typography>
+                                <Button disableRipple sx={ {
+                                    '&.MuiButton-text': {
+                                        textTransform: 'none !important',
+                                        color: resetButtonActiveColor,
+                                        padding: 0,
+                                        fontSize: '0.875rem',
+                                        flexShrink: 0,
+                                        lineHeight: '143%',
+                                        fontWeight: 600,
+                                        gap: '0.5rem',
+                                        minWidth: '0.0625rem'
+                                    },
+                                } }>
+                                    Add statistical map(s) to viewer
+                                    <ArrowForwardIcon sx={{fontSize: '1.25rem'}} />
+                                </Button>
+                            </Box>
                         </Box>
+
                     </Box>
                 </Box>
 
