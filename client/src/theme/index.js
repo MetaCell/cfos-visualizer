@@ -1,7 +1,7 @@
 import vars from "./variables";
 import { createTheme } from "@mui/material/styles";
 
-const { primaryFont, primaryBgColor, primaryActiveColor, headerBorderLeftColor, switchTrackColor, headerBorderColor, switchTrackActiveBg, labelColor, chipBg, whiteColor } = vars;
+const { primaryFont, primaryBgColor, primaryActiveColor, headerBorderLeftColor, switchTrackColor, headerBorderColor, switchTrackActiveBg, labelColor, chipBg, tooltipBgColor, whiteColor } = vars;
 
 let theme = createTheme();
 
@@ -198,6 +198,21 @@ theme = createTheme( {
             background: 'linear-gradient(180deg, rgba(30, 30, 31, 0.00) 0%, rgba(30, 30, 31, 0.40) 19.79%, #1E1E1F 100%)',
             borderRadius: '0 0 0.5rem 0.5rem',
           }
+        }
+      }
+    },
+
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          padding: '0.5rem 0.75rem',
+          borderRadius: '0.5rem',
+          backgroundColor: tooltipBgColor,
+          fontWeight: 600, 
+          fontSize: '0.75rem'
+        },
+        tooltipPlacementRight: {
+          margin: '0 0 0 0.5rem !important'
         }
       }
     }
