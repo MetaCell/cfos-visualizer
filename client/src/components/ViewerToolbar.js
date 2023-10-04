@@ -65,7 +65,7 @@ export const ViewerToolbar = () => {
         }}>
             {
                 options.map((option) => option.isVisible && (
-                    <Tooltip key={option.title} open={true} title={option.title} placement="right">
+                    <Tooltip key={option.title} title={option.title} placement="right">
                         <IconButton onClick={option.onClickFunc}>
                             {option.Icon}
                         </IconButton>
