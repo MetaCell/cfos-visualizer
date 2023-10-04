@@ -198,6 +198,9 @@ theme = createTheme( {
           backgroundColor: tooltipBgColor,
           fontWeight: 600, 
           fontSize: '0.75rem'
+        },
+        tooltipPlacementRight: {
+          margin: '0 0 0 0.5rem !important'
         }
       }
     }

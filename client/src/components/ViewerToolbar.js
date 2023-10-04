@@ -52,10 +52,10 @@ export const ViewerToolbar = () => {
     return (
         <Stack spacing={0.5} sx={{
             '& .MuiIconButton-root': {
-                padding: '4px',
+                padding: '0.25rem',
                 '&:hover': {
                     backgroundColor: vars.headerBorderColor,
-                    borderRadius: '8px'
+                    borderRadius: '0.5rem'
                 }
             },
             '& .MuiSvgIcon-root': {
@@ -65,7 +65,7 @@ export const ViewerToolbar = () => {
         }}>
             {
                 options.map((option) => option.isVisible && (
-                    <Tooltip key={option.title} title={option.title} placement="right">
+                    <Tooltip key={option.title} open={true} title={option.title} placement="right">
                         <IconButton onClick={option.onClickFunc}>
                             {option.Icon}
                         </IconButton>
