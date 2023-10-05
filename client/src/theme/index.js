@@ -25,12 +25,27 @@ theme = createTheme( {
       `,
     },
 
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: '0.5rem',
+          border: '0.0625rem solid var(--gray-600, #302F31)',
+          background: '#1E1E1F',
+          boxShadow: '0rem 0.5rem 0.5rem -0.25rem rgba(16, 24, 40, 0.03), 0rem 1.25rem 1.5rem -0.25rem rgba(16, 24, 40, 0.08)',
+        },
+        paperWidthXs: {
+          maxWidth: '15.375rem'
+        }
+      }
+    },
+
     MuiIconButton: {
       styleOverrides: {
         root: {
           '&.Mui-disabled': {
             '& .MuiSvgIcon-root': {
-              color: headerBorderLeftColor
+              color: headerBorderLeftColor,
+              pointerEvents: 'auto'
             }
           }
         }
@@ -202,13 +217,49 @@ theme = createTheme( {
       }
     },
 
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          '&.MuiButtonBase-root': {
+            minHeight: '0.0625rem',
+            textTransform: 'none',
+            color: '#737378',
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            lineHeight: '150%',
+            minWidth: '0.0625rem',
+
+            '&.Mui-selected': {
+              color: '#D6D5D7',
+            }
+          }
+        },
+      }
+    },
+
+    MuiTabs: {
+      styleOverrides: {
+        flexContainer: {
+          gap: '0.5rem',
+        },
+        root: {
+          padding: '0.5rem 0.75rem',
+          borderBottom: '0.0625rem solid #302F31',
+          minHeight: '0.0625rem',
+        },
+        indicator: {
+          display: 'none'
+        }
+      }
+    },
+
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
           padding: '0.5rem 0.75rem',
           borderRadius: '0.5rem',
           backgroundColor: tooltipBgColor,
-          fontWeight: 600, 
+          fontWeight: 600,
           fontSize: '0.75rem'
         },
         tooltipPlacementRight: {
