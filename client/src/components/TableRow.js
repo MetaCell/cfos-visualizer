@@ -9,6 +9,7 @@ import CustomSlider from './Slider';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import GrainIcon from '@mui/icons-material/Grain';
 import { tableStyles } from './Table';
+import Picker from './Picker';
 
 const {
   headerBorderLeftColor,
@@ -19,7 +20,10 @@ const colorPaletteExampleColors = [ '#3939A1', '#8A3535', '#475467' ];
 
 const TableRow = ( { index, data, length } ) =>
 {
-  const [ open, setOpen ] = useState(index === 0 ? true : false );
+  const [ open, setOpen ] = useState(false );
+  const toggleColorPicker = () => {
+    setOpen((open) => !open);
+  }
   return (
     <>
       <Box sx={ tableStyles.root }>
@@ -42,7 +46,7 @@ const TableRow = ( { index, data, length } ) =>
             </IconButton>
           </Tooltip>
           <Tooltip placement='right' title={ index === length - 1 ? "Not available for atlas" : "Configure color" }>
-            <IconButton onClick={ () => setOpen( true ) } disabled={ index === length - 1 }>
+            <IconButton onClick={ toggleColorPicker } disabled={ index === length - 1 }>
               <ColorLensOutlinedIcon sx={ { color: `${ colorPaletteExampleColors[ index ] } !important` } } />
             </IconButton>
           </Tooltip>
@@ -71,6 +75,7 @@ const TableRow = ( { index, data, length } ) =>
         </Box>
       </Box>
 
+      { open && <Picker open={ open } onClose={ () => setOpen( false ) } /> }
     </>
   );
 };
