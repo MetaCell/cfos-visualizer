@@ -46,12 +46,13 @@ const templateArr = [
   },
   {
     name: 'Cool',
-    color: 'linear-gradient(90deg, rgba(237, 27, 14, 0.40) 0%, rgba(255, 255, 255, 0.40) 36.98%, rgba(20, 36, 186, 0.40) 67.19%, rgba(63, 186, 20, 0.40) 100%), rgba(255, 255, 255, 0.30)'
+    color: 'linear-gradient(90deg, rgba(72, 154, 230, 0.4) 0%, rgba(206, 208, 75, 0.4) 100%), rgba(255, 255, 255, 0.3)'
   },
   {
     name: 'Black & White',
     color: 'linear-gradient(90deg, #030203 0%, rgba(3, 2, 3, 0.00) 100%), rgba(255, 255, 255, 0.30)'
   }
+
 ]
 
 const Picker = ({open, onClose}) =>
@@ -62,7 +63,7 @@ const Picker = ({open, onClose}) =>
     setValue(newValue);
   };
 
-  const [selectedColor, setSelectedColor] = React.useState('#B11F1F');
+  const [selectedColor, setSelectedColor] = React.useState('rgba(237, 27, 14, 0.40)');
 
   const handleColorChange = (color) => {
     setSelectedColor(color.hex);
