@@ -4,3 +4,4 @@ processor/process/*
 data/
 application_default_credentials.json
 server/.env
+processor/helpers/__pycache__/

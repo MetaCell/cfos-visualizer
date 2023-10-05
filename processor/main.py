@@ -1,6 +1,4 @@
 import sys
-import requests
-from bs4 import BeautifulSoup
 import os
 import http.server
 import socketserver
@@ -16,6 +14,26 @@ from selenium.webdriver.common.keys import Keys
 
 server_started_event = threading.Event()
 
+driver = None
+
+web_directory = os.path.dirname(os.path.abspath(__file__))
+download_dir = web_directory + "/process"
+data_dir = web_directory + "/data/"
+
+def wait_for_file(filename, directory_path):
+    """
+    Wait for a specific file to appear in a directory.
+    
+    Args:
+        filename (str): The name of the file to wait for.
+        directory_path (str): The path to the directory to watch.
+    """
+    while not os.path.exists(os.path.join(directory_path, filename)):
+        print(f"Waiting for {filename} to appear in {directory_path}...")
+        time.sleep(1)  # Wait for 1 second before checking again
+
+    print(f"{filename} has appeared in {directory_path}.")
+
 def start_http_server(directory, port):
     try:
         os.chdir(directory)
@@ -29,26 +47,23 @@ def start_http_server(directory, port):
         server_started_event.set()
         httpd.serve_forever()
 
-if __name__ == "__main__":
-    # Check if the number of arguments is correct
-    if len(sys.argv) != 2:
-        sys.argv.append("gubra_ano_combined_25um.nii.gz")
-        sys.argv.append("True")
-        #print("Usage: python script.py arg1 arg2 arg3")
-        #sys.exit(1)
-
-    file_name = sys.argv[1]
-    process_wireframe = not (sys.argv[2] == "False")
-
-    web_directory = os.path.dirname(os.path.abspath(__file__))
-    download_dir = web_directory + "/process"
-    data_dir = web_directory + "/data/"
+def process(file_name, process_wireframe):
 
     wireframe_file_name  = file_name.replace(".nii.gz", "-wireframe.nii.gz")
 
     if process_wireframe:
         process_nifti_file(data_dir + file_name, data_dir + wireframe_file_name)
 
+    http_file_path = "http://localhost:8888/website/index.html?file="+file_name
+    driver.get(http_file_path)
+
+    if process_wireframe:
+        http_file_path = "http://localhost:8888/website/index.html?file="+wireframe_file_name
+        driver.get(http_file_path)
+
+    print(f"Process completed for { file_name }")
+
+if __name__ == "__main__":
     port = 8888
     # Create a thread for the HTTP server
     http_server_thread = threading.Thread(target=start_http_server, args=(web_directory, port))
@@ -60,7 +75,7 @@ if __name__ == "__main__":
     options = Options()
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--verbose")
-    #options.add_argument("--headless")
+    options.add_argument("--headless")
 
     options.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
@@ -71,13 +86,20 @@ if __name__ == "__main__":
     })
 
     driver = webdriver.Chrome(options=options)
+    # Get the current directory using os.getcwd()
+    current_directory = os.getcwd()
 
-    http_file_path = "http://localhost:8888/website/index.html?file="+file_name
-    driver.get(http_file_path)
+    target_dir = current_directory + "/data/"
 
-    if process_wireframe:
-        http_file_path = "http://localhost:8888/website/index.html?file="+wireframe_file_name
-        driver.get(http_file_path)
+    # Use os.listdir() to get a list of all files and directories in the current directory
+    files = os.listdir(target_dir)
 
-    print(f"Process completed for { file_name }")
+    # Filter out only the files (excluding directories)
+    files = [file for file in files if os.path.isfile(os.path.join(target_dir, file))]
+
+    # Print the list of files
+    for file in files:
+        print(f"Processing ${file}...")
+        process(file, False)
+        wait_for_file(file.replace("nii.gz", "msgpack"), download_dir)
 
