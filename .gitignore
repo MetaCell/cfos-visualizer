@@ -1,4 +1,5 @@
 client/node_modules/
+client/build/
 processor/data/*
 processor/process/*
 data/

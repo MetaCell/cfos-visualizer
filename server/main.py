@@ -59,16 +59,16 @@ def download_as_json(object_name):
 def init_webapp_routes(app):
     www_path = os.path.dirname(os.path.abspath(__file__)) + "/www"
 
-    @app.route('/atlas/<id>')
+    @app.route('/cfos-visualizer-stanford/Atlas/<id>')
     def download_atlas(id):
         return download_as_stream("Atlas", id)
 
-    @app.route('/activityMap/<id>')
+    @app.route('/cfos-visualizer-stanford/ActivityMap/<id>')
     def activity_map(id):
         return download_as_stream("ActivityMap", id)
 
     # TODO: update to no longer be a placeholder
-    @app.route('/experiment/<id>')
+    @app.route('/cfos-visualizer-stanford/Experiment/<id>')
     def experiment(id):
         # Dummy response for the new route
         response_data = {
@@ -77,9 +77,9 @@ def init_webapp_routes(app):
         }
         return jsonify(response_data)
 
-    @app.route('/index')
-    def index():
-        return download_as_json("index.json")
+    @app.route('/cfos-visualizer-stanford/<id>')
+    def index(id):
+        return download_as_json(id)
 
     @app.errorhandler(404)
     def page_not_found(error):
