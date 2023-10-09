@@ -1,10 +1,10 @@
-import flask
-from flask import Flask, jsonify, send_file
-from flask_cors import CORS, cross_origin
-from io import BytesIO
 import os
-import json
+from io import BytesIO
+
+import flask
 from dotenv import load_dotenv
+from flask import jsonify, send_file
+from flask_cors import CORS
 from google.cloud import storage
 
 load_dotenv()
