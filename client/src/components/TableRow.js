@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Divider, IconButton, Tooltip, Typography } from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -20,10 +20,19 @@ const colorPaletteExampleColors = [ '#3939A1', '#8A3535', '#475467' ];
 
 const TableRow = ( { index, data, length } ) =>
 {
-  const [ open, setOpen ] = useState(false );
-  const toggleColorPicker = () => {
-    setOpen((open) => !open);
-  }
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
   return (
     <>
       <Box sx={ tableStyles.root }>
@@ -46,7 +55,7 @@ const TableRow = ( { index, data, length } ) =>
             </IconButton>
           </Tooltip>
           <Tooltip placement='right' title={ index === length - 1 ? "Not available for atlas" : "Configure color" }>
-            <IconButton onClick={ toggleColorPicker } disabled={ index === length - 1 }>
+            <IconButton aria-describedby={id} onClick={handleClick} disabled={ index === length - 1 }>
               <ColorLensOutlinedIcon sx={ { color: `${ colorPaletteExampleColors[ index ] } !important` } } />
             </IconButton>
           </Tooltip>
@@ -75,7 +84,8 @@ const TableRow = ( { index, data, length } ) =>
         </Box>
       </Box>
 
-      { open && <Picker open={ open } onClose={ () => setOpen( false ) } /> }
+
+      <Picker onClose={handleClose} id={id} open={open} anchorEl={anchorEl} />
     </>
   );
 };
