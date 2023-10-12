@@ -14,22 +14,30 @@ export const SNACKBAR_TIMEOUT = 3000
 
 export const DEFAULT_LOADING_MESSAGE = "Loading..."
 
-export const DEFAULT_COLOR_GRADIENT = [
-    [0, 0, 0, 1],
-    [0.15, 0, 1, 1],
-    [0.3, 0, 1, 0],
-    [0.45, 0, 0, 0],
-    [0.5, 0, 0, 0],
-    [0.55, 0, 0, 0],
-    [0.7, 1, 1, 0],
-    [0.85, 1, 0, 0],
-    [1, 1, 1, 1],
-]
+export const GRADIENTS = {
+    HOT: [
+        [0, 255 / 255, 9 / 255, 9 / 255],
+        [1, 255 / 255, 217 / 255, 102 / 255]
+    ],
+    COOL: [
+        [0, 20 / 255, 0 / 255, 175 / 255],
+        [1, 20 / 255, 147 / 255, 255 / 255]
+    ],
+    BLACK_AND_WHITE: [
+        [0, 3 / 255, 2 / 255, 3 / 255],
+        [1, 3 / 255, 2 / 255, 0]
+    ]
+}
+
+export const DEFAULT_COLOR_GRADIENT = GRADIENTS.HOT
+
 
 export const LUT_DATA = {
     lut: 'custom',
     lutO: 'linear',
     opacity: [[0, 1], [1, 1]]
 }
+export const GRADIENT_STEPS = 9
 
 export const STACK_MESH_INDEX = 1
+

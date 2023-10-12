@@ -1,4 +1,4 @@
-import {DEFAULT_COLOR_GRADIENT} from "../settings";
+import {DEFAULT_COLOR_GRADIENT, GRADIENT_STEPS} from "../settings";
 
 
 export function getOriginalHexColor(gradient) {
@@ -24,17 +24,28 @@ function rgbToHex(r, g, b) {
 export function getColorGradient(hex) {
     const originalColor = hexToRgb(hex);
 
-    if(!originalColor){
-        console.warn(`Invalid hex color provided: ${hex}`)
-        return DEFAULT_COLOR_GRADIENT
+    if (!originalColor) {
+        console.warn(`Invalid hex color provided: ${hex}`);
+        return DEFAULT_COLOR_GRADIENT;
     }
 
     const complementaryColor = getComplementaryColor(originalColor);
 
-    return [
-        [0, originalColor.r, originalColor.g, originalColor.b],
-        [1, complementaryColor.r, complementaryColor.g, complementaryColor.b]
-    ];
+    // Create an array to store the gradient steps
+    let gradient = [];
+
+
+    for (let i = 0; i < GRADIENT_STEPS; i++) {
+        const step = i / (GRADIENT_STEPS - 1);  // t ranges from 0 to 1
+        gradient.push([
+            step,  // Color stop position
+            lerp(originalColor.r, complementaryColor.r, step),
+            lerp(originalColor.g, complementaryColor.g, step),
+            lerp(originalColor.b, complementaryColor.b, step)
+        ]);
+    }
+
+    return gradient;
 }
 
 export function hexToRgb(hex) {
@@ -52,4 +63,9 @@ export function getComplementaryColor(color) {
         g: 1 - color.g,
         b: 1 - color.b
     };
+}
+
+// Linear interpolation function
+function lerp(start, end, step) {
+    return start * (1 - step) + end * step;
 }
