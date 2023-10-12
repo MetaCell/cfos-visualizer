@@ -1,5 +1,5 @@
 import {getLUTHelper, makeSliceTransparent, removeBackground} from "./stackHelper";
-import {STACK_HELPER_BORDER_COLOR} from "../settings";
+import {DEFAULT_COLOR_GRADIENT, STACK_HELPER_BORDER_COLOR} from "../settings";
 
 export function postProcessActivityMap(stackHelper, activityMap, orientation, index) {
     removeBackground(stackHelper);
@@ -10,15 +10,19 @@ export function postProcessActivityMap(stackHelper, activityMap, orientation, in
     stackHelper.orientation = orientation
 
     makeSliceTransparent(stackHelper, activityMap.opacity);
-
-    const helperLut = getLUTHelper(activityMap.colorGradient);
-    stackHelper.slice.lut = helperLut.lut;
-    stackHelper.slice.lutTexture = helperLut.texture;
+    updateLUT(activityMap.colorGradient, stackHelper);
 
     return stackHelper
 }
 
-export function getActivtyMapsDiff(activityMaps, activityMapsStackHelpersRef) {
+export function updateLUT(colorGradient, stackHelper) {
+    const helperLut = getLUTHelper(colorGradient);
+    stackHelper.slice.lut = helperLut.lut
+    stackHelper.slice.lutTexture = helperLut.texture;
+    stackHelper.colorGradient = JSON.stringify(colorGradient)
+}
+
+export function getActivityMapsDiff(activityMaps, activityMapsStackHelpersRef) {
     const newActivityMapsState = Object.keys(activityMaps);
 
     // Get the current activityMap IDs from the ref

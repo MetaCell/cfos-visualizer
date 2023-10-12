@@ -13,8 +13,8 @@ import {ViewerToolbar} from "./ViewerToolbar";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
 import {DIRECTIONS} from "../constants";
-import {updateSlice, makeSliceTransparent} from "../helpers/stackHelper";
-import {getActivtyMapsDiff, postProcessActivityMap, updateVisibility} from "../helpers/activityMapHelper";
+import {updateSlice, makeSliceTransparent, getLUTHelper} from "../helpers/stackHelper";
+import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
 
 
@@ -124,10 +124,10 @@ export const Viewer = (props) => {
 
     // Handle activityMap changes
     useEffect(() => {
-        const {activityMapsToAdd, activityMapsToRemove} = getActivtyMapsDiff(activeActivityMaps,
+        const {activityMapsToAdd, activityMapsToRemove} = getActivityMapsDiff(activeActivityMaps,
             activityMapsStackHelpersRef);
 
-        // Process removals first
+        // Process removals
         activityMapsToRemove.forEach(amIdToRemove => {
             const stackHelperToRemove = activityMapsStackHelpersRef.current[amIdToRemove];
             if (stackHelperToRemove) {
@@ -136,7 +136,25 @@ export const Viewer = (props) => {
             }
         });
 
-        // Process additions next
+        // Process changes
+
+        Object.keys(activityMapsStackHelpersRef.current).forEach(amID => {
+            const activityMap = activeActivityMaps[amID];
+            if(activityMap){
+                const activityMapStackHelper = activityMapsStackHelpersRef.current[amID]
+                // change visibility
+                if(activityMapStackHelper.visible !== activityMap.visibility){
+                    activityMapStackHelper.visible = activityMap.visibility
+                }
+                // change LUT
+                if(activityMapStackHelper.colorGradient !== JSON.stringify(activityMap.colorGradient)){
+                    updateLUT(activityMap.colorGradient, activityMapStackHelper)
+                }
+            }
+        })
+
+
+        // Process additions
         activityMapsToAdd.forEach(amIdToAdd => {
             const activityMap = activeActivityMaps[amIdToAdd];
             let stackHelper = new StackHelper(activityMap.stack);
@@ -149,8 +167,7 @@ export const Viewer = (props) => {
             activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
         });
 
-        // Update visibility for activity maps
-        updateVisibility(activityMapsStackHelpersRef, activeActivityMaps);
+
 
     }, [activeActivityMaps]);
 
@@ -257,6 +274,7 @@ export const Viewer = (props) => {
                                                     onChange={(event) => {
                                                         if (event.target.checked) {
                                                             dispatch(fetchAndAddActivityMapToViewer(activityMapID));
+                                                            handlePopoverClose()
                                                         } else {
                                                             dispatch(removeActivityMapFromViewer(activityMapID));
                                                         }

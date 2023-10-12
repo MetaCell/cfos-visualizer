@@ -5,6 +5,9 @@ import Tab from '@mui/material/Tab';
 import { Box, Popover, Typography } from '@mui/material';
 import { ChromePicker } from 'react-color';
 import vars from '../theme/variables';
+import {useDispatch} from "react-redux";
+import {changeActivityMapColor} from "../redux/actions";
+import {getColorGradient} from "../helpers/colorHelper";
 
 const { headingColor, whiteColor, headerBorderLeftColor, headerBorderColor } = vars
 
@@ -53,16 +56,17 @@ const templateArr = [
   }
 ]
 
-const Picker = ({open, id, anchorEl, onClose}) =>
+const Picker = ({open, id, anchorEl, selectedColor, onClose}) =>
 {
+  const dispatch = useDispatch();
   const [value, setValue] = React.useState(0);
-  const [ selectedColor, setSelectedColor ] = React.useState( '#4DED0E' );
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
   const handleColorChange = (color) => {
-    setSelectedColor(color.hex);
+    dispatch(changeActivityMapColor(id, getColorGradient(color.hex)));
   };
 
   return (

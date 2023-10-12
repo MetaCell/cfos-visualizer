@@ -13,6 +13,7 @@ import { tableStyles } from './Table';
 import Picker from './Picker';
 import {removeActivityMapFromViewer, toggleViewerObjectVisibility} from "../redux/actions";
 import {useDispatch} from "react-redux";
+import {getOriginalHexColor} from "../helpers/colorHelper";
 
 const {
   headerBorderLeftColor,
@@ -89,7 +90,7 @@ const TableRow = ( { index, data, isAtlas } ) =>
       </Box>
 
 
-      <Picker onClose={handleClose} id={id} open={open} anchorEl={anchorEl} />
+      <Picker onClose={handleClose} id={id} open={open} anchorEl={anchorEl} selectedColor={color} />
     </>
   );
 };

@@ -160,8 +160,8 @@ describe('viewerReducer', () => {
         };
 
         const OTHER_COLOR_GRADIENT = [
-            [0, 1, 0, 0],  // Original color (red) with color stop 0
-            [1, 0, 1, 1]   // Complementary color (cyan) with color stop 1
+            [0, 1, 0, 0],
+            [1, 0, 1, 1]
         ]
 
         const expectedState = {
@@ -170,7 +170,7 @@ describe('viewerReducer', () => {
             }
         };
 
-        const changeColorAction = changeActivityMapColor(activityMapID, '#ff0000');
+        const changeColorAction = changeActivityMapColor(activityMapID, OTHER_COLOR_GRADIENT);
 
         expect(viewerReducer(setupState, changeColorAction)).toEqual(expectedState);
     });

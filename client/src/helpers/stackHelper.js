@@ -1,7 +1,7 @@
 import * as AMI from 'ami.js';
 import * as THREE from 'three';
 import {DIRECTIONS} from "../constants";
-import {LUT_DATA, STACK_MESH_INDEX} from "../settings";
+import {DEFAULT_COLOR_GRADIENT, LUT_DATA, STACK_MESH_INDEX} from "../settings";
 
 const StackModel = AMI.StackModel;
 const HelpersLut = AMI.lutHelperFactory(THREE);
@@ -44,15 +44,10 @@ export const updateSlice = (stackHelper, direction) => {
 }
 
 
-export const getLUTHelper = (color) => {
+export const getLUTHelper = (colorGradient) => {
     const dummyElement = document.createElement('div');
-    const helpLut = new HelpersLut(dummyElement);
-    helpLut.luts = HelpersLut.presetLuts();
-    helpLut.lut = LUT_DATA.lut;
-    helpLut.lut0 = LUT_DATA.lut0;
-    helpLut.color = color;
-    helpLut.opacity = LUT_DATA.opacity;
-    return helpLut
+    return new HelpersLut(dummyElement, LUT_DATA.lut, LUT_DATA.lutO, colorGradient);
+
 }
 
 

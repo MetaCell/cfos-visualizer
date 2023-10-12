@@ -40,9 +40,9 @@ export const changeAllViewerObjectsOpacity = (opacity) => ({
     payload: opacity
 });
 
-export const changeActivityMapColor = (activityMapID, hexColor) => ({
-    type: actions.CHANGE_ACTIVITY_MAP_COLOR,
-    payload: { activityMapID, color: hexColor }
+export const changeActivityMapColor = (activityMapID, colorGradient) => ({
+    type: actions.CHANGE_ACTIVITY_MAP_COLOR_GRADIENT,
+    payload: { activityMapID, colorGradient }
 });
 
 export const changeViewerOrder = (order) => ({

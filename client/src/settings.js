@@ -1,6 +1,5 @@
 export const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
-export const DEFAULT_COLOR_GRADIENT = [[0,0,1,1],[1,0,0,1]]
 
 export const DEFAULT_ATLAS_OPACITY = 1;
 export const DEFAULT_ACTIVITY_MAP_OPACITY = 0.8;
@@ -15,8 +14,20 @@ export const SNACKBAR_TIMEOUT = 3000
 
 export const DEFAULT_LOADING_MESSAGE = "Loading..."
 
+export const DEFAULT_COLOR_GRADIENT = [
+    [0, 0, 0, 1],
+    [0.15, 0, 1, 1],
+    [0.3, 0, 1, 0],
+    [0.45, 0, 0, 0],
+    [0.5, 0, 0, 0],
+    [0.55, 0, 0, 0],
+    [0.7, 1, 1, 0],
+    [0.85, 1, 0, 0],
+    [1, 1, 1, 1],
+]
+
 export const LUT_DATA = {
-    lut: 'hot_and_cold',
+    lut: 'custom',
     lutO: 'linear',
     opacity: [[0, 1], [1, 1]]
 }

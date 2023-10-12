@@ -125,7 +125,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 )
             };
 
-        case actions.CHANGE_ACTIVITY_MAP_COLOR:
+        case actions.CHANGE_ACTIVITY_MAP_COLOR_GRADIENT:
             const activityMap = state.activityMaps[action.payload.activityMapID];
             return {
                 ...state,
@@ -133,7 +133,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state.activityMaps,
                     [action.payload.activityMapID]: new ActivityMap(
                         activityMap.id,
-                        getColorGradient(action.payload.color),
+                        action.payload.colorGradient,
                         activityMap.opacity,
                         activityMap.visibility,
                         activityMap.stack,
