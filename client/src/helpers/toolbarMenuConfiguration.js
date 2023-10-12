@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import vars from "../theme/variables";
 import {AtlasSelectedIcon} from "../icons";
-import {actions} from "../redux/constants";
+import {actions, messages} from "../redux/constants";
 
 const { primaryFont, headerButtonColor, headerBorderColor } = vars;
 
@@ -12,7 +12,7 @@ export const generateToolbarItems = (experimentsAtlas, currentExperiment, curren
   for (const [experimentID, atlasArray] of Object.entries(experimentsAtlas)) {
     const atlasList = atlasArray.map(atlasID => {
       const atlasName = atlasesMetadata[atlasID].name;
-      const atlasMetadata = atlasesMetadata[atlasID].metadata || "No metadata available"
+      const atlasMetadata = atlasesMetadata[atlasID].metadata || messages.NO_METADATA
       return {
         label: (
             <Box display="flex" alignItems="center" gap={1}>

@@ -24,3 +24,7 @@ export const actions = {
     SET_ERROR: 'SET_ERROR'
 };
 
+export const messages = {
+    NO_METADATA: "No metadata available",
+    NO_DESCRIPTION: "No description available"
+}

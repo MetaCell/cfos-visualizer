@@ -4,6 +4,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import vars from "../theme/variables";
 import CustomSlider from "./Slider";
 import Table from "./Table";
+import {useSelector} from "react-redux";
+import {messages} from "../redux/constants";
 
 const { headerBorderLeftColor, headingColor, accordianTextColor } = vars;
 
@@ -53,28 +55,48 @@ const styles = {
 	},
 };
 
-const experiments = [
-	{
-			name: 'c-Fos__avg__saline.nii.gz',
-			description: 'from external experiment - Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT'
-	},
-	{
-			name: 'c-Fos__avg__saline.nii.gz',
-			description: 'from external experiment - Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT'
-	},
-	{
-			name: 'c-Fos__avg__saline.nii.gz',
-			description: 'from external experiment - Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT'
-	},
-	{
-			name: 'c-Fos__avg__saline.nii.gz',
-			description: 'from external experiment - Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT'
-	},
-]
+
 
 const ControlPanel = () =>
 {
 	const [ open, setOpen ] = React.useState( true );
+	const activeAtlas = useSelector(state => state.viewer.atlas);
+	const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
+
+	const atlasesMetadata = useSelector(state => state.model.Atlases);
+	const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
+
+	const getViewerObjectsData = () => {
+		const viewerObjects = []
+
+		if (activeAtlas) {
+			for (const activityMapId of Object.keys(activeActivityMaps)) {
+				const activityMapMetadata = activityMapsMetadata[activityMapId];
+				const activityMap = activeActivityMaps[activityMapId];
+
+				viewerObjects.push({
+					id: activityMapId,
+					name: activityMapMetadata.name,
+					description: activityMapMetadata.description || messages.NO_DESCRIPTION,
+					color: activityMap.color
+				});
+			}
+
+			// Atlas should be the last entry in the array
+			const atlasId = activeAtlas.id;
+			const atlasMetadata = atlasesMetadata[atlasId];
+
+			viewerObjects.push({
+				id: atlasId,
+				name: atlasMetadata.name,
+				description: atlasMetadata.description || messages.NO_DESCRIPTION
+			});
+		}
+		return viewerObjects
+	}
+
+	const viewerObjects = getViewerObjectsData()
+
 	return (
 		<>
 			<Box sx={ styles.controlPanel }>
@@ -114,7 +136,7 @@ const ControlPanel = () =>
 				>
 					<Table
 						tableHeader={ [ 'Actions', 'Name', 'Configure intensity' ] }
-						tableContent={experiments}
+						tableContent={viewerObjects}
 					/>
 				</Box>
 			</Box>

@@ -10,17 +10,20 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import GrainIcon from '@mui/icons-material/Grain';
 import { tableStyles } from './Table';
 import Picker from './Picker';
+import {removeActivityMapFromViewer} from "../redux/actions";
+import {useDispatch} from "react-redux";
 
 const {
   headerBorderLeftColor,
   headerButtonColor
 } = vars;
 
-const colorPaletteExampleColors = [ '#3939A1', '#8A3535', '#475467' ];
 
-const TableRow = ( { index, data, length } ) =>
+const TableRow = ( { index, data, isAtlas } ) =>
 {
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const { id, name, color, description } = data;
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -31,19 +34,19 @@ const TableRow = ( { index, data, length } ) =>
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
 
   return (
     <>
       <Box sx={ tableStyles.root }>
         <Box sx={ { gap: '0.25rem !important' } }>
-          <Tooltip placement='right' title="Move up/down">
-            <IconButton>
+          {/*TODO: Update title when feature gets implemented*/}
+          <Tooltip placement='right' title="Move up/down (Coming Soon)">
+            <IconButton disabled>
               <DragIndicatorIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip placement='right' title={index === length - 1 ? "Not available for atlas" : "Unload image" }>
-            <IconButton disabled={ index === length - 1 }>
+          <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Unload image" }>
+            <IconButton disabled={ isAtlas} onClick={() => dispatch(removeActivityMapFromViewer(id))}>
               <RemoveCircleOutlineIcon />
             </IconButton>
           </Tooltip>
@@ -54,9 +57,9 @@ const TableRow = ( { index, data, length } ) =>
               <VisibilityOutlinedIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip placement='right' title={ index === length - 1 ? "Not available for atlas" : "Configure color" }>
-            <IconButton aria-describedby={id} onClick={handleClick} disabled={ index === length - 1 }>
-              <ColorLensOutlinedIcon sx={ { color: `${ colorPaletteExampleColors[ index ] } !important` } } />
+          <Tooltip placement='right' title={ isAtlas ? "Not available for atlas" : "Configure color" }>
+            <IconButton onClick={handleClick} disabled={ isAtlas }>
+              <ColorLensOutlinedIcon sx={ { color: `${ color } !important` } } />
             </IconButton>
           </Tooltip>
           <Tooltip placement='right' title="Download">
@@ -72,10 +75,10 @@ const TableRow = ( { index, data, length } ) =>
         <Box>
           <GrainIcon sx={ { color: headerButtonColor, fontSize: '1rem' } } />
           <Typography variant='body1'>
-            { data?.name }
+            { name }
           </Typography>
           <Typography variant='body2' className='ellipses'>
-            { data?.description }
+            { description }
           </Typography>
         </Box>
 
