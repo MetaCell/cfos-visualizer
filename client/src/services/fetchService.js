@@ -28,9 +28,9 @@ export async function fetchExperimentMetadata(experimentID) {
     }
 }
 
-export async function fetchAtlasStack(atlasID) {
+export async function fetchAtlasStack(filepath) {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.ATLAS}/${atlasID}`);
+        const response = await fetch(`${BASE_URL}/${Entities.ATLAS}/${filepath}`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
@@ -41,9 +41,9 @@ export async function fetchAtlasStack(atlasID) {
     }
 }
 
-export async function fetchAtlasWireframeStack(atlasID) {
+export async function fetchAtlasWireframeStack(filepath) {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.ATLAS}/${atlasID}W`);
+        const response = await fetch(`${BASE_URL}/${Entities.ATLAS}/${filepath}W`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
@@ -54,9 +54,9 @@ export async function fetchAtlasWireframeStack(atlasID) {
     }
 }
 
-export async function fetchActivityMapStack(activityMapID) {
+export async function fetchActivityMapStack(filepath) {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.ACTIVITY_MAP}/${activityMapID}`);
+        const response = await fetch(`${BASE_URL}/${Entities.ACTIVITY_MAP}/${filepath}`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();

@@ -7,15 +7,13 @@ import {
     fetchModelStructure
 } from "../services/fetchService";
 import {
-    triggerDownloadAllObjects,
-    triggerViewerObjectDownload,
     setCurrentExperiment,
     setError,
     setModel,
     addActivityMapToViewer, setViewerAtlas, fetchAndSetExperimentAndAtlas, startLoading, stopLoading
 } from "./actions";
 import {actions} from "./constants";
-import {Experiment, ActivityMap, ViewerObjectType, Atlas} from "../model/models";
+import {Experiment, ActivityMap, Atlas} from "../model/models";
 import {DEFAULT_COLOR, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY, DEFAULT_ACTIVITY_MAP_OPACITY} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 
@@ -85,10 +83,14 @@ export const middleware = store => next => async action => {
             if (currentAtlas?.id !== atlasID) {
                 let atlasStack = null;
                 let atlasWireframeStack = null;
-
+                let atlasMetadata = store.getState().model.Atlases[atlasID]
+                if(!atlasMetadata){
+                    store.dispatch(setError(`Atlas id ${atlasID} not found`));
+                    store.dispatch(stopLoading());
+                }
                 try {
                     store.dispatch(startLoading('Fetching atlas...'));
-                    atlasStack = await fetchAtlasStack(atlasID);
+                    atlasStack = await fetchAtlasStack(atlasMetadata.file);
                 } catch (error) {
                     store.dispatch(setError(error.message));
                     store.dispatch(stopLoading());
@@ -118,8 +120,13 @@ export const middleware = store => next => async action => {
             store.dispatch(startLoading('Fetching activity map...'))
             const activityMapID = action.payload;
             let stack = null
+            let activityMapMetadata = store.getState().model.ActivityMaps[activityMapID]
+            if(!activityMapMetadata){
+                store.dispatch(setError(`Activity Map id ${activityMapID} not found`));
+                store.dispatch(stopLoading());
+            }
             try {
-                stack = await fetchActivityMapStack(activityMapID);
+                stack = await fetchActivityMapStack(activityMapMetadata?.file);
             } catch (error) {
                 store.dispatch(setError(error.message));
                 store.dispatch(stopLoading());

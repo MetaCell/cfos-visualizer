@@ -77,9 +77,9 @@ def init_webapp_routes(app):
         }
         return jsonify(response_data)
 
-    @app.route('/cfos-visualizer-stanford/<id>')
-    def index(id):
-        return download_as_json(id)
+    @app.route('/cfos-visualizer-stanford')
+    def index():
+        return download_as_json("index.json")
 
     @app.errorhandler(404)
     def page_not_found(error):

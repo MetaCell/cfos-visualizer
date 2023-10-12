@@ -1,23 +1,23 @@
 import * as THREE from "three";
 import * as AMI from 'ami.js';
 
-import React, { useEffect, useRef } from "react";
+import React, {useEffect, useRef} from "react";
 import {
     Badge, Box, Button, Chip, Divider, FormControlLabel, FormGroup, Popover, Switch, Typography
 } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
+import {useSelector, useDispatch} from "react-redux";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import * as viewerHelper from '../helpers/viewerHelper';
 import vars from "../theme/variables";
-import { ViewerToolbar } from "./ViewerToolbar";
-import { fetchAndAddActivityMapToViewer, removeActivityMapFromViewer } from "../redux/actions";
-import { STACK_HELPER_BORDER_COLOR } from "../settings";
-import { DIRECTIONS } from "../constants";
-import { updateSlice, makeSliceTransparent } from "../helpers/stackHelper";
-import { getActivtyMapsDiff, postProcessActivityMap } from "../helpers/activityMapHelper";
+import {ViewerToolbar} from "./ViewerToolbar";
+import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
+import {STACK_HELPER_BORDER_COLOR} from "../settings";
+import {DIRECTIONS} from "../constants";
+import {updateSlice, makeSliceTransparent} from "../helpers/stackHelper";
+import {getActivtyMapsDiff, postProcessActivityMap} from "../helpers/activityMapHelper";
 
 
-const { primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor } = vars;
+const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
 
 const StackHelper = AMI.stackHelperFactory(THREE);
 
@@ -26,10 +26,11 @@ export const Viewer = (props) => {
 
     const dispatch = useDispatch();
 
-    const atlas = useSelector(state => state.viewer.atlas);
-    const activityMaps = useSelector(state => state.viewer.activityMaps);
-    const experimentsActivityMap = useSelector(state => state.model.ExperimentsActivityMap);
+    const activeAtlas = useSelector(state => state.viewer.atlas);
+    const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
+    const experimentsActivityMaps = useSelector(state => state.model.ExperimentsActivityMap);
     const currentExperiment = useSelector(state => state.currentExperiment);
+    const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -42,7 +43,7 @@ export const Viewer = (props) => {
     const currentAtlasStackHelperRef = useRef(null);
     const activityMapsStackHelpersRef = useRef({});
 
-    const activityMapsRef = useRef(activityMaps);
+    const activityMapsRef = useRef(activeActivityMaps);
 
     // On Mount
     useEffect(() => {
@@ -93,16 +94,16 @@ export const Viewer = (props) => {
 
     // needed for the handle wheel event listener
     useEffect(() => {
-        activityMapsRef.current = activityMaps;
-    }, [activityMaps]);
+        activityMapsRef.current = activeActivityMaps;
+    }, [activeActivityMaps]);
 
 
     // On atlas changes
     useEffect(() => {
-        if (atlas) {
-            viewerHelper.updateCamera(containerRef.current, cameraRef.current, atlas.stack);
+        if (activeAtlas) {
+            viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
 
-            const stackHelper = new StackHelper(atlas.stack);
+            const stackHelper = new StackHelper(activeAtlas.stack);
             stackHelper.bbox.visible = false;
             stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
             stackHelper.index = Math.floor(stackHelper.stack._frame.length / 2);
@@ -115,11 +116,12 @@ export const Viewer = (props) => {
             sceneRef.current.add(stackHelper);
             currentAtlasStackHelperRef.current = stackHelper
         }
-    }, [atlas]);
+    }, [activeAtlas]);
 
     // Handle activityMap changes
     useEffect(() => {
-        const { activityMapsToAdd, activityMapsToRemove } = getActivtyMapsDiff(activityMaps, activityMapsStackHelpersRef);
+        const {activityMapsToAdd, activityMapsToRemove} = getActivtyMapsDiff(activeActivityMaps,
+            activityMapsStackHelpersRef);
 
         // Process removals first
         activityMapsToRemove.forEach(amIdToRemove => {
@@ -132,7 +134,7 @@ export const Viewer = (props) => {
 
         // Process additions next
         activityMapsToAdd.forEach(amIdToAdd => {
-            const activityMap = activityMaps[amIdToAdd];
+            const activityMap = activeActivityMaps[amIdToAdd];
             let stackHelper = new StackHelper(activityMap.stack);
             stackHelper = postProcessActivityMap(stackHelper, activityMap, cameraRef.current.stackOrientation,
                 currentAtlasStackHelperRef.current.index);
@@ -142,7 +144,7 @@ export const Viewer = (props) => {
             activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
         });
 
-    }, [activityMaps]);
+    }, [activeActivityMaps]);
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -152,24 +154,25 @@ export const Viewer = (props) => {
         setAnchorEl(null);
     };
 
-    const orderedExperiments = [currentExperiment?.id, ...Object.keys(experimentsActivityMap).filter(experiment => experiment !== currentExperiment?.id)];
+    const orderedExperiments = [currentExperiment?.id, ...Object.keys(experimentsActivityMaps)
+        .filter(experiment => experiment !== currentExperiment?.id)];
 
     const isOpen = Boolean(anchorEl);
     const popoverID = isOpen ? 'simple-popover' : undefined;
 
     return (
-        <Box sx={{ position: "relative", height: "100%", width: "100%" }}>
-            <Box sx={{ position: 'absolute', top: '0.75rem', left: '0.75rem', zIndex: 9 }}>
-                <ViewerToolbar />
+        <Box sx={{position: "relative", height: "100%", width: "100%"}}>
+            <Box sx={{position: 'absolute', top: '0.75rem', left: '0.75rem', zIndex: 9}}>
+                <ViewerToolbar/>
             </Box>
-            <Badge badgeContent={activityMaps.length} color="primary">
+            <Badge badgeContent={activeActivityMaps.length} color="primary">
                 <Button sx={{
                     '&.MuiButton-root': {
                         position: 'absolute',
                         right: '0.75rem',
                         height: '2.25rem',
                         borderRadius: '0.5rem',
-                        border: `0.0625rem solid ${activityMaps.length > 0}`,
+                        border: `0.0625rem solid ${activeActivityMaps.length > 0}`,
                         fontSize: '0.875rem',
                         fontWeight: 600,
                         textTransform: 'none',
@@ -185,13 +188,13 @@ export const Viewer = (props) => {
                 }
                 } aria-describedby={popoverID} variant="contained" onClick={handlePopoverOpen} disableRipple>
                     Statistical maps
-                    <KeyboardArrowDownIcon sx={{ fontSize: '1.25rem', color: headerButtonColor }} />
+                    <KeyboardArrowDownIcon sx={{fontSize: '1.25rem', color: headerButtonColor}}/>
                 </Button>
             </Badge>
 
             <Popover
                 id={popoverID}
-                sx={{ maxHeight: '20rem' }}
+                sx={{maxHeight: '20rem'}}
                 open={isOpen}
                 anchorEl={anchorEl}
                 onClose={handlePopoverClose}
@@ -204,10 +207,10 @@ export const Viewer = (props) => {
             >
                 <Box px={2} pt={1.25}>
                     {orderedExperiments.map((experimentName, experimentIndex) => {
-                        const experimentActivityMaps = experimentsActivityMap[experimentName] || [];
+                        const experimentActivityMaps = experimentsActivityMaps[experimentName] || [];
                         return (<Box key={experimentName}>
                             {experimentIndex !== 0 &&
-                                <Divider sx={{ mt: 1.5, mb: 1, background: headerBorderLeftColor }} />}
+                                <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
                             <Box sx={{
                                 height: '1.875rem',
                                 display: 'flex',
@@ -219,50 +222,51 @@ export const Viewer = (props) => {
                                 }
                             }}>
                                 <Typography>{experimentName}</Typography>
-                                {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment" />}
+                                {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
                             </Box>
                             <FormGroup>
-                                {experimentActivityMaps.map((activityMapID, mapIndex) => (<Box key={activityMapID} sx={{
-                                    position: 'relative', paddingLeft: '0.25rem', '&:hover': {
-                                        '&:before': {
-                                            background: primaryActiveColor,
-                                        }
-                                    }, '&:before': {
-                                        content: '""',
-                                        height: '100%',
-                                        width: '0.125rem',
-                                        background: headerBorderColor,
-                                        position: 'absolute',
-                                        left: 0,
-                                        top: 0,
-                                    },
-                                }}>
-                                    <FormControlLabel
-                                        key={activityMapID}
-                                        control={
-                                            <Switch
-                                                checked={!!activityMaps[activityMapID]}
-                                                onChange={(event) => {
-                                                    if (event.target.checked) {
-                                                        dispatch(fetchAndAddActivityMapToViewer(activityMapID));
-                                                    } else {
-                                                        dispatch(removeActivityMapFromViewer(activityMapID));
-                                                    }
-                                                }}
-                                            />}
-                                        labelPlacement="start"
-                                        label={activityMapID}
-                                    />
-                                </Box>))}
+                                {experimentActivityMaps.map((activityMapID, mapIndex) => (
+                                    <Box key={activityMapID} sx={{
+                                        position: 'relative', paddingLeft: '0.25rem', '&:hover': {
+                                            '&:before': {
+                                                background: primaryActiveColor,
+                                            }
+                                        }, '&:before': {
+                                            content: '""',
+                                            height: '100%',
+                                            width: '0.125rem',
+                                            background: headerBorderColor,
+                                            position: 'absolute',
+                                            left: 0,
+                                            top: 0,
+                                        },
+                                    }}>
+                                        <FormControlLabel
+                                            key={activityMapID}
+                                            control={
+                                                <Switch
+                                                    checked={!!activeActivityMaps[activityMapID]}
+                                                    onChange={(event) => {
+                                                        if (event.target.checked) {
+                                                            dispatch(fetchAndAddActivityMapToViewer(activityMapID));
+                                                        } else {
+                                                            dispatch(removeActivityMapFromViewer(activityMapID));
+                                                        }
+                                                    }}
+                                                />}
+                                            labelPlacement="start"
+                                            label={activityMapsMetadata[activityMapID]?.name}
+                                        />
+                                    </Box>))}
                             </FormGroup>
                         </Box>)
                     })}
                 </Box>
             </Popover>
-            <Box sx={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%", }}
-                ref={containerRef}>
+            <Box sx={{position: "absolute", top: 0, left: 0, height: "100%", width: "100%",}}
+                 ref={containerRef}>
                 {/* <Typography> Viewer </Typography> */}
             </Box>
-        </Box >
+        </Box>
     );
 };
