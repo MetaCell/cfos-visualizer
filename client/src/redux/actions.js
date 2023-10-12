@@ -11,6 +11,11 @@ export const setViewerAtlas = (atlas) => ({
     payload: atlas
 });
 
+export const toggleWireframe = () => ({
+    type: actions.TOGGLE_WIREFRAME,
+    payload: {}
+});
+
 export const fetchAndAddActivityMapToViewer = (activityMapID) => ({
     type: actions.FETCH_AND_ADD_ACTIVITY_MAP_TO_VIEWER,
     payload: activityMapID

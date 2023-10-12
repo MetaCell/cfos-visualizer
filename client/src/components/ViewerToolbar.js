@@ -1,53 +1,59 @@
 import React from 'react';
 import { IconButton, Stack, Tooltip } from "@mui/material";
-import { KeyboardArrowDownIcon, KeyboardArrowUpIcon, HomeIcon, ZoomInIcon, ZoomOutIcon, TonalityIcon, AutoModeIcon } from '../icons';
+import { KeyboardArrowDownIcon, KeyboardArrowUpIcon, HomeIcon, ZoomInIcon, ZoomOutIcon, TonalityIcon, TonalityIconInverted, AutoModeIcon } from '../icons';
 import vars from '../theme/variables';
+import { toggleWireframe } from '../redux/actions';
+import {useDispatch, useSelector} from "react-redux";
 
-const options = [
-    {
-        title: "Previous slice",
-        Icon: <KeyboardArrowUpIcon />,
-        onClickFunc: () => console.log("Previous slice"),
-        isVisible: true
-    },
-    {
-        title: "Center stack",
-        Icon: <HomeIcon />,
-        onClickFunc: () => console.log("Center stack"),
-        isVisible: true
-    },
-    {
-        title: "Next slice",
-        Icon: <KeyboardArrowDownIcon />,
-        onClickFunc: () => console.log("Next slice"),
-        isVisible: true
-    },
-    {
-        title: "Auto scroll through slices",
-        Icon: <AutoModeIcon />,
-        onClickFunc: () => console.log("Auto scroll through slices"),
-        isVisible: true
-    },
-    {
-        title: "Zoom in",
-        Icon: <ZoomInIcon />,
-        onClickFunc: () => console.log("Zoom in"),
-        isVisible: true
-    },
-    {
-        title: "Zoom out",
-        Icon: <ZoomOutIcon />,
-        onClickFunc: () => console.log("Zoom out"),
-        isVisible: true
-    },
-    {
-        title: "Switch to wireframe",
-        Icon: <TonalityIcon />,
-        onClickFunc: () => console.log("Switch to wireframe"),
-        isVisible: true
-    }
-]
 export const ViewerToolbar = () => {
+
+    const dispatch = useDispatch();
+    const wireframe = useSelector(state => state.viewer.wireframe);
+
+    const options = [
+        {
+            title: "Previous slice",
+            Icon: <KeyboardArrowUpIcon />,
+            onClickFunc: () => console.log("Previous slice"),
+            isVisible: true
+        },
+        {
+            title: "Center stack",
+            Icon: <HomeIcon />,
+            onClickFunc: () => console.log("Center stack"),
+            isVisible: true
+        },
+        {
+            title: "Next slice",
+            Icon: <KeyboardArrowDownIcon />,
+            onClickFunc: () => console.log("Next slice"),
+            isVisible: true
+        },
+        {
+            title: "Auto scroll through slices",
+            Icon: <AutoModeIcon />,
+            onClickFunc: () => console.log("Auto scroll through slices"),
+            isVisible: true
+        },
+        {
+            title: "Zoom in",
+            Icon: <ZoomInIcon />,
+            onClickFunc: () => console.log("Zoom in"),
+            isVisible: true
+        },
+        {
+            title: "Zoom out",
+            Icon: <ZoomOutIcon />,
+            onClickFunc: () => console.log("Zoom out"),
+            isVisible: true
+        },
+        {
+            title: "Toggle wireframe",
+            Icon: wireframe ? <TonalityIconInverted /> : <TonalityIcon />,
+            onClickFunc: () => { dispatch(toggleWireframe()) },
+            isVisible: true
+        }
+    ]
 
     return (
         <Stack spacing={0.5} sx={{

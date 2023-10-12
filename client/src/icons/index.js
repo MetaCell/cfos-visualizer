@@ -97,6 +97,23 @@ export const TonalityIcon = (props) => (
   </SvgIcon>
 );
 
+export const TonalityIconInverted = (props) => (
+  <SvgIcon width="20" height="20" viewBox="0 0 20 20" fill="none" {...props} className={props.selected ? 'selected' : 'unselected'}>
+    <g id="tonality">
+      <path
+        id="Vector"
+        d="M9.99984 1.66666C5.39984 1.66666 1.6665 5.39999 1.6665 9.99999C1.6665 14.6 5.39984 18.3333 9.99984 18.3333C14.5998 18.3333 18.3332 14.6 18.3332 9.99999C18.3332 5.39999 14.5998 1.66666 9.99984 1.66666Z"
+        fill="#D6D5D7"
+      />
+      <path
+        id="Foreground"
+        d="M9.1665 16.6083C5.88317 16.2 3.33317 13.4 3.33317 9.99999C3.33317 6.59999 5.87484 3.79999 9.1665 3.39166V16.6083Z"
+        fill="#FFFFFF"  // Change the foreground fill color here
+      />
+    </g>
+  </SvgIcon>
+);
+
 export const AtlasSelectedIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path d="M7.32911 13.2291L3.85411 9.75414L2.67078 10.9291L7.32911 15.5875L17.3291 5.58748L16.1541 4.41248L7.32911 13.2291Z" fill="#5A48E6"/>

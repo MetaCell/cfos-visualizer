@@ -10,6 +10,7 @@ export const INIT_STATE = {
     order: [],
     activityMaps: {},
     atlas: null,
+    wireframe: false
   },
   currentExperiment: null,
   model: {

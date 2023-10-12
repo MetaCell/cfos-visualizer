@@ -145,6 +145,11 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 order: action.payload.order
             };
 
+        case actions.TOGGLE_WIREFRAME:
+            return {
+                ...state,
+                wireframe: !state.wireframe
+            };
 
         default:
             return state;

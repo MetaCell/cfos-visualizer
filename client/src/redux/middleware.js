@@ -1,4 +1,3 @@
-
 import {
     fetchActivityMapStack,
     fetchAtlasStack,
@@ -20,6 +19,7 @@ import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../s
 export const middleware = store => next => async action => {
 
     switch (action.type) {
+
         case actions.FETCH_MODEL:
             let model = null
             // let fetchedLuts = null
@@ -64,9 +64,10 @@ export const middleware = store => next => async action => {
             break;
 
         case actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS:
-            const { experimentID, atlasID } = action.payload;
+            let { experimentID, atlasID } = action.payload;
             const currentExperiment = store.getState().currentExperiment;
             const currentAtlas = store.getState().viewer.atlas;
+            const wireFrame = store.getState().viewer.wireframe;
 
             if (currentExperiment?.id !== experimentID) {
                 let data = null
@@ -88,21 +89,20 @@ export const middleware = store => next => async action => {
                     store.dispatch(setError(`Atlas id ${atlasID} not found`));
                     store.dispatch(stopLoading());
                 }
+
                 try {
                     store.dispatch(startLoading('Fetching atlas...'));
-                    atlasStack = await fetchAtlasStack(atlasMetadata.file);
+                    
+                    if (!wireFrame) {
+                        atlasStack = await fetchAtlasStack(atlasMetadata.file);
+                    }else{
+                        atlasWireframeStack = await fetchAtlasWireframeStack(atlasID);
+                    }
                 } catch (error) {
                     store.dispatch(setError(error.message));
                     store.dispatch(stopLoading());
                     return;
                 }
-                // TODO: uncomment when we get the wireframe version of the atlas
-                // try {
-                //     atlasWireframeStack = await fetchAtlasWireframeStack(atlasID);
-                // } catch (error) {
-                //     store.dispatch(setError(error.message));
-                //     return;
-                // }
 
                 const atlas = new Atlas(
                     atlasID,
@@ -117,6 +117,7 @@ export const middleware = store => next => async action => {
             break;
 
         case actions.FETCH_AND_ADD_ACTIVITY_MAP_TO_VIEWER:
+        case actions.TOGGLE_WIREFRAME:
             store.dispatch(startLoading('Fetching activity map...'))
             const activityMapID = action.payload;
             let stack = null
