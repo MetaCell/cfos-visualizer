@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Divider, IconButton, Tooltip, Typography } from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import ColorLensOutlinedIcon from '@mui/icons-material/ColorLensOutlined';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import vars from '../theme/variables';
@@ -10,7 +11,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import GrainIcon from '@mui/icons-material/Grain';
 import { tableStyles } from './Table';
 import Picker from './Picker';
-import {removeActivityMapFromViewer} from "../redux/actions";
+import {removeActivityMapFromViewer, toggleViewerObjectVisibility} from "../redux/actions";
 import {useDispatch} from "react-redux";
 
 const {
@@ -23,7 +24,7 @@ const TableRow = ( { index, data, isAtlas } ) =>
 {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { id, name, color, description } = data;
+  const { id, name, color, isVisible, description } = data;
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -52,9 +53,9 @@ const TableRow = ( { index, data, isAtlas } ) =>
           </Tooltip>
 
           <Divider sx={ { background: headerBorderLeftColor, width: '0.0625rem', height: '100%' } } />
-          <Tooltip placement='right' title="Hide">
-            <IconButton>
-              <VisibilityOutlinedIcon />
+          <Tooltip placement='right' title={isVisible ? "Hide" : "Show"}>
+            <IconButton onClick={() => dispatch(toggleViewerObjectVisibility(id))}>
+              { isVisible ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
             </IconButton>
           </Tooltip>
           <Tooltip placement='right' title={ isAtlas ? "Not available for atlas" : "Configure color" }>

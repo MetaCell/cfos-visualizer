@@ -14,7 +14,8 @@ import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../re
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
 import {DIRECTIONS} from "../constants";
 import {updateSlice, makeSliceTransparent} from "../helpers/stackHelper";
-import {getActivtyMapsDiff, postProcessActivityMap} from "../helpers/activityMapHelper";
+import {getActivtyMapsDiff, postProcessActivityMap, updateVisibility} from "../helpers/activityMapHelper";
+import {sceneObjects} from "../redux/constants";
 
 
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
@@ -38,7 +39,7 @@ export const Viewer = (props) => {
     const rendererRef = useRef(null);
     const sceneRef = useRef(null);
     const cameraRef = useRef(null);
-    const contronsRef = useRef(null);
+    const controlsRef = useRef(null);
 
     const currentAtlasStackHelperRef = useRef(null);
     const activityMapsStackHelpersRef = useRef({});
@@ -60,12 +61,12 @@ export const Viewer = (props) => {
         sceneRef.current = viewerHelper.initScene();
         cameraRef.current = viewerHelper.getOrthographicCamera(containerRef);
         sceneRef.current.add(cameraRef.current);
-        contronsRef.current = viewerHelper.getControls(cameraRef.current, containerRef.current);
-        cameraRef.current.controls = contronsRef.current;
+        controlsRef.current = viewerHelper.getControls(cameraRef.current, containerRef.current);
+        cameraRef.current.controls = controlsRef.current;
     };
 
     const animate = () => {
-        contronsRef.current.update();
+        controlsRef.current.update();
         rendererRef.current.render(sceneRef.current, cameraRef.current);
 
         requestAnimationFrame(function () {
@@ -104,13 +105,16 @@ export const Viewer = (props) => {
             viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
 
             const stackHelper = new StackHelper(activeAtlas.stack);
+            stackHelper.name = sceneObjects.ATLAS
             stackHelper.bbox.visible = false;
             stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
             stackHelper.index = Math.floor(stackHelper.stack._frame.length / 2);
             stackHelper.orientation = cameraRef.current.stackOrientation;
 
-            if (currentAtlasStackHelperRef.current?.stackHelper) {
-                sceneRef.current.remove(currentAtlasStackHelperRef.current.stackHelper);
+            stackHelper.visible = activeAtlas.visibility
+
+            if (currentAtlasStackHelperRef.current) {
+                sceneRef.current.remove(currentAtlasStackHelperRef.current);
             }
 
             sceneRef.current.add(stackHelper);
@@ -136,6 +140,7 @@ export const Viewer = (props) => {
         activityMapsToAdd.forEach(amIdToAdd => {
             const activityMap = activeActivityMaps[amIdToAdd];
             let stackHelper = new StackHelper(activityMap.stack);
+            stackHelper.name = sceneObjects.ACTIVITY_MAP
             stackHelper = postProcessActivityMap(stackHelper, activityMap, cameraRef.current.stackOrientation,
                 currentAtlasStackHelperRef.current.index);
 
@@ -143,6 +148,9 @@ export const Viewer = (props) => {
             // Store the stackHelper in the ref object
             activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
         });
+
+        // Update visibility for activity maps
+        updateVisibility(activityMapsStackHelpersRef, activeActivityMaps);
 
     }, [activeActivityMaps]);
 

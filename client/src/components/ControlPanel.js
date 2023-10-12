@@ -78,7 +78,8 @@ const ControlPanel = () =>
 					id: activityMapId,
 					name: activityMapMetadata.name,
 					description: activityMapMetadata.description || messages.NO_DESCRIPTION,
-					color: activityMap.color
+					color: activityMap.color,
+					isVisible: activityMap.visibility
 				});
 			}
 
@@ -89,7 +90,9 @@ const ControlPanel = () =>
 			viewerObjects.push({
 				id: atlasId,
 				name: atlasMetadata.name,
-				description: atlasMetadata.description || messages.NO_DESCRIPTION
+				description: atlasMetadata.description || messages.NO_DESCRIPTION,
+				color: activeAtlas.color,
+				isVisible: activeAtlas.visibility,
 			});
 		}
 		return viewerObjects

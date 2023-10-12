@@ -28,3 +28,9 @@ export const messages = {
     NO_METADATA: "No metadata available",
     NO_DESCRIPTION: "No description available"
 }
+
+export const sceneObjects = {
+    CAMERA: 'camera',
+    ATLAS: 'atlas',
+    ACTIVITY_MAP: 'activity_map'
+}

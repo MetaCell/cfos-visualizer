@@ -32,3 +32,10 @@ export function getActivtyMapsDiff(activityMaps, activityMapsStackHelpersRef) {
 
     return {activityMapsToAdd, activityMapsToRemove};
 }
+
+export const updateVisibility = (activityMapsStackHelpersRef, activeActivityMaps) => {
+    Object.keys(activityMapsStackHelpersRef.current).forEach(amId => {
+        const stackHelper = activityMapsStackHelpersRef.current[amId];
+        stackHelper.visible = activeActivityMaps[amId]?.visibility
+    });
+}
