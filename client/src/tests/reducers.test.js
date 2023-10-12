@@ -1,4 +1,3 @@
-
 import {Experiment, ActivityMap, Atlas} from "../model/models";
 import {currentExperimentReducer, modelReducer, uiReducer, viewerReducer} from "../redux/reducers";
 import {
@@ -16,6 +15,7 @@ import {
     startLoading
 } from "../redux/actions";
 import {INIT_STATE} from "../redux/store";
+import {DEFAULT_COLOR_GRADIENT} from "../settings";
 
 
 describe('viewerReducer', () => {
@@ -40,7 +40,7 @@ describe('viewerReducer', () => {
     });
 
     it('should handle ADD_ACTIVITY_MAP_TO_VIEWER', () => {
-        const newActivityMap = new ActivityMap(activityMapID, 'red', 1, true, 'stack');
+        const newActivityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack');
         const expectedState = {
             ...initialState,
             activityMaps: {
@@ -53,9 +53,8 @@ describe('viewerReducer', () => {
     });
 
 
-
     it('should handle REMOVE_ACTIVITY_MAP_FROM_VIEWER', () => {
-        const objectToRemove = new ActivityMap(activityMapID, 'red', 1, true, 'stack', 'wireframeStack');
+        const objectToRemove = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack', 'wireframeStack');
         const setupState = {
             activityMaps: {
                 [activityMapID]: objectToRemove,
@@ -73,7 +72,7 @@ describe('viewerReducer', () => {
     });
 
     it('should handle TOGGLE_VIEWER_OBJECT_VISIBILITY for activityMap', () => {
-        const activityMap = new ActivityMap(activityMapID, 'red', 1, true, 'stack');
+        const activityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack');
         const setupState = {
             ...initialState,
             activityMaps: {
@@ -84,7 +83,7 @@ describe('viewerReducer', () => {
         const expectedState = {
             ...setupState,
             activityMaps: {
-                [activityMapID]: new ActivityMap(activityMapID, 'red', 1, false, 'stack')
+                [activityMapID]: new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, 1, false, 'stack')
             }
         };
 
@@ -103,7 +102,7 @@ describe('viewerReducer', () => {
 
 
     it('should handle CHANGE_VIEWER_OBJECT_OPACITY for activityMap', () => {
-        const activityMap = new ActivityMap(activityMapID, 'red', 1, true, 'stack');
+        const activityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack');
         const setupState = {
             ...initialState,
             activityMaps: {
@@ -114,7 +113,7 @@ describe('viewerReducer', () => {
         const expectedState = {
             ...setupState,
             activityMaps: {
-                [activityMapID]: new ActivityMap(activityMapID, 'red', 0.5, true, 'stack')
+                [activityMapID]: new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, 0.5, true, 'stack')
             }
         };
 
@@ -133,7 +132,7 @@ describe('viewerReducer', () => {
 
     it('should handle CHANGE_ALL_VIEWER_OBJECTS_OPACITY', () => {
         const newOpacity = 0.7
-        const object1 = new ActivityMap(activityMapID,  'red', 1, true, 'stack');
+        const object1 = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack');
         const setupState = {
             ...initialState,
             activityMaps: {
@@ -145,7 +144,7 @@ describe('viewerReducer', () => {
             ...initialState,
             atlas: new Atlas(atlasID, newOpacity, true, 'stack', 'wireframeStack'),
             activityMaps: {
-                [activityMapID]: { ...object1, opacity: newOpacity },
+                [activityMapID]: {...object1, opacity: newOpacity},
             }
         };
 
@@ -153,20 +152,25 @@ describe('viewerReducer', () => {
     });
 //
     it('should handle CHANGE_ACTIVITY_MAP_COLOR', () => {
-        const initialObject = new ActivityMap(activityMapID, 'red', 1, true, 'stack');
+        const initialObject = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack');
         const setupState = {
             activityMaps: {
                 [activityMapID]: initialObject
             }
         };
 
+        const OTHER_COLOR_GRADIENT = [
+            [0, 1, 0, 0],  // Original color (red) with color stop 0
+            [1, 0, 1, 1]   // Complementary color (cyan) with color stop 1
+        ]
+
         const expectedState = {
             activityMaps: {
-               [activityMapID]: new ActivityMap(activityMapID, 'blue', 1, true, 'stack')
+                [activityMapID]: new ActivityMap(activityMapID, OTHER_COLOR_GRADIENT, 1, true, 'stack')
             }
         };
 
-        const changeColorAction = changeActivityMapColor(activityMapID, 'blue');
+        const changeColorAction = changeActivityMapColor(activityMapID, '#ff0000');
 
         expect(viewerReducer(setupState, changeColorAction)).toEqual(expectedState);
     });
@@ -210,7 +214,6 @@ describe('currentExperimentReducer', () => {
     });
 
 });
-
 
 
 describe('modelReducer', () => {

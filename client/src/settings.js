@@ -1,6 +1,6 @@
 export const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
-export const DEFAULT_COLOR = [[0,0,1,1],[1,0,0,1]]
+export const DEFAULT_COLOR_GRADIENT = [[0,0,1,1],[1,0,0,1]]
 
 export const DEFAULT_ATLAS_OPACITY = 1;
 export const DEFAULT_ACTIVITY_MAP_OPACITY = 0.8;

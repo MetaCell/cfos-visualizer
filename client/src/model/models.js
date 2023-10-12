@@ -18,9 +18,9 @@ export class Atlas {
 }
 
 export class ActivityMap {
-    constructor(id, color, opacity, visibility, stack) {
+    constructor(id, colorGradient, opacity, visibility, stack) {
         return {
-            ...Immutable({id, color, opacity, visibility}, {deep: true}),
+            ...Immutable({id, colorGradient, opacity, visibility}, {deep: true}),
             stack,
         };
     }

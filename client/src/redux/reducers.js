@@ -2,6 +2,7 @@ import {INIT_STATE} from "./store";
 import {actions} from "./constants";
 import {ActivityMap, Atlas} from "../model/models";
 import {DEFAULT_LOADING_MESSAGE} from "../settings";
+import {getColorGradient} from "../helpers/colorHelper";
 
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
@@ -40,7 +41,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload]: new ActivityMap(
                             activityMap.id,
-                            activityMap.color,
+                            activityMap.colorGradient,
                             activityMap.opacity,
                             !activityMap.visibility,
                             activityMap.stack,
@@ -74,7 +75,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload.id]: new ActivityMap(
                             activityMap.id,
-                            activityMap.color,
+                            activityMap.colorGradient,
                             action.payload.opacity,
                             activityMap.visibility,
                             activityMap.stack,
@@ -104,7 +105,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 const activityMap = state.activityMaps[activityMapID];
                 acc[activityMapID] = new ActivityMap(
                     activityMap.id,
-                    activityMap.color,
+                    activityMap.colorGradient,
                     action.payload,
                     activityMap.visibility,
                     activityMap.stack,
@@ -132,7 +133,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state.activityMaps,
                     [action.payload.activityMapID]: new ActivityMap(
                         activityMap.id,
-                        action.payload.color,
+                        getColorGradient(action.payload.color),
                         activityMap.opacity,
                         activityMap.visibility,
                         activityMap.stack,

@@ -14,8 +14,9 @@ import {
 } from "./actions";
 import {actions} from "./constants";
 import {Experiment, ActivityMap, Atlas} from "../model/models";
-import {DEFAULT_COLOR, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY, DEFAULT_ACTIVITY_MAP_OPACITY} from "../settings";
+import {DEFAULT_COLOR_GRADIENT, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY, DEFAULT_ACTIVITY_MAP_OPACITY} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
+import {getColorGradient} from "../helpers/colorHelper";
 
 export const middleware = store => next => async action => {
 
@@ -135,7 +136,7 @@ export const middleware = store => next => async action => {
 
             const activityMapObject = new ActivityMap(
                 activityMapID,
-                DEFAULT_COLOR,
+                activityMapMetadata.color ? getColorGradient(activityMapMetadata.color) : DEFAULT_COLOR_GRADIENT,
                 DEFAULT_ACTIVITY_MAP_OPACITY,
                 DEFAULT_VISIBILITY,
                 stack,

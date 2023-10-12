@@ -11,7 +11,7 @@ export function postProcessActivityMap(stackHelper, activityMap, orientation, in
 
     makeSliceTransparent(stackHelper, activityMap.opacity);
 
-    const helperLut = getLUTHelper(activityMap.color);
+    const helperLut = getLUTHelper(activityMap.colorGradient);
     stackHelper.slice.lut = helperLut.lut;
     stackHelper.slice.lutTexture = helperLut.texture;
 

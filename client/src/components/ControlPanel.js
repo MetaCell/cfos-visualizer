@@ -6,6 +6,7 @@ import CustomSlider from "./Slider";
 import Table from "./Table";
 import {useSelector} from "react-redux";
 import {messages} from "../redux/constants";
+import {getOriginalHexColor} from "../helpers/colorHelper";
 
 const { headerBorderLeftColor, headingColor, accordianTextColor } = vars;
 
@@ -78,7 +79,7 @@ const ControlPanel = () =>
 					id: activityMapId,
 					name: activityMapMetadata.name,
 					description: activityMapMetadata.description || messages.NO_DESCRIPTION,
-					color: activityMap.color,
+					color: getOriginalHexColor(activityMap.colorGradient),
 					isVisible: activityMap.visibility
 				});
 			}
@@ -91,7 +92,7 @@ const ControlPanel = () =>
 				id: atlasId,
 				name: atlasMetadata.name,
 				description: atlasMetadata.description || messages.NO_DESCRIPTION,
-				color: activeAtlas.color,
+				color: null,
 				isVisible: activeAtlas.visibility,
 			});
 		}
