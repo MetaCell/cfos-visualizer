@@ -87,9 +87,8 @@ export const Viewer = (props) => {
         updateSlice(currentAtlasStackHelperRef?.current, direction)
         Object.keys(activityMapsStackHelpersRef.current).forEach(activityMapID => {
             const stackHelper = activityMapsStackHelpersRef.current[activityMapID];
-            const activityMap = activityMapsRef.current[activityMapID];
             updateSlice(stackHelper, direction);
-            makeSliceTransparent(stackHelper, activityMap.opacity);
+            makeSliceTransparent(stackHelper);
         });
     };
 
@@ -140,15 +139,16 @@ export const Viewer = (props) => {
 
         Object.keys(activityMapsStackHelpersRef.current).forEach(amID => {
             const activityMap = activeActivityMaps[amID];
-            if(activityMap){
+            if (activityMap) {
                 const activityMapStackHelper = activityMapsStackHelpersRef.current[amID]
                 // change visibility
-                if(activityMapStackHelper.visible !== activityMap.visibility){
+                if (activityMapStackHelper.visible !== activityMap.visibility) {
                     activityMapStackHelper.visible = activityMap.visibility
                 }
                 // change LUT
-                if(activityMapStackHelper.colorGradient !== JSON.stringify(activityMap.colorGradient)){
-                    updateLUT(activityMap.colorGradient, activityMapStackHelper)
+                if (activityMapStackHelper.colorGradient !== JSON.stringify(activityMap.colorGradient) ||
+                    activityMapStackHelper.opacityGradient !== JSON.stringify(activityMap.opacityGradient)) {
+                    updateLUT(activityMap.colorGradient, activityMap.opacityGradient, activityMapStackHelper)
                 }
             }
         })
@@ -166,7 +166,6 @@ export const Viewer = (props) => {
             // Store the stackHelper in the ref object
             activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
         });
-
 
 
     }, [activeActivityMaps]);

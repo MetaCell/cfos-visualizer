@@ -13,7 +13,7 @@ import { tableStyles } from './Table';
 import Picker from './Picker';
 import {downloadViewerObject, removeActivityMapFromViewer, toggleViewerObjectVisibility} from "../redux/actions";
 import {useDispatch} from "react-redux";
-import {getOriginalHexColor} from "../helpers/colorHelper";
+import {getOriginalHexColor} from "../helpers/gradientHelper";
 
 const {
   headerBorderLeftColor,
@@ -25,7 +25,7 @@ const TableRow = ( { index, data, isAtlas } ) =>
 {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { id, name, color, isVisible, description } = data;
+  const { id, name, color, opacity, isVisible, description } = data;
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -85,7 +85,7 @@ const TableRow = ( { index, data, isAtlas } ) =>
         </Box>
 
         <Box sx={ { gap: '0.75rem !important' } }>
-          <CustomSlider defaultValue={ 10 * ( index + 1 ) } heading="Intensity" />
+          <CustomSlider id={id} value={ 100 * opacity } heading="Intensity" />
         </Box>
       </Box>
 

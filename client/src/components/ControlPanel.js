@@ -6,7 +6,7 @@ import CustomSlider from "./Slider";
 import Table from "./Table";
 import {useSelector} from "react-redux";
 import {messages} from "../redux/constants";
-import {getOriginalHexColor} from "../helpers/colorHelper";
+import {getOriginalHexColor, getOriginalOpacity} from "../helpers/gradientHelper";
 
 const { headerBorderLeftColor, headingColor, accordianTextColor } = vars;
 
@@ -80,6 +80,7 @@ const ControlPanel = () =>
 					name: activityMapMetadata.name,
 					description: activityMapMetadata.description || messages.NO_DESCRIPTION,
 					color: getOriginalHexColor(activityMap.colorGradient),
+					opacity: getOriginalOpacity(activityMap.opacityGradient),
 					isVisible: activityMap.visibility
 				});
 			}
@@ -93,7 +94,8 @@ const ControlPanel = () =>
 				name: atlasMetadata.name,
 				description: atlasMetadata.description || messages.NO_DESCRIPTION,
 				color: null,
-				isVisible: activeAtlas.visibility,
+				opacity: activeAtlas.opacity,
+				isVisible: activeAtlas.visibility
 			});
 		}
 		return viewerObjects

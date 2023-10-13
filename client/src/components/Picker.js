@@ -7,7 +7,7 @@ import { ChromePicker } from 'react-color';
 import vars from '../theme/variables';
 import {useDispatch} from "react-redux";
 import {changeActivityMapColor} from "../redux/actions";
-import {getColorGradient} from "../helpers/colorHelper";
+import {getColorGradient} from "../helpers/gradientHelper";
 import {GRADIENTS as Gradients} from "../settings";
 
 const { headingColor, whiteColor, headerBorderLeftColor, headerBorderColor } = vars

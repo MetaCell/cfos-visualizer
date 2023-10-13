@@ -2,7 +2,6 @@ export const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 
 export const DEFAULT_ATLAS_OPACITY = 1;
-export const DEFAULT_ACTIVITY_MAP_OPACITY = 0.8;
 export const DEFAULT_VISIBILITY = true;
 
 export const VIEWER_CLEAR_COLOR = 0x00000000
@@ -31,12 +30,11 @@ export const GRADIENTS = {
 
 export const DEFAULT_COLOR_GRADIENT = GRADIENTS.HOT
 
+const DEFAULT_ACTIVITY_MAP_OPACITY = 0.8;
 
-export const LUT_DATA = {
-    lut: 'custom',
-    lutO: 'linear',
-    opacity: [[0, 1], [1, 1]]
-}
+export const DEFAULT_OPACITY_GRADIENT = [[0, 0], [1, DEFAULT_ACTIVITY_MAP_OPACITY]]
+
+
 export const GRADIENT_STEPS = 9
 
 export const STACK_MESH_INDEX = 1

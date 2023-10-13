@@ -123,6 +123,7 @@ export const tableStyles = {
 };
 
 const Table = ({tableHeader, tableContent}) => {
+    const hasNoActivityMaps = tableContent.length < 2
     return (
         <Box pb={1.5}>
             <Box sx={tableStyles.head}>
@@ -138,7 +139,7 @@ const Table = ({tableHeader, tableContent}) => {
                     <TableRow key={index} data={row} index={index} isAtlas={index === tableContent?.length - 1}/>)
                 }
                 {
-                    tableContent.length < 2 &&
+                    hasNoActivityMaps &&
                     <Box className="secondary" justifyContent='space-between'
                          sx={{
                              ...tableStyles.root,

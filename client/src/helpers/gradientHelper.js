@@ -69,3 +69,12 @@ export function getComplementaryColor(color) {
 function lerp(start, end, step) {
     return start * (1 - step) + end * step;
 }
+
+
+export function getOpacityGradient(opacityPercentage) {
+    return [[0, 0], [1, opacityPercentage / 100]]
+}
+
+export function getOriginalOpacity(gradientOpacity) {
+    return gradientOpacity[1][1]
+}
