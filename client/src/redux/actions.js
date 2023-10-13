@@ -50,12 +50,12 @@ export const changeViewerOrder = (order) => ({
     payload: { order }
 });
 
-export const triggerViewerObjectDownload = (id) => ({
+export const downloadViewerObject = (id) => ({
     type: actions.DOWNLOAD_VIEWER_OBJECT,
     payload: id
 })
 
-export const triggerDownloadAllObjects = () => ({
+export const downloadAllObjects = () => ({
     type: actions.DOWNLOAD_ALL_OBJECTS
 })
 

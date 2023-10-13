@@ -11,7 +11,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import GrainIcon from '@mui/icons-material/Grain';
 import { tableStyles } from './Table';
 import Picker from './Picker';
-import {removeActivityMapFromViewer, toggleViewerObjectVisibility} from "../redux/actions";
+import {downloadViewerObject, removeActivityMapFromViewer, toggleViewerObjectVisibility} from "../redux/actions";
 import {useDispatch} from "react-redux";
 import {getOriginalHexColor} from "../helpers/colorHelper";
 
@@ -65,7 +65,7 @@ const TableRow = ( { index, data, isAtlas } ) =>
             </IconButton>
           </Tooltip>
           <Tooltip placement='right' title="Download">
-            <IconButton>
+            <IconButton onClick={() => dispatch(downloadViewerObject(id))}>
               <DownloadOutlinedIcon />
             </IconButton>
           </Tooltip>

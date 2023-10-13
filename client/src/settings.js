@@ -41,3 +41,7 @@ export const GRADIENT_STEPS = 9
 
 export const STACK_MESH_INDEX = 1
 
+
+export const ALLOWED_FILE_EXTENSIONS_REGEX = /\.(nii\.gz|nifti)$/
+export const COMPRESSED_EXTENSION = '.msgpack'
+export const WIREFRAME_IDENTIFIER = 'W'

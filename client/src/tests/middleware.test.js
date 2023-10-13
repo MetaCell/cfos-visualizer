@@ -6,7 +6,7 @@ import {
     fetchAtlasWireframeStack, fetchActivityMapStack, fetchLUTFile
 } from '../services/fetchService';
 import {
-    fetchAndAddActivityMapToViewer, triggerDownloadAllObjects, triggerViewerObjectDownload,
+    fetchAndAddActivityMapToViewer, downloadAllObjects, downloadViewerObject,
     fetchAndSetExperimentAndAtlas,
     fetchModel,
     setCurrentExperiment,
@@ -192,7 +192,7 @@ describe('Middleware', () => {
             }
         });
 
-        middleware(store)(next)(triggerViewerObjectDownload(mockActivityMapID));
+        middleware(store)(next)(downloadViewerObject(mockActivityMapID));
 
         expect(downloadActivityMap).toHaveBeenCalledWith(mockActivityMapID);
     });
@@ -209,7 +209,7 @@ describe('Middleware', () => {
             }
         });
 
-        middleware(store)(next)(triggerViewerObjectDownload(atlasID));
+        middleware(store)(next)(downloadViewerObject(atlasID));
 
         expect(downloadAtlas).toHaveBeenCalledWith(atlasID);
     });
@@ -231,7 +231,7 @@ describe('Middleware', () => {
             }
         });
 
-        middleware(store)(next)(triggerDownloadAllObjects());
+        middleware(store)(next)(downloadAllObjects());
 
         expect(downloadAllViewerObjects).toHaveBeenCalledWith(Object.keys(mockActivityMaps), atlasID)
     });

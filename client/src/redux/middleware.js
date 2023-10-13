@@ -1,4 +1,3 @@
-
 import {
     fetchActivityMapStack,
     fetchAtlasStack,
@@ -14,7 +13,12 @@ import {
 } from "./actions";
 import {actions} from "./constants";
 import {Experiment, ActivityMap, Atlas} from "../model/models";
-import {DEFAULT_COLOR_GRADIENT, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY, DEFAULT_ACTIVITY_MAP_OPACITY} from "../settings";
+import {
+    DEFAULT_COLOR_GRADIENT,
+    DEFAULT_ATLAS_OPACITY,
+    DEFAULT_VISIBILITY,
+    DEFAULT_ACTIVITY_MAP_OPACITY
+} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 import {getColorGradient} from "../helpers/colorHelper";
 
@@ -47,7 +51,7 @@ export const middleware = store => next => async action => {
             //     return acc;
             // }, {});
 
-            store.dispatch(setModel({ ...model, Luts: {} }));
+            store.dispatch(setModel({...model, Luts: {}}));
 
             // Extract default experimentID and atlasID
             const experimentAtlasEntries = Object.entries(model.ExperimentsAtlas);
@@ -57,7 +61,7 @@ export const middleware = store => next => async action => {
                 if (atlasEntries.length > 0) {
                     const atlasID = atlasEntries[0];
                     store.dispatch(fetchAndSetExperimentAndAtlas(experimentID, atlasID));
-                }else{
+                } else {
                     store.dispatch(stopLoading());
                 }
             }
@@ -65,7 +69,7 @@ export const middleware = store => next => async action => {
             break;
 
         case actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS:
-            const { experimentID, atlasID } = action.payload;
+            const {experimentID, atlasID} = action.payload;
             const currentExperiment = store.getState().currentExperiment;
             const currentAtlas = store.getState().viewer.atlas;
 
@@ -85,7 +89,7 @@ export const middleware = store => next => async action => {
                 let atlasStack = null;
                 let atlasWireframeStack = null;
                 let atlasMetadata = store.getState().model.Atlases[atlasID]
-                if(!atlasMetadata){
+                if (!atlasMetadata) {
                     store.dispatch(setError(`Atlas id ${atlasID} not found`));
                     store.dispatch(stopLoading());
                 }
@@ -122,12 +126,12 @@ export const middleware = store => next => async action => {
             const activityMapID = action.payload;
             let stack = null
             let activityMapMetadata = store.getState().model.ActivityMaps[activityMapID]
-            if(!activityMapMetadata){
+            if (!activityMapMetadata) {
                 store.dispatch(setError(`Activity Map id ${activityMapID} not found`));
                 store.dispatch(stopLoading());
             }
             try {
-                stack = await fetchActivityMapStack(activityMapMetadata?.file);
+                stack = await fetchActivityMapStack(activityMapMetadata.file);
             } catch (error) {
                 store.dispatch(setError(error.message));
                 store.dispatch(stopLoading());
@@ -146,23 +150,25 @@ export const middleware = store => next => async action => {
             break;
 
         case actions.DOWNLOAD_VIEWER_OBJECT:
-            const viewerState = store.getState().viewer
-            const activityMap = viewerState.activityMaps[action.payload];
-            if (activityMap) {
-                try{
-                    await downloadActivityMap(action.payload);
-                }
-                catch (error) {
-                    store.dispatch(setError(error.message));
-                }
-            } else if (viewerState.atlas && viewerState.atlas.id === action.payload) {
+            const id = action.payload
+            const activityMapMetadataToDownload = store.getState().model.ActivityMaps[id]
+            if (activityMapMetadataToDownload) {
                 try {
-                    await downloadAtlas(action.payload);
+                    await downloadActivityMap(activityMapMetadataToDownload.file);
                 } catch (error) {
                     store.dispatch(setError(error.message));
                 }
             } else {
-                store.dispatch(setError(`Object with ID ${action.payload} not found`));
+                const atlasMetadata = store.getState().model.Atlases[id]
+                if (atlasMetadata) {
+                    try {
+                        await downloadAtlas(atlasMetadata.file);
+                    } catch (error) {
+                        store.dispatch(setError(error.message));
+                    }
+                } else {
+                    store.dispatch(setError(`Object with ID ${id} not found`));
+                }
             }
             break;
 
@@ -171,7 +177,7 @@ export const middleware = store => next => async action => {
 
             try {
                 await downloadAllViewerObjects(allActivityMapsIDs, store.getState().viewer.atlas.id);
-            }catch (error) {
+            } catch (error) {
                 store.dispatch(setError(error.message));
             }
             break;
