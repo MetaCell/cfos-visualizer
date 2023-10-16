@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
+          fileParam = fileParam.split('/').pop(); //filename only
           link.download = fileParam.replace('.nii.gz', '.msgpack');
           link.click();
       }

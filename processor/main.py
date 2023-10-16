@@ -23,6 +23,8 @@ server_started_event = threading.Event()
 
 driver = None
 
+wireframe = True
+
 web_directory = os.path.dirname(os.path.abspath(__file__))
 download_dir = web_directory + "/process"
 data_dir = web_directory + "/data/"
@@ -56,6 +58,7 @@ def start_http_server(directory, port):
 
 def process(target_dir, file_name, process_wireframe):
 
+    processed_file_names = []
     wireframe_file_name  = file_name.replace(".nii.gz", "-wireframe.nii.gz")
 
     if process_wireframe:
@@ -64,11 +67,20 @@ def process(target_dir, file_name, process_wireframe):
     http_file_path = "http://localhost:8888/website/index.html?file="+file_name
     driver.get(http_file_path)
 
+    processed_file_name = os.path.basename(file_name).replace("nii.gz", "msgpack")
+    wait_for_file(processed_file_name, download_dir)
+    processed_file_names.append(processed_file_name)
+
     if process_wireframe:
         http_file_path = "http://localhost:8888/website/index.html?file="+wireframe_file_name
         driver.get(http_file_path)
 
+        processed_file_name = os.path.basename(wireframe_file_name).replace("nii.gz", "msgpack")
+        wait_for_file(processed_file_name, download_dir)
+        processed_file_names.append(processed_file_name)
+
     print(f"Process completed for { file_name }")
+    return processed_file_names
 
 if __name__ == "__main__":
     port = 8888
@@ -112,8 +124,11 @@ if __name__ == "__main__":
         for file in files:
             print(f"Processing ${file}...")
             full_name = sub_folder + "/" + file
-            process(target_dir, full_name, True)
-            wait_for_file(file.replace("nii.gz", "msgpack"), download_dir)
+            processed_file_names = process(target_dir, full_name, process_wireframe=wireframe)
+            #copy file back to the original location
+            for processed_file in processed_file_names:
+                os.rename(download_dir + "/" + processed_file, target_sub_dir + processed_file)
+            
 
         process_bucket_upload(bucket_name, target_sub_dir, sub_folder)
 
