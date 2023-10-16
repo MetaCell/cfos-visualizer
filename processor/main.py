@@ -5,12 +5,19 @@ import socketserver
 import threading
 import time 
 
+from dotenv import load_dotenv
+
 from helpers.wireframe import process_nifti_file
+from helpers.ingest import process_bucket_upload
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
+
+load_dotenv()
+
+bucket_name = os.environ.get("GCLOUD_PROJECT")
 
 server_started_event = threading.Event()
 
@@ -47,12 +54,12 @@ def start_http_server(directory, port):
         server_started_event.set()
         httpd.serve_forever()
 
-def process(file_name, process_wireframe):
+def process(target_dir, file_name, process_wireframe):
 
     wireframe_file_name  = file_name.replace(".nii.gz", "-wireframe.nii.gz")
 
     if process_wireframe:
-        process_nifti_file(data_dir + file_name, data_dir + wireframe_file_name)
+        process_nifti_file(target_dir + file_name, target_dir + wireframe_file_name)
 
     http_file_path = "http://localhost:8888/website/index.html?file="+file_name
     driver.get(http_file_path)
@@ -91,15 +98,22 @@ if __name__ == "__main__":
 
     target_dir = current_directory + "/data/"
 
-    # Use os.listdir() to get a list of all files and directories in the current directory
-    files = os.listdir(target_dir)
+    sub_folders = ["atlas", "activityMap"]
 
-    # Filter out only the files (excluding directories)
-    files = [file for file in files if os.path.isfile(os.path.join(target_dir, file))]
+    for sub_folder in sub_folders:
+        target_sub_dir = target_dir + sub_folder + "/"
+        # Use os.listdir() to get a list of all files and directories in the current directory
+        files = os.listdir(target_sub_dir)
 
-    # Print the list of files
-    for file in files:
-        print(f"Processing ${file}...")
-        process(file, False)
-        wait_for_file(file.replace("nii.gz", "msgpack"), download_dir)
+        # Filter out only the files (excluding directories)
+        files = [file for file in files if os.path.isfile(os.path.join(target_sub_dir, file))]
+
+        # Print the list of files
+        for file in files:
+            print(f"Processing ${file}...")
+            full_name = sub_folder + "/" + file
+            process(target_dir, full_name, True)
+            wait_for_file(file.replace("nii.gz", "msgpack"), download_dir)
+
+        process_bucket_upload(bucket_name, target_sub_dir, sub_folder)
 

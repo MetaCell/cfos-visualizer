@@ -3,6 +3,7 @@ from tqdm import tqdm
 
 import os
 
+
 def upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_path):
     # Initialize a client using Application Default Credentials
     client = storage.Client()
@@ -18,15 +19,16 @@ def upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_
 
             blob = bucket.blob(remote_file_path)
 
-            # Upload the file in chunks with a progress bar
-            with tqdm(total=os.path.getsize(local_file_path), unit='B', unit_scale=True, unit_divisor=1024) as pbar:
-                def progress_callback(bytes_uploaded):
-                    pbar.update(bytes_uploaded - pbar.n)
+            # Get the file size for progress tracking
+            file_size = os.path.getsize(local_file_path)
 
-                blob.resumable_upload_from_filename(local_file_path, callback=progress_callback)
-                
-            pbar.close()
+            with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
+                # Upload the file in chunks
+                with open(local_file_path, 'rb') as file:
+                    blob.upload_from_file(file)
+                    pbar.update(file_size)
 
+                pbar.close()
 
 def list_bucket_files(bucket_name, prefix=None):
   # Initialize a client using Application Default Credentials
@@ -44,14 +46,12 @@ def list_bucket_files(bucket_name, prefix=None):
 
   return file_list
 
-if __name__ == "__main__":
-    bucket_name = "your_bucket_name"
-    local_folder_path = "/path/to/local/folder"
-    remote_folder_path = "path/on/bucket"
 
+def process_bucket_upload(bucket_name, local_folder_path, remote_folder_path):
     upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_path)
     #handle wireframe conversion
     files = list_bucket_files(bucket_name)
+    print(files)
 
     #store to file so the client can access it
     print("Folder structure replicated to the bucket.")
