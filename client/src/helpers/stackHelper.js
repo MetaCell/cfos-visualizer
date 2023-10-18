@@ -1,7 +1,7 @@
 import * as AMI from 'ami.js';
 import * as THREE from 'three';
 import {DIRECTIONS} from "../constants";
-import {DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, LUT_DATA, STACK_MESH_INDEX} from "../settings";
+import {LUT_DATA, STACK_MESH_INDEX} from "../settings";
 
 const StackModel = AMI.StackModel;
 const HelpersLut = AMI.lutHelperFactory(THREE);
@@ -41,6 +41,7 @@ export const updateSlice = (stackHelper, direction) => {
             stackHelper.index = stackHelper.index - 1;
         }
     }
+    makeSliceTransparent(stackHelper);
 }
 
 
@@ -54,11 +55,15 @@ export const getLUTHelper = (colorGradient, opacityGradient) => {
 export const makeSliceTransparent = (stackHelper) => {
     const material = getMaterial(stackHelper)
     material.transparent = true;
-    material.needsUpdate = true;
+    //material.needsUpdate = true;
 }
 
-const getMaterial = (stackHelper) => {
-    return stackHelper.children[0].children[0].material
+export const getMaterial = (stackHelper) => {
+    let meshIndex = 0
+    if (stackHelper.children.length > STACK_MESH_INDEX) {
+        meshIndex = STACK_MESH_INDEX
+    }
+    return stackHelper.children[meshIndex].children[0].material
 }
 
 export const removeBackground = (stackHelper) => {

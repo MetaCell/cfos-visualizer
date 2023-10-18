@@ -30,9 +30,9 @@ export const toggleViewerObjectVisibility = (id) => ({
     payload: id
 });
 
-export const changeActivityMapOpacityGradient = (id, opacityGradient) => ({
-    type: actions.CHANGE_ACTIVITY_MAP_OPACITY_GRADIENT,
-    payload: { id, opacityGradient }
+export const changeViewerObjectOpacity = (id, opacityInPercentage) => ({
+    type: actions.CHANGE_VIEWER_OBJECT_OPACITY,
+    payload: { id, opacity: opacityInPercentage }
 });
 
 export const changeAllViewerObjectsOpacity = (opacity) => ({

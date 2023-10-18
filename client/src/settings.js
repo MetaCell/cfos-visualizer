@@ -34,7 +34,6 @@ const DEFAULT_ACTIVITY_MAP_OPACITY = 0.8;
 
 export const DEFAULT_OPACITY_GRADIENT = [[0, 0], [1, DEFAULT_ACTIVITY_MAP_OPACITY]]
 
-
 export const GRADIENT_STEPS = 9
 
 export const STACK_MESH_INDEX = 1
@@ -43,3 +42,6 @@ export const STACK_MESH_INDEX = 1
 export const ALLOWED_FILE_EXTENSIONS_REGEX = /\.(nii\.gz|nifti)$/
 export const COMPRESSED_EXTENSION = '.msgpack'
 export const WIREFRAME_IDENTIFIER = 'W'
+
+export class LUT_DATA {
+}

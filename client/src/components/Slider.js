@@ -2,7 +2,7 @@ import React from "react";
 import vars from "../theme/variables";
 import {Box, Button, Slider, Typography} from "@mui/material";
 import {useDispatch} from "react-redux";
-import {changeActivityMapColor, changeActivityMapOpacityGradient} from "../redux/actions";
+import {changeActivityMapColor, changeViewerObjectOpacity} from "../redux/actions";
 import {getColorGradient, getOpacityGradient} from "../helpers/gradientHelper";
 
 const {resetButtonColor, labelColor, resetButtonActiveColor} = vars;
@@ -28,7 +28,7 @@ const styles = {
 const CustomSlider = ({heading, width = 1, value, id}) => {
     const dispatch = useDispatch();
     const handleChange = (event, newValue) => {
-        dispatch(changeActivityMapOpacityGradient(id, getOpacityGradient(newValue)));
+        dispatch(changeViewerObjectOpacity(id, newValue));
     };
     return (
         <Box

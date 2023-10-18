@@ -13,7 +13,7 @@ import {ViewerToolbar} from "./ViewerToolbar";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
 import {DIRECTIONS} from "../constants";
-import {updateSlice, makeSliceTransparent, getLUTHelper} from "../helpers/stackHelper";
+import {updateSlice, makeSliceTransparent, getLUTHelper, getMaterial} from "../helpers/stackHelper";
 import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
 
@@ -88,7 +88,6 @@ export const Viewer = (props) => {
         Object.keys(activityMapsStackHelpersRef.current).forEach(activityMapID => {
             const stackHelper = activityMapsStackHelpersRef.current[activityMapID];
             updateSlice(stackHelper, direction);
-            makeSliceTransparent(stackHelper);
         });
     };
 
@@ -103,21 +102,33 @@ export const Viewer = (props) => {
         if (activeAtlas) {
             viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
 
-            const stackHelper = new StackHelper(activeAtlas.stack);
-            stackHelper.name = sceneObjects.ATLAS
-            stackHelper.bbox.visible = false;
-            stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-            stackHelper.index = Math.floor(stackHelper.stack._frame.length / 2);
-            stackHelper.orientation = cameraRef.current.stackOrientation;
+            // Check if the current atlas is different from the active atlas.
+            if (!currentAtlasStackHelperRef.current || currentAtlasStackHelperRef.current.atlasId !== activeAtlas.id) {
+                const stackHelper = new StackHelper(activeAtlas.stack);
+                stackHelper.name = sceneObjects.ATLAS;
+                stackHelper.bbox.visible = false;
+                stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
+                stackHelper.index = Math.floor(stackHelper.stack._frame.length / 2);
+                stackHelper.orientation = cameraRef.current.stackOrientation;
 
-            stackHelper.visible = activeAtlas.visibility
+                stackHelper.visible = activeAtlas.visibility;
+                makeSliceTransparent(stackHelper);
+                stackHelper.slice.opacity = activeAtlas.opacity;
 
-            if (currentAtlasStackHelperRef.current) {
-                sceneRef.current.remove(currentAtlasStackHelperRef.current);
+                // Store the atlas ID in the StackHelper for future comparison
+                stackHelper.atlasId = activeAtlas.id;
+
+                if (currentAtlasStackHelperRef.current) {
+                    sceneRef.current.remove(currentAtlasStackHelperRef.current);
+                }
+
+                sceneRef.current.add(stackHelper);
+                currentAtlasStackHelperRef.current = stackHelper;
+            }else{
+                currentAtlasStackHelperRef.current.visible = activeAtlas.visibility;
+                currentAtlasStackHelperRef.current.slice.opacity = activeAtlas.opacity;
+
             }
-
-            sceneRef.current.add(stackHelper);
-            currentAtlasStackHelperRef.current = stackHelper
         }
     }, [activeAtlas]);
 

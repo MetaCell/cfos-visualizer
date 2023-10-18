@@ -2,7 +2,7 @@ import {INIT_STATE} from "./store";
 import {actions} from "./constants";
 import {ActivityMap, Atlas} from "../model/models";
 import {DEFAULT_LOADING_MESSAGE} from "../settings";
-import {getColorGradient} from "../helpers/gradientHelper";
+import {getOpacityGradient} from "../helpers/gradientHelper";
 
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
@@ -66,7 +66,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 return state;
             }
 
-        case actions.CHANGE_ACTIVITY_MAP_OPACITY_GRADIENT:
+        case actions.CHANGE_VIEWER_OBJECT_OPACITY:
             if (state.activityMaps[action.payload.id]) {
                 const activityMap = state.activityMaps[action.payload.id];
                 return {
@@ -76,54 +76,54 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         [action.payload.id]: new ActivityMap(
                             activityMap.id,
                             activityMap.colorGradient,
-                            action.payload.opacityGradient,
+                            getOpacityGradient(action.payload.opacity),
                             activityMap.visibility,
                             activityMap.stack,
                         )
                     }
                 };
             }
-            // else if (state.atlas && state.atlas.id === action.payload.id) {
-            //     const atlas = state.atlas;
-            //     return {
-            //         ...state,
-            //         atlas: new Atlas(
-            //             atlas.id,
-            //             action.payload.opacity,
-            //             atlas.visibility,
-            //             atlas.stack,
-            //             atlas.wireframeStack
-            //         )
-            //     };
-            // }
+            else if (state.atlas && state.atlas.id === action.payload.id) {
+                const atlas = state.atlas;
+                return {
+                    ...state,
+                    atlas: new Atlas(
+                        atlas.id,
+                        action.payload.opacity / 100,
+                        atlas.visibility,
+                        atlas.stack,
+                        atlas.wireframeStack
+                    )
+                };
+            }
             else {
                 return state;
             }
 
-        // case actions.CHANGE_ALL_VIEWER_OBJECTS_OPACITY:
-        //     const updatedActivityMaps = Object.keys(state.activityMaps).reduce((acc, activityMapID) => {
-        //         const activityMap = state.activityMaps[activityMapID];
-        //         acc[activityMapID] = new ActivityMap(
-        //             activityMap.id,
-        //             activityMap.colorGradient,
-        //             action.payload,
-        //             activityMap.visibility,
-        //             activityMap.stack,
-        //         );
-        //         return acc;
-        //     }, {});
-        //     const atlas = state.atlas;
-        //     return {
-        //         ...state,
-        //         activityMaps: updatedActivityMaps,
-        //         atlas: new Atlas(
-        //             atlas.id,
-        //             action.payload,
-        //             atlas.visibility,
-        //             atlas.stack,
-        //             atlas.wireframeStack
-        //         )
-        //     };
+        case actions.CHANGE_ALL_VIEWER_OBJECTS_OPACITY:
+            const updatedActivityMaps = Object.keys(state.activityMaps).reduce((acc, activityMapID) => {
+                const activityMap = state.activityMaps[activityMapID];
+                acc[activityMapID] = new ActivityMap(
+                    activityMap.id,
+                    activityMap.colorGradient,
+                    getOpacityGradient(action.payload),
+                    activityMap.visibility,
+                    activityMap.stack,
+                );
+                return acc;
+            }, {});
+            const atlas = state.atlas;
+            return {
+                ...state,
+                activityMaps: updatedActivityMaps,
+                atlas: new Atlas(
+                    atlas.id,
+                    action.payload / 100,
+                    atlas.visibility,
+                    atlas.stack,
+                    atlas.wireframeStack
+                )
+            };
 
         case actions.CHANGE_ACTIVITY_MAP_COLOR_GRADIENT:
             const activityMap = state.activityMaps[action.payload.activityMapID];

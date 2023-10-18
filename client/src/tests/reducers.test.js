@@ -3,7 +3,7 @@ import {currentExperimentReducer, modelReducer, uiReducer, viewerReducer} from "
 import {
     addActivityMapToViewer,
     changeAllViewerObjectsOpacity,
-    changeActivityMapOpacityGradient,
+    changeViewerObjectOpacity,
     removeActivityMapFromViewer,
     setError,
     setModel,
@@ -118,7 +118,7 @@ describe('viewerReducer', () => {
             }
         };
 
-        expect(viewerReducer(setupState, changeActivityMapOpacityGradient(activityMapID, other_opacity_gradient))).toEqual(expectedState);
+        expect(viewerReducer(setupState, changeViewerObjectOpacity(activityMapID, 100))).toEqual(expectedState);
     });
 
     // it('should handle CHANGE_VIEWER_OBJECT_OPACITY for atlas', () => {
