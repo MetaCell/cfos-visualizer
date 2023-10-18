@@ -25,11 +25,7 @@ const styles = {
     }
 };
 
-const CustomSlider = ({heading, width = 1, value, id}) => {
-    const dispatch = useDispatch();
-    const handleChange = (event, newValue) => {
-        dispatch(changeViewerObjectOpacity(id, newValue));
-    };
+const CustomSlider = ({heading, width = 1, onChange, value}) => {
     return (
         <Box
             width={width}
@@ -44,11 +40,11 @@ const CustomSlider = ({heading, width = 1, value, id}) => {
             >
                 {heading}
             </Typography>
-            <Slider value={value} onChange={handleChange}/>
+            <Slider value={value} onChange={(event, newValue) => onChange(newValue)}/>
             <Button
                 disableRipple
                 disabled={value === 0}
-                onClick={() => handleChange(undefined, 0)}
+                onClick={() => onChange(0)}
                 sx={{
                     ...styles.button,
                     color: `${value === 0 ? resetButtonColor : resetButtonActiveColor} !important`,

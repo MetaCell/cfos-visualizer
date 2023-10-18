@@ -4,9 +4,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import vars from "../theme/variables";
 import CustomSlider from "./Slider";
 import Table from "./Table";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {messages} from "../redux/constants";
 import {getOriginalHexColor, getOriginalOpacity} from "../helpers/gradientHelper";
+import {changeAllViewerObjectsOpacity, changeViewerObjectOpacity} from "../redux/actions";
 
 const { headerBorderLeftColor, headingColor, accordianTextColor } = vars;
 
@@ -60,7 +61,10 @@ const styles = {
 
 const ControlPanel = () =>
 {
+	const dispatch = useDispatch();
+
 	const [ open, setOpen ] = React.useState( true );
+	const [ opacity, setOpacity ] = React.useState( 0 );
 	const activeAtlas = useSelector(state => state.viewer.atlas);
 	const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
 
@@ -101,6 +105,11 @@ const ControlPanel = () =>
 		return viewerObjects
 	}
 
+	const onOpacityChange = (newValue) => {
+		setOpacity(newValue)
+		dispatch(changeAllViewerObjectsOpacity(newValue));
+	}
+
 	const viewerObjects = getViewerObjectsData()
 
 	return (
@@ -131,7 +140,7 @@ const ControlPanel = () =>
 						</Typography>
 					</Box>
 
-					<CustomSlider defaultValue={0} width='30%' heading="Global intensity" />
+					<CustomSlider value={ opacity } width='30%' heading="Global intensity" onChange={(newValue) => onOpacityChange(newValue)} />
 				</Box>
 
 				<Box

@@ -11,7 +11,12 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import GrainIcon from '@mui/icons-material/Grain';
 import { tableStyles } from './Table';
 import Picker from './Picker';
-import {downloadViewerObject, removeActivityMapFromViewer, toggleViewerObjectVisibility} from "../redux/actions";
+import {
+  changeViewerObjectOpacity,
+  downloadViewerObject,
+  removeActivityMapFromViewer,
+  toggleViewerObjectVisibility
+} from "../redux/actions";
 import {useDispatch} from "react-redux";
 import {getOriginalHexColor} from "../helpers/gradientHelper";
 
@@ -34,6 +39,10 @@ const TableRow = ( { index, data, isAtlas } ) =>
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const onOpacityChange = (id, newValue) => {
+    dispatch(changeViewerObjectOpacity(id, newValue));
+  }
 
   const open = Boolean(anchorEl);
 
@@ -85,7 +94,7 @@ const TableRow = ( { index, data, isAtlas } ) =>
         </Box>
 
         <Box sx={ { gap: '0.75rem !important' } }>
-          <CustomSlider id={id} value={ 100 * opacity } heading="Intensity" />
+          <CustomSlider value={ 100 * opacity } heading="Intensity" onChange={(newValue) => onOpacityChange(id, newValue)}/>
         </Box>
       </Box>
 
