@@ -27,23 +27,27 @@ function isVector3Object(obj) {
     return obj && typeof obj === 'object' && 'x' in obj && 'y' in obj && 'z' in obj;
 }
 
-export const updateSlice = (stackHelper, direction) => {
-    if (stackHelper) {
-        if (direction === DIRECTIONS.UP) {
-            if (stackHelper.index >= stackHelper.orientationMaxIndex - 1) {
-                return
-            }
-            stackHelper.index = stackHelper.index + 1;
-        } else {
-            if (stackHelper.index <= 0) {
-                return
-            }
-            stackHelper.index = stackHelper.index - 1;
-        }
+export const getNewSliceIndex = (stackHelper, direction) => {
+    if (!stackHelper) {
+        return null;
     }
-    makeSliceTransparent(stackHelper);
-}
 
+    if (direction === DIRECTIONS.UP && stackHelper.index < stackHelper.orientationMaxIndex - 1) {
+        return stackHelper.index + 1;
+    } else if (direction === DIRECTIONS.DOWN && stackHelper.index > 0) {
+        return stackHelper.index - 1;
+    }
+
+    return null;
+};
+
+
+export const updateStackHelperIndex = (stackHelper, newIndex) => {
+    if (stackHelper) {
+        stackHelper.index = newIndex;
+        makeSliceTransparent(stackHelper);
+    }
+};
 
 export const getLUTHelper = (colorGradient, opacityGradient) => {
     const dummyElement = document.createElement('div');

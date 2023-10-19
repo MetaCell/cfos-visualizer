@@ -13,9 +13,12 @@ import {ViewerToolbar} from "./ViewerToolbar";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
 import {DIRECTIONS} from "../constants";
-import {updateSlice, makeSliceTransparent, getLUTHelper, getMaterial} from "../helpers/stackHelper";
+import {
+    getNewSliceIndex, updateStackHelperIndex
+} from "../helpers/stackHelper";
 import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
+import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} from "../icons";
 
 
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
@@ -83,13 +86,47 @@ export const Viewer = (props) => {
     };
 
     const handleScroll = (event) => {
-        const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP
-        updateSlice(currentAtlasStackHelperRef?.current, direction)
-        Object.keys(activityMapsStackHelpersRef.current).forEach(activityMapID => {
-            const stackHelper = activityMapsStackHelpersRef.current[activityMapID];
-            updateSlice(stackHelper, direction);
+        const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP;
+        const currentAtlas = currentAtlasStackHelperRef.current;
+
+        const newIndex = getNewSliceIndex(currentAtlas, direction);
+        if (newIndex !== null) {
+            updateAllStackHelpersIndex(newIndex);
+        }
+    };
+
+    const updateAllStackHelpersIndex = (newIndex) => {
+        // Update the atlas
+        updateStackHelperIndex(currentAtlasStackHelperRef.current, newIndex);
+
+        // Update the activity maps to match the atlas index
+        Object.values(activityMapsStackHelpersRef.current).forEach(stackHelper => {
+            updateStackHelperIndex(stackHelper, newIndex);
         });
     };
+
+    const handlePreviousSlice = () => {
+        const currentAtlas = currentAtlasStackHelperRef.current;
+        if (currentAtlas && currentAtlas.index > 0) {
+            updateAllStackHelpersIndex(currentAtlas.index - 1);
+        }
+    };
+
+    const handleNextSlice = () => {
+        const currentAtlas = currentAtlasStackHelperRef.current;
+        if (currentAtlas && currentAtlas.index < currentAtlas.orientationMaxIndex - 1) {
+            updateAllStackHelpersIndex(currentAtlas.index + 1);
+        }
+    };
+
+    const handleCenterStack = () => {
+        const currentAtlas = currentAtlasStackHelperRef.current;
+        if (currentAtlas) {
+            const centerIndex = Math.floor(currentAtlas.stack._frame.length / 2);
+            updateAllStackHelpersIndex(centerIndex);
+        }
+    };
+
 
     // needed for the handle wheel event listener
     useEffect(() => {
@@ -108,11 +145,10 @@ export const Viewer = (props) => {
                 stackHelper.name = sceneObjects.ATLAS;
                 stackHelper.bbox.visible = false;
                 stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-                stackHelper.index = Math.floor(stackHelper.stack._frame.length / 2);
+                updateStackHelperIndex(stackHelper, Math.floor(stackHelper.stack._frame.length / 2))
                 stackHelper.orientation = cameraRef.current.stackOrientation;
 
                 stackHelper.visible = activeAtlas.visibility;
-                makeSliceTransparent(stackHelper);
                 stackHelper.slice.opacity = activeAtlas.opacity;
 
                 // Store the atlas ID in the StackHelper for future comparison
@@ -181,6 +217,7 @@ export const Viewer = (props) => {
 
     }, [activeActivityMaps]);
 
+
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -192,13 +229,58 @@ export const Viewer = (props) => {
     const orderedExperiments = [currentExperiment?.id, ...Object.keys(experimentsActivityMaps)
         .filter(experiment => experiment !== currentExperiment?.id)];
 
+    const toolbarOptions = [
+        {
+            title: "Previous slice",
+            Icon: <KeyboardArrowUpIcon />,
+            onClickFunc: handlePreviousSlice,
+            isVisible: true
+        },
+        {
+            title: "Center stack",
+            Icon: <HomeIcon />,
+            onClickFunc: handleCenterStack,
+            isVisible: true
+        },
+        {
+            title: "Next slice",
+            Icon: <KeyboardArrowDownIcon />,
+            onClickFunc: handleNextSlice,
+            isVisible: true
+        },
+        // {
+        //     title: "Auto scroll through slices",
+        //     Icon: <AutoModeIcon />,
+        //     onClickFunc: () => console.log("Auto scroll through slices"),
+        //     isVisible: true
+        // },
+        // {
+        //     title: "Zoom in",
+        //     Icon: <ZoomInIcon />,
+        //     onClickFunc: () => console.log("Zoom in"),
+        //     isVisible: true
+        // },
+        // {
+        //     title: "Zoom out",
+        //     Icon: <ZoomOutIcon />,
+        //     onClickFunc: () => console.log("Zoom out"),
+        //     isVisible: true
+        // },
+        {
+            title: "Switch to wireframe",
+            Icon: <TonalityIcon />,
+            onClickFunc: () => console.log("Switch to wireframe"),
+            isVisible: true
+        }
+    ]
+
     const isOpen = Boolean(anchorEl);
     const popoverID = isOpen ? 'simple-popover' : undefined;
 
     return (
         <Box sx={{position: "relative", height: "100%", width: "100%"}}>
             <Box sx={{position: 'absolute', top: '0.75rem', left: '0.75rem', zIndex: 9}}>
-                <ViewerToolbar/>
+                <ViewerToolbar options={toolbarOptions}/>
             </Box>
             <Badge badgeContent={activeActivityMaps.length} color="primary">
                 <Button sx={{
