@@ -37,6 +37,8 @@ export const Viewer = (props) => {
     const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [wireframeMode, setWireframeMode] = React.useState(false);
+
 
     const containerRef = useRef(null);
     const rendererRef = useRef(null);
@@ -139,10 +141,16 @@ export const Viewer = (props) => {
         if (activeAtlas) {
             viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
 
-            // Check if the current atlas is different from the active atlas.
-            if (!currentAtlasStackHelperRef.current || currentAtlasStackHelperRef.current.atlasId !== activeAtlas.id) {
-                const stackHelper = new StackHelper(activeAtlas.stack);
+            const targetStack = wireframeMode ? activeAtlas.wireframeStack : activeAtlas.stack;
+
+            // Check if the current atlas is different from the active atlas or if wireframe mode has changed.
+            const currentAtlasHasChanged = !currentAtlasStackHelperRef.current || currentAtlasStackHelperRef.current.atlasId !== activeAtlas.id;
+            const wireframeModeHasChanged = currentAtlasStackHelperRef.current && currentAtlasStackHelperRef.current.isWireframe !== wireframeMode;
+
+            if (currentAtlasHasChanged || wireframeModeHasChanged) {
+                const stackHelper = new StackHelper(targetStack);
                 stackHelper.name = sceneObjects.ATLAS;
+                stackHelper.isWireframe = wireframeMode;
                 stackHelper.bbox.visible = false;
                 stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
                 updateStackHelperIndex(stackHelper, Math.floor(stackHelper.stack._frame.length / 2))
@@ -151,22 +159,34 @@ export const Viewer = (props) => {
                 stackHelper.visible = activeAtlas.visibility;
                 stackHelper.slice.opacity = activeAtlas.opacity;
 
-                // Store the atlas ID in the StackHelper for future comparison
                 stackHelper.atlasId = activeAtlas.id;
+
 
                 if (currentAtlasStackHelperRef.current) {
                     sceneRef.current.remove(currentAtlasStackHelperRef.current);
                 }
-
                 sceneRef.current.add(stackHelper);
                 currentAtlasStackHelperRef.current = stackHelper;
-            }else{
+
+                // FIXME: Workaround to get the atlas always on the bottom
+
+                // Store all activity maps temporarily and remove them from the scene
+                const tempActivityMaps = [];
+                Object.keys(activityMapsStackHelpersRef.current).forEach(activityMapID => {
+                    tempActivityMaps.push(activityMapsStackHelpersRef.current[activityMapID]);
+                    sceneRef.current.remove(activityMapsStackHelpersRef.current[activityMapID]);
+                });
+                //  Add back the activity maps
+                tempActivityMaps.forEach(activityMapStackHelper => {
+                    sceneRef.current.add(activityMapStackHelper);
+                });
+            } else {
                 currentAtlasStackHelperRef.current.visible = activeAtlas.visibility;
                 currentAtlasStackHelperRef.current.slice.opacity = activeAtlas.opacity;
-
             }
         }
-    }, [activeAtlas]);
+    }, [activeAtlas, wireframeMode]);
+
 
     // Handle activityMap changes
     useEffect(() => {
@@ -269,7 +289,7 @@ export const Viewer = (props) => {
         {
             title: "Switch to wireframe",
             Icon: <TonalityIcon />,
-            onClickFunc: () => console.log("Switch to wireframe"),
+            onClickFunc: () => setWireframeMode(prevMode => !prevMode),
             isVisible: true
         }
     ]
