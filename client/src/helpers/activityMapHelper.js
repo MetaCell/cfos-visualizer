@@ -9,16 +9,22 @@ export function postProcessActivityMap(stackHelper, activityMap, orientation, in
     stackHelper.index = index;
     stackHelper.orientation = orientation
 
-    makeSliceTransparent(stackHelper, activityMap.opacity);
-
-    const helperLut = getLUTHelper(activityMap.color);
-    stackHelper.slice.lut = helperLut.lut;
-    stackHelper.slice.lutTexture = helperLut.texture;
+    makeSliceTransparent(stackHelper);
+    updateLUT(activityMap.colorGradient, activityMap.opacityGradient, stackHelper);
 
     return stackHelper
 }
 
-export function getActivtyMapsDiff(activityMaps, activityMapsStackHelpersRef) {
+export function updateLUT(colorGradient, opacityGradient, stackHelper) {
+    const helperLut = getLUTHelper(colorGradient, opacityGradient);
+    stackHelper.slice.lut = helperLut.lut
+    stackHelper.slice.lutO = helperLut.lutO
+    stackHelper.slice.lutTexture = helperLut.texture;
+    stackHelper.colorGradient = JSON.stringify(colorGradient)
+    stackHelper.opacityGradient = JSON.stringify(opacityGradient)
+}
+
+export function getActivityMapsDiff(activityMaps, activityMapsStackHelpersRef) {
     const newActivityMapsState = Object.keys(activityMaps);
 
     // Get the current activityMap IDs from the ref
@@ -31,4 +37,11 @@ export function getActivtyMapsDiff(activityMaps, activityMapsStackHelpersRef) {
     const activityMapsToRemove = oldActivityMapState.filter(amId => !newActivityMapsState.includes(amId));
 
     return {activityMapsToAdd, activityMapsToRemove};
+}
+
+export const updateVisibility = (activityMapsStackHelpersRef, activeActivityMaps) => {
+    Object.keys(activityMapsStackHelpersRef.current).forEach(amId => {
+        const stackHelper = activityMapsStackHelpersRef.current[amId];
+        stackHelper.visible = activeActivityMaps[amId]?.visibility
+    });
 }

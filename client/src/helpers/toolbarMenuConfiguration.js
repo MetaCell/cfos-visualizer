@@ -2,19 +2,22 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import vars from "../theme/variables";
 import {AtlasSelectedIcon} from "../icons";
-import {actions} from "../redux/constants";
+import {actions, messages} from "../redux/constants";
 
 const { primaryFont, headerButtonColor, headerBorderColor } = vars;
 
-export const generateToolbarItems = (experimentsAtlas, currentExperiment, currentAtlas) => {
+export const generateToolbarItems = (experimentsAtlas, currentExperiment, currentAtlasID, atlasesMetadata) => {
   const toolbarItems = [];
 
   for (const [experimentID, atlasArray] of Object.entries(experimentsAtlas)) {
-    const atlasList = atlasArray.map(atlasID => ({
-      label: (
-          <Box display="flex" alignItems="center" gap={1}>
-            <Typography>{atlasID}</Typography>
-            {atlasID === currentAtlas?.id && experimentID === currentExperiment?.id && <AtlasSelectedIcon />}
+    const atlasList = atlasArray.map(atlasID => {
+      const atlasName = atlasesMetadata[atlasID].name;
+      const atlasMetadata = atlasesMetadata[atlasID].metadata || messages.NO_METADATA
+      return {
+        label: (
+            <Box display="flex" alignItems="center" gap={1}>
+              <Typography>{atlasName}</Typography>
+            {atlasID === currentAtlasID && experimentID === currentExperiment?.id && <AtlasSelectedIcon />}
           </Box>
       ),
       icon: "",
@@ -40,7 +43,7 @@ export const generateToolbarItems = (experimentsAtlas, currentExperiment, curren
                   {atlasID}
                 </Typography>
                 <Box sx={{ fontSize: '0.875rem', marginTop: '10px', padding: '10px', color: '#8D8D91', borderRadius: '4px', border: '1px solid #302F31' }}>
-                  No metadata available
+                  {atlasMetadata}
                 </Box>
               </>
           ),
@@ -51,7 +54,7 @@ export const generateToolbarItems = (experimentsAtlas, currentExperiment, curren
           },
         }
       ]
-    }));
+    }});
 
     const experimentItem = {
       label: experimentID,

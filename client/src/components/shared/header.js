@@ -40,6 +40,7 @@ export const Header = () => {
   const experimentsAtlas = useSelector(state => state.model.ExperimentsAtlas);
   const currentExperiment = useSelector(state => state.currentExperiment);
   const currentAtlas = useSelector(state => state.viewer.atlas);
+  const atlasesMetadata = useSelector( state => state.model.Atlases)
 
   const dynamicToolbarMenu = {
     global: toolbarMenu.global,
@@ -56,7 +57,7 @@ export const Header = () => {
       icon: <Box display='flex' mr='0.5rem'><ArticleIcon /></Box>,
       action: {},
       position: "bottom-start",
-      list: generateToolbarItems(experimentsAtlas, currentExperiment, currentAtlas)
+      list: generateToolbarItems(experimentsAtlas, currentExperiment, currentAtlas, atlasesMetadata)
     }]
   };
 

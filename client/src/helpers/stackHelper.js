@@ -27,42 +27,47 @@ function isVector3Object(obj) {
     return obj && typeof obj === 'object' && 'x' in obj && 'y' in obj && 'z' in obj;
 }
 
-export const updateSlice = (stackHelper, direction) => {
-    if (stackHelper) {
-        if (direction === DIRECTIONS.UP) {
-            if (stackHelper.index >= stackHelper.orientationMaxIndex - 1) {
-                return
-            }
-            stackHelper.index = stackHelper.index + 1;
-        } else {
-            if (stackHelper.index <= 0) {
-                return
-            }
-            stackHelper.index = stackHelper.index - 1;
-        }
+export const getNewSliceIndex = (stackHelper, direction) => {
+    if (!stackHelper) {
+        return null;
     }
-}
+
+    if (direction === DIRECTIONS.UP && stackHelper.index < stackHelper.orientationMaxIndex - 1) {
+        return stackHelper.index + 1;
+    } else if (direction === DIRECTIONS.DOWN && stackHelper.index > 0) {
+        return stackHelper.index - 1;
+    }
+
+    return null;
+};
 
 
-export const getLUTHelper = (color) => {
+export const updateStackHelperIndex = (stackHelper, newIndex) => {
+    if (stackHelper) {
+        stackHelper.index = newIndex;
+        makeSliceTransparent(stackHelper);
+    }
+};
+
+export const getLUTHelper = (colorGradient, opacityGradient) => {
     const dummyElement = document.createElement('div');
-    const helpLut = new HelpersLut(dummyElement);
-    helpLut.luts = HelpersLut.presetLuts();
-    helpLut.lut = LUT_DATA.lut;
-    helpLut.lut0 = LUT_DATA.lut0;
-    helpLut.color = color;
-    helpLut.opacity = LUT_DATA.opacity;
-    return helpLut
+    return new HelpersLut(dummyElement, 'custom', 'custom', colorGradient, opacityGradient);
+
 }
 
 
-export const makeSliceTransparent = (stackHelper, opacity) => {
-    let material = stackHelper.children[0].children[0].material
+export const makeSliceTransparent = (stackHelper) => {
+    const material = getMaterial(stackHelper)
     material.transparent = true;
-    material.uniforms.uOpacity.value = opacity
-    material.needsUpdate = true;
 }
 
+export const getMaterial = (stackHelper) => {
+    let meshIndex = 0
+    if (stackHelper.children.length > STACK_MESH_INDEX) {
+        meshIndex = STACK_MESH_INDEX
+    }
+    return stackHelper.children[meshIndex].children[0].material
+}
 
 export const removeBackground = (stackHelper) => {
     for (let i = stackHelper.children.length - 1; i >= 0; i--) {

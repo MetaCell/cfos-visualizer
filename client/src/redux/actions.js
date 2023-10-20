@@ -30,9 +30,9 @@ export const toggleViewerObjectVisibility = (id) => ({
     payload: id
 });
 
-export const changeViewerObjectOpacity = (id, opacity) => ({
+export const changeViewerObjectOpacity = (id, opacityInPercentage) => ({
     type: actions.CHANGE_VIEWER_OBJECT_OPACITY,
-    payload: { id, opacity }
+    payload: { id, opacity: opacityInPercentage }
 });
 
 export const changeAllViewerObjectsOpacity = (opacity) => ({
@@ -40,9 +40,9 @@ export const changeAllViewerObjectsOpacity = (opacity) => ({
     payload: opacity
 });
 
-export const changeActivityMapColor = (activityMapID, color) => ({
-    type: actions.CHANGE_ACTIVITY_MAP_COLOR,
-    payload: { activityMapID, color }
+export const changeActivityMapColor = (activityMapID, colorGradient) => ({
+    type: actions.CHANGE_ACTIVITY_MAP_COLOR_GRADIENT,
+    payload: { activityMapID, colorGradient }
 });
 
 export const changeViewerOrder = (order) => ({
@@ -50,12 +50,12 @@ export const changeViewerOrder = (order) => ({
     payload: { order }
 });
 
-export const triggerViewerObjectDownload = (id) => ({
+export const downloadViewerObject = (id) => ({
     type: actions.DOWNLOAD_VIEWER_OBJECT,
     payload: id
 })
 
-export const triggerDownloadAllObjects = () => ({
+export const downloadAllObjects = () => ({
     type: actions.DOWNLOAD_ALL_OBJECTS
 })
 

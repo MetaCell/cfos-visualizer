@@ -2,6 +2,7 @@ import {INIT_STATE} from "./store";
 import {actions} from "./constants";
 import {ActivityMap, Atlas} from "../model/models";
 import {DEFAULT_LOADING_MESSAGE} from "../settings";
+import {getOpacityGradient} from "../helpers/gradientHelper";
 
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
@@ -40,8 +41,8 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload]: new ActivityMap(
                             activityMap.id,
-                            activityMap.color,
-                            activityMap.opacity,
+                            activityMap.colorGradient,
+                            activityMap.opacityGradient,
                             !activityMap.visibility,
                             activityMap.stack,
                         )
@@ -74,8 +75,8 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload.id]: new ActivityMap(
                             activityMap.id,
-                            activityMap.color,
-                            action.payload.opacity,
+                            activityMap.colorGradient,
+                            getOpacityGradient(action.payload.opacity),
                             activityMap.visibility,
                             activityMap.stack,
                         )
@@ -88,7 +89,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state,
                     atlas: new Atlas(
                         atlas.id,
-                        action.payload.opacity,
+                        action.payload.opacity / 100,
                         atlas.visibility,
                         atlas.stack,
                         atlas.wireframeStack
@@ -104,8 +105,8 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 const activityMap = state.activityMaps[activityMapID];
                 acc[activityMapID] = new ActivityMap(
                     activityMap.id,
-                    activityMap.color,
-                    action.payload,
+                    activityMap.colorGradient,
+                    getOpacityGradient(action.payload),
                     activityMap.visibility,
                     activityMap.stack,
                 );
@@ -117,14 +118,14 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 activityMaps: updatedActivityMaps,
                 atlas: new Atlas(
                     atlas.id,
-                    action.payload,
+                    action.payload / 100,
                     atlas.visibility,
                     atlas.stack,
                     atlas.wireframeStack
                 )
             };
 
-        case actions.CHANGE_ACTIVITY_MAP_COLOR:
+        case actions.CHANGE_ACTIVITY_MAP_COLOR_GRADIENT:
             const activityMap = state.activityMaps[action.payload.activityMapID];
             return {
                 ...state,
@@ -132,8 +133,8 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state.activityMaps,
                     [action.payload.activityMapID]: new ActivityMap(
                         activityMap.id,
-                        action.payload.color,
-                        activityMap.opacity,
+                        action.payload.colorGradient,
+                        activityMap.opacityGradient,
                         activityMap.visibility,
                         activityMap.stack,
                     )

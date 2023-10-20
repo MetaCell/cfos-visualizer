@@ -1,7 +1,8 @@
-import { decode } from '@msgpack/msgpack';
-import {BASE_URL} from "../settings";
+import {decode} from '@msgpack/msgpack';
+import {BASE_URL, COMPRESSED_EXTENSION, WIREFRAME_IDENTIFIER} from "../settings";
 import {deserializeStack} from "../helpers/stackHelper";
 import {Entities} from "../model/models";
+import {originalFilenameToNewExtension} from "../utils";
 
 
 export async function fetchModelStructure() {
@@ -28,9 +29,9 @@ export async function fetchExperimentMetadata(experimentID) {
     }
 }
 
-export async function fetchAtlasStack(atlasID) {
+export async function fetchAtlasStack(filename) {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.ATLAS}/${atlasID}`);
+        const response = await fetch(`${BASE_URL}/${Entities.ATLAS}/${originalFilenameToNewExtension(filename)}`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
@@ -41,9 +42,10 @@ export async function fetchAtlasStack(atlasID) {
     }
 }
 
-export async function fetchAtlasWireframeStack(atlasID) {
+export async function fetchAtlasWireframeStack(filename) {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.ATLAS}/${atlasID}W`);
+        const wireframeFilename = originalFilenameToNewExtension(`${filename}`, `${WIREFRAME_IDENTIFIER}${COMPRESSED_EXTENSION}`)
+        const response = await fetch(`${BASE_URL}/${Entities.ATLAS}/${wireframeFilename}`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();
@@ -54,9 +56,9 @@ export async function fetchAtlasWireframeStack(atlasID) {
     }
 }
 
-export async function fetchActivityMapStack(activityMapID) {
+export async function fetchActivityMapStack(filename) {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.ACTIVITY_MAP}/${activityMapID}`);
+        const response = await fetch(`${BASE_URL}/${Entities.ACTIVITY_MAP}/${originalFilenameToNewExtension(filename)}`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const buffer = await response.arrayBuffer();

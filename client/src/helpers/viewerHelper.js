@@ -2,6 +2,7 @@ import * as THREE from "three";
 import * as AMI from 'ami.js';
 
 import {ORIENTATION} from "../settings";
+import {sceneObjects} from "../redux/constants";
 
 const TrackballOrthoControl = AMI.trackballOrthoControlFactory(THREE);
 const OrthographicCamera = AMI.orthographicCameraFactory(THREE);
@@ -13,6 +14,7 @@ export const initRenderer = (viewerContainerRef) => {
     });
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.sortObjects = false // FIXME: Workaround for the atlas always be on top
     container.appendChild(renderer.domElement);
     return renderer;
 }
@@ -30,6 +32,7 @@ export const getOrthographicCamera = (container) => {
     );
     camera.fov = 50;
     camera.aspect = 1;
+    camera.name = sceneObjects.CAMERA
     return camera;
 }
 

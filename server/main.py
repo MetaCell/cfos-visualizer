@@ -1,10 +1,10 @@
-import flask
-from flask import Flask, jsonify, send_file
-from flask_cors import CORS, cross_origin
-from io import BytesIO
 import os
-import json
+from io import BytesIO
+
+import flask
 from dotenv import load_dotenv
+from flask import jsonify, send_file
+from flask_cors import CORS
 from google.cloud import storage
 
 load_dotenv()
@@ -77,9 +77,9 @@ def init_webapp_routes(app):
         }
         return jsonify(response_data)
 
-    @app.route('/cfos-visualizer-stanford/<id>')
-    def index(id):
-        return download_as_json(id)
+    @app.route('/cfos-visualizer-stanford')
+    def index():
+        return download_as_json("index.json")
 
     @app.errorhandler(404)
     def page_not_found(error):

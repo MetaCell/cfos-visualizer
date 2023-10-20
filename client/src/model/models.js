@@ -1,10 +1,10 @@
 import Immutable from 'seamless-immutable';
 
 export const Entities = {
-    ATLAS: 'atlas',
-    ACTIVITY_MAP: 'activityMap',
-    EXPERIMENT: 'experiment',
-    LUT: 'lut',
+    ATLAS: 'Atlas',
+    ACTIVITY_MAP: 'ActivityMap',
+    EXPERIMENT: 'Experiment',
+    LUT: 'Lut',
 }
 
 export class Atlas {
@@ -18,9 +18,9 @@ export class Atlas {
 }
 
 export class ActivityMap {
-    constructor(id, color, opacity, visibility, stack) {
+    constructor(id, colorGradient, opacityGradient, visibility, stack) {
         return {
-            ...Immutable({id, color, opacity, visibility}, {deep: true}),
+            ...Immutable({id, colorGradient, opacityGradient, visibility}, {deep: true}),
             stack,
         };
     }
