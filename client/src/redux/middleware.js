@@ -100,13 +100,12 @@ export const middleware = store => next => async action => {
                     store.dispatch(stopLoading());
                     return;
                 }
-                // TODO: uncomment when we get the wireframe version of the atlas
-                // try {
-                //     atlasWireframeStack = await fetchAtlasWireframeStack(atlasID);
-                // } catch (error) {
-                //     store.dispatch(setError(error.message));
-                //     return;
-                // }
+                try {
+                    atlasWireframeStack = await fetchAtlasWireframeStack(atlasMetadata.file);
+                } catch (error) {
+                    store.dispatch(setError(error.message));
+                    return;
+                }
 
                 const atlas = new Atlas(
                     atlasID,

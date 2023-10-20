@@ -37,6 +37,9 @@ export const Viewer = (props) => {
     const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [wireframeMode, setWireframeMode] = React.useState(false);
+    const [sliceIndex, setSliceIndex] = React.useState(null);
+
 
     const containerRef = useRef(null);
     const rendererRef = useRef(null);
@@ -91,9 +94,10 @@ export const Viewer = (props) => {
 
         const newIndex = getNewSliceIndex(currentAtlas, direction);
         if (newIndex !== null) {
-            updateAllStackHelpersIndex(newIndex);
+            setSliceIndex(newIndex);
         }
     };
+
 
     const updateAllStackHelpersIndex = (newIndex) => {
         // Update the atlas
@@ -106,16 +110,15 @@ export const Viewer = (props) => {
     };
 
     const handlePreviousSlice = () => {
-        const currentAtlas = currentAtlasStackHelperRef.current;
-        if (currentAtlas && currentAtlas.index > 0) {
-            updateAllStackHelpersIndex(currentAtlas.index - 1);
+        if (sliceIndex && sliceIndex > 0) {
+            setSliceIndex(sliceIndex - 1);
         }
     };
 
     const handleNextSlice = () => {
         const currentAtlas = currentAtlasStackHelperRef.current;
-        if (currentAtlas && currentAtlas.index < currentAtlas.orientationMaxIndex - 1) {
-            updateAllStackHelpersIndex(currentAtlas.index + 1);
+        if (sliceIndex && currentAtlas && sliceIndex < currentAtlas.orientationMaxIndex - 1) {
+            setSliceIndex(sliceIndex + 1)
         }
     };
 
@@ -123,9 +126,16 @@ export const Viewer = (props) => {
         const currentAtlas = currentAtlasStackHelperRef.current;
         if (currentAtlas) {
             const centerIndex = Math.floor(currentAtlas.stack._frame.length / 2);
-            updateAllStackHelpersIndex(centerIndex);
+            setSliceIndex(centerIndex);
         }
     };
+
+    // handle slice index changes
+    useEffect(() => {
+        if (sliceIndex !== null) {
+            updateAllStackHelpersIndex(sliceIndex)
+        }
+    }, [sliceIndex]);
 
 
     // needed for the handle wheel event listener
@@ -139,34 +149,59 @@ export const Viewer = (props) => {
         if (activeAtlas) {
             viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
 
-            // Check if the current atlas is different from the active atlas.
-            if (!currentAtlasStackHelperRef.current || currentAtlasStackHelperRef.current.atlasId !== activeAtlas.id) {
-                const stackHelper = new StackHelper(activeAtlas.stack);
+            const targetStack = wireframeMode ? activeAtlas.wireframeStack : activeAtlas.stack;
+
+            // Check if the current atlas is different from the active atlas or if wireframe mode has changed.
+            const currentAtlasHasChanged = !currentAtlasStackHelperRef.current || currentAtlasStackHelperRef.current.atlasId !== activeAtlas.id;
+            const wireframeModeHasChanged = currentAtlasStackHelperRef.current && currentAtlasStackHelperRef.current.isWireframe !== wireframeMode;
+
+            if (currentAtlasHasChanged || wireframeModeHasChanged) {
+                const stackHelper = new StackHelper(targetStack);
                 stackHelper.name = sceneObjects.ATLAS;
+                stackHelper.isWireframe = wireframeMode;
                 stackHelper.bbox.visible = false;
                 stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-                updateStackHelperIndex(stackHelper, Math.floor(stackHelper.stack._frame.length / 2))
                 stackHelper.orientation = cameraRef.current.stackOrientation;
+
+                if (currentAtlasHasChanged) {
+                    // If the atlas has changed, center the index
+                    const centerIndex = Math.floor(stackHelper.stack._frame.length / 2);
+                    setSliceIndex(centerIndex);
+                } else if (wireframeModeHasChanged && sliceIndex !== null) {
+                    // If only the wireframe mode has changed, use the stored slice index
+                    updateStackHelperIndex(stackHelper, sliceIndex);
+                }
 
                 stackHelper.visible = activeAtlas.visibility;
                 stackHelper.slice.opacity = activeAtlas.opacity;
 
-                // Store the atlas ID in the StackHelper for future comparison
                 stackHelper.atlasId = activeAtlas.id;
 
                 if (currentAtlasStackHelperRef.current) {
                     sceneRef.current.remove(currentAtlasStackHelperRef.current);
                 }
-
                 sceneRef.current.add(stackHelper);
                 currentAtlasStackHelperRef.current = stackHelper;
-            }else{
+
+                // FIXME: Workaround to get the atlas always on the bottom
+
+                // Store all activity maps temporarily and remove them from the scene
+                const tempActivityMaps = [];
+                Object.keys(activityMapsStackHelpersRef.current).forEach(activityMapID => {
+                    tempActivityMaps.push(activityMapsStackHelpersRef.current[activityMapID]);
+                    sceneRef.current.remove(activityMapsStackHelpersRef.current[activityMapID]);
+                });
+                //  Add back the activity maps
+                tempActivityMaps.forEach(activityMapStackHelper => {
+                    sceneRef.current.add(activityMapStackHelper);
+                });
+            } else {
                 currentAtlasStackHelperRef.current.visible = activeAtlas.visibility;
                 currentAtlasStackHelperRef.current.slice.opacity = activeAtlas.opacity;
-
             }
         }
-    }, [activeAtlas]);
+    }, [activeAtlas, wireframeMode]);
+
 
     // Handle activityMap changes
     useEffect(() => {
@@ -269,7 +304,7 @@ export const Viewer = (props) => {
         {
             title: "Switch to wireframe",
             Icon: <TonalityIcon />,
-            onClickFunc: () => console.log("Switch to wireframe"),
+            onClickFunc: () => setWireframeMode(prevMode => !prevMode),
             isVisible: true
         }
     ]

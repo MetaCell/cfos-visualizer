@@ -59,7 +59,6 @@ export const getLUTHelper = (colorGradient, opacityGradient) => {
 export const makeSliceTransparent = (stackHelper) => {
     const material = getMaterial(stackHelper)
     material.transparent = true;
-    //material.needsUpdate = true;
 }
 
 export const getMaterial = (stackHelper) => {

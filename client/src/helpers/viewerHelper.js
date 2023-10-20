@@ -14,6 +14,7 @@ export const initRenderer = (viewerContainerRef) => {
     });
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.sortObjects = false // FIXME: Workaround for the atlas always be on top
     container.appendChild(renderer.domElement);
     return renderer;
 }
