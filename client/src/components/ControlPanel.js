@@ -4,6 +4,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import vars from "../theme/variables";
 import CustomSlider from "./Slider";
 import Table from "./Table";
+import {useDispatch, useSelector} from "react-redux";
+import {messages} from "../redux/constants";
+import {getOriginalHexColor, getOriginalOpacity} from "../helpers/gradientHelper";
+import {changeAllViewerObjectsOpacity, changeViewerObjectOpacity} from "../redux/actions";
 
 const { headerBorderLeftColor, headingColor, accordianTextColor } = vars;
 
@@ -53,28 +57,61 @@ const styles = {
 	},
 };
 
-const experiments = [
-	{
-			name: 'c-Fos__avg__saline.nii.gz',
-			description: 'from external experiment - Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT'
-	},
-	{
-			name: 'c-Fos__avg__saline.nii.gz',
-			description: 'from external experiment - Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT'
-	},
-	{
-			name: 'c-Fos__avg__saline.nii.gz',
-			description: 'from external experiment - Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT'
-	},
-	{
-			name: 'c-Fos__avg__saline.nii.gz',
-			description: 'from external experiment - Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT'
-	},
-]
+
 
 const ControlPanel = () =>
 {
+	const dispatch = useDispatch();
+
 	const [ open, setOpen ] = React.useState( true );
+	const [ opacity, setOpacity ] = React.useState( 0 );
+	const activeAtlas = useSelector(state => state.viewer.atlas);
+	const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
+
+	const atlasesMetadata = useSelector(state => state.model.Atlases);
+	const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
+
+	const getViewerObjectsData = () => {
+		const viewerObjects = []
+
+		if (activeAtlas) {
+			for (const activityMapId of Object.keys(activeActivityMaps)) {
+				const activityMapMetadata = activityMapsMetadata[activityMapId];
+				const activityMap = activeActivityMaps[activityMapId];
+
+				viewerObjects.push({
+					id: activityMapId,
+					name: activityMapMetadata.name,
+					description: activityMapMetadata.description || messages.NO_DESCRIPTION,
+					color: getOriginalHexColor(activityMap.colorGradient),
+					opacity: getOriginalOpacity(activityMap.opacityGradient),
+					isVisible: activityMap.visibility
+				});
+			}
+
+			// Atlas should be the last entry in the array
+			const atlasId = activeAtlas.id;
+			const atlasMetadata = atlasesMetadata[atlasId];
+
+			viewerObjects.push({
+				id: atlasId,
+				name: atlasMetadata.name,
+				description: atlasMetadata.description || messages.NO_DESCRIPTION,
+				color: null,
+				opacity: activeAtlas.opacity,
+				isVisible: activeAtlas.visibility
+			});
+		}
+		return viewerObjects
+	}
+
+	const onOpacityChange = (newValue) => {
+		setOpacity(newValue)
+		dispatch(changeAllViewerObjectsOpacity(newValue));
+	}
+
+	const viewerObjects = getViewerObjectsData()
+
 	return (
 		<>
 			<Box sx={ styles.controlPanel }>
@@ -103,7 +140,7 @@ const ControlPanel = () =>
 						</Typography>
 					</Box>
 
-					<CustomSlider defaultValue={0} width='30%' heading="Global intensity" />
+					<CustomSlider value={ opacity } width='30%' heading="Global intensity" onChange={(newValue) => onOpacityChange(newValue)} />
 				</Box>
 
 				<Box
@@ -114,7 +151,7 @@ const ControlPanel = () =>
 				>
 					<Table
 						tableHeader={ [ 'Actions', 'Name', 'Configure intensity' ] }
-						tableContent={experiments}
+						tableContent={viewerObjects}
 					/>
 				</Box>
 			</Box>

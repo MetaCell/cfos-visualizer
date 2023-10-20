@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Divider, IconButton, Tooltip, Typography } from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import ColorLensOutlinedIcon from '@mui/icons-material/ColorLensOutlined';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import vars from '../theme/variables';
@@ -10,17 +11,26 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import GrainIcon from '@mui/icons-material/Grain';
 import { tableStyles } from './Table';
 import Picker from './Picker';
+import {
+  changeViewerObjectOpacity,
+  downloadViewerObject,
+  removeActivityMapFromViewer,
+  toggleViewerObjectVisibility
+} from "../redux/actions";
+import {useDispatch} from "react-redux";
+import {getOriginalHexColor} from "../helpers/gradientHelper";
 
 const {
   headerBorderLeftColor,
   headerButtonColor
 } = vars;
 
-const colorPaletteExampleColors = [ '#3939A1', '#8A3535', '#475467' ];
 
-const TableRow = ( { index, data, length } ) =>
+const TableRow = ( { index, data, isAtlas } ) =>
 {
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const { id, name, color, opacity, isVisible, description } = data;
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -30,37 +40,41 @@ const TableRow = ( { index, data, length } ) =>
     setAnchorEl(null);
   };
 
+  const onOpacityChange = (id, newValue) => {
+    dispatch(changeViewerObjectOpacity(id, newValue));
+  }
+
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
 
   return (
     <>
       <Box sx={ tableStyles.root }>
         <Box sx={ { gap: '0.25rem !important' } }>
-          <Tooltip placement='right' title="Move up/down">
-            <IconButton>
+          {/*TODO: Update title when feature gets implemented*/}
+          <Tooltip placement='right' title="Move up/down (Coming Soon)">
+            <IconButton disabled>
               <DragIndicatorIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip placement='right' title={index === length - 1 ? "Not available for atlas" : "Unload image" }>
-            <IconButton disabled={ index === length - 1 }>
+          <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Unload image" }>
+            <IconButton disabled={ isAtlas} onClick={() => dispatch(removeActivityMapFromViewer(id))}>
               <RemoveCircleOutlineIcon />
             </IconButton>
           </Tooltip>
 
           <Divider sx={ { background: headerBorderLeftColor, width: '0.0625rem', height: '100%' } } />
-          <Tooltip placement='right' title="Hide">
-            <IconButton>
-              <VisibilityOutlinedIcon />
+          <Tooltip placement='right' title={isVisible ? "Hide" : "Show"}>
+            <IconButton onClick={() => dispatch(toggleViewerObjectVisibility(id))}>
+              { isVisible ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
             </IconButton>
           </Tooltip>
-          <Tooltip placement='right' title={ index === length - 1 ? "Not available for atlas" : "Configure color" }>
-            <IconButton aria-describedby={id} onClick={handleClick} disabled={ index === length - 1 }>
-              <ColorLensOutlinedIcon sx={ { color: `${ colorPaletteExampleColors[ index ] } !important` } } />
+          <Tooltip placement='right' title={ isAtlas ? "Not available for atlas" : "Configure color" }>
+            <IconButton onClick={handleClick} disabled={ isAtlas }>
+              <ColorLensOutlinedIcon sx={ { color: `${ color } !important` } } />
             </IconButton>
           </Tooltip>
           <Tooltip placement='right' title="Download">
-            <IconButton>
+            <IconButton onClick={() => dispatch(downloadViewerObject(id))}>
               <DownloadOutlinedIcon />
             </IconButton>
           </Tooltip>
@@ -72,20 +86,20 @@ const TableRow = ( { index, data, length } ) =>
         <Box>
           <GrainIcon sx={ { color: headerButtonColor, fontSize: '1rem' } } />
           <Typography variant='body1'>
-            { data?.name }
+            { name }
           </Typography>
           <Typography variant='body2' className='ellipses'>
-            { data?.description }
+            { description }
           </Typography>
         </Box>
 
         <Box sx={ { gap: '0.75rem !important' } }>
-          <CustomSlider defaultValue={ 10 * ( index + 1 ) } heading="Intensity" />
+          <CustomSlider value={ 100 * opacity } heading="Intensity" onChange={(newValue) => onOpacityChange(id, newValue)}/>
         </Box>
       </Box>
 
 
-      <Picker onClose={handleClose} id={id} open={open} anchorEl={anchorEl} />
+      <Picker onClose={handleClose} id={id} open={open} anchorEl={anchorEl} selectedColor={color} />
     </>
   );
 };

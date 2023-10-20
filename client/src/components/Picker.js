@@ -5,6 +5,10 @@ import Tab from '@mui/material/Tab';
 import { Box, Popover, Typography } from '@mui/material';
 import { ChromePicker } from 'react-color';
 import vars from '../theme/variables';
+import {useDispatch} from "react-redux";
+import {changeActivityMapColor} from "../redux/actions";
+import {getColorGradient} from "../helpers/gradientHelper";
+import {GRADIENTS as Gradients} from "../settings";
 
 const { headingColor, whiteColor, headerBorderLeftColor, headerBorderColor } = vars
 
@@ -41,28 +45,36 @@ function a11yProps(index) {
 const templateArr = [
   {
     name: 'Hot',
-    color: 'linear-gradient(90deg, rgba(255, 9, 9, 0.50) 0%, rgba(255, 217, 102, 0.50) 100%), rgba(255, 255, 255, 0.10)'
+    color: 'linear-gradient(90deg, rgba(255, 9, 9, 0.50) 0%, rgba(255, 217, 102, 0.50) 100%), rgba(255, 255, 255, 0.10)',
+    gradient: Gradients.HOT,
   },
   {
     name: 'Cool',
-    color: 'linear-gradient(90deg, rgba(20, 0, 175, 0.80) 0%, rgba(20, 147, 255, 0.80) 100%), rgba(255, 255, 255, 0.30)'
+    color: 'linear-gradient(90deg, rgba(20, 0, 175, 0.80) 0%, rgba(20, 147, 255, 0.80) 100%), rgba(255, 255, 255, 0.30)',
+    gradient: Gradients.COOL
   },
   {
     name: 'Black & White',
-    color: 'linear-gradient(90deg, #030203 0%, rgba(3, 2, 3, 0.00) 100%), rgba(255, 255, 255, 0.30)'
+    color: 'linear-gradient(90deg, #030203 0%, rgba(3, 2, 3, 0.00) 100%), rgba(255, 255, 255, 0.30)',
+    gradient: Gradients.BLACK_AND_WHITE
   }
 ]
 
-const Picker = ({open, id, anchorEl, onClose}) =>
+const Picker = ({open, id, anchorEl, selectedColor, onClose}) =>
 {
-  const [value, setValue] = React.useState(0);
-  const [ selectedColor, setSelectedColor ] = React.useState( '#4DED0E' );
+  const dispatch = useDispatch();
+  const [tab, setTab] = React.useState(0);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+
+  const handleTabChange = (event, newValue) => {
+    setTab(newValue);
   };
   const handleColorChange = (color) => {
-    setSelectedColor(color.hex);
+    dispatch(changeActivityMapColor(id, getColorGradient(color.hex)));
+  };
+
+  const handleTemplateChange = (gradient) => {
+    dispatch(changeActivityMapColor(id, gradient));
   };
 
   return (
@@ -94,11 +106,11 @@ const Picker = ({open, id, anchorEl, onClose}) =>
         }
       }}
     >
-      <Tabs value={ value } onChange={ handleChange }>
+      <Tabs value={ tab } onChange={ handleTabChange }>
         {['Template', 'Custom'].map((label, index) => <Tab disableRipple label={label} {...a11yProps(index)} />)}
       </Tabs>
 
-      <CustomTabPanel value={value} index={0}>
+      <CustomTabPanel value={tab} index={0}>
         <Box display='flex' flexDirection='column' gap={1.5}>
           { templateArr?.map((template, index) => (
             <Box
@@ -117,13 +129,14 @@ const Picker = ({open, id, anchorEl, onClose}) =>
                 }
               } }
               key={ index }
+              onClick={() => handleTemplateChange(template.gradient)}
             >
               <Typography>{ template.name }</Typography>
             </Box>
           ))}
         </Box>
       </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
+      <CustomTabPanel value={tab} index={1}>
         <Box sx={ {
           '& > div': {
             width: '100% !important',

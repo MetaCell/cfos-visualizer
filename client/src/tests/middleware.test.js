@@ -6,7 +6,7 @@ import {
     fetchAtlasWireframeStack, fetchActivityMapStack, fetchLUTFile
 } from '../services/fetchService';
 import {
-    fetchAndAddActivityMapToViewer, triggerDownloadAllObjects, triggerViewerObjectDownload,
+    fetchAndAddActivityMapToViewer, downloadAllObjects, downloadViewerObject,
     fetchAndSetExperimentAndAtlas,
     fetchModel,
     setCurrentExperiment,
@@ -14,7 +14,7 @@ import {
     setModel, addActivityMapToViewer, fetchAndSetViewerAtlas, setViewerAtlas
 } from "../redux/actions";
 import {Experiment, ActivityMap, Atlas} from "../model/models";
-import {DEFAULT_COLOR, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY} from "../settings";
+import {DEFAULT_COLOR_GRADIENT, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 import {actions} from "../redux/constants";
 
@@ -158,7 +158,7 @@ describe('Middleware', () => {
 
         const expectedObject = new ActivityMap(
             'activityMapID',
-            DEFAULT_COLOR,
+            DEFAULT_COLOR_GRADIENT,
             DEFAULT_ATLAS_OPACITY,
             DEFAULT_VISIBILITY,
             activityMapStack,
@@ -179,7 +179,7 @@ describe('Middleware', () => {
     });
 
     it('should handle DOWNLOAD_OBJECT Activity Map', () => {
-        const mockActivityMap = new ActivityMap(mockActivityMapID, 'red', 1, true, 'stack');
+        const mockActivityMap = new ActivityMap(mockActivityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack');
 
         // Mock the state of the store
         store.getState = jest.fn().mockReturnValue({
@@ -192,7 +192,7 @@ describe('Middleware', () => {
             }
         });
 
-        middleware(store)(next)(triggerViewerObjectDownload(mockActivityMapID));
+        middleware(store)(next)(downloadViewerObject(mockActivityMapID));
 
         expect(downloadActivityMap).toHaveBeenCalledWith(mockActivityMapID);
     });
@@ -209,15 +209,15 @@ describe('Middleware', () => {
             }
         });
 
-        middleware(store)(next)(triggerViewerObjectDownload(atlasID));
+        middleware(store)(next)(downloadViewerObject(atlasID));
 
         expect(downloadAtlas).toHaveBeenCalledWith(atlasID);
     });
 
     it('should handle DOWNLOAD_ALL_OBJECTS', () => {
         const mockActivityMaps = {
-            [mockActivityMapID]: new ActivityMap(mockActivityMapID, 'red', 1, true, 'stack1'),
-            'ActivityMap2': new ActivityMap('ActivityMap2', 'blue', 1, true, 'stack2'),
+            [mockActivityMapID]: new ActivityMap(mockActivityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack1'),
+            'ActivityMap2': new ActivityMap('ActivityMap2', DEFAULT_COLOR_GRADIENT, 1, true, 'stack2'),
         };
         const atlasID = 'Atlas1'
         const atlas = new Atlas(atlasID,  1, true, 'stack', 'wireframeStack');
@@ -231,7 +231,7 @@ describe('Middleware', () => {
             }
         });
 
-        middleware(store)(next)(triggerDownloadAllObjects());
+        middleware(store)(next)(downloadAllObjects());
 
         expect(downloadAllViewerObjects).toHaveBeenCalledWith(Object.keys(mockActivityMaps), atlasID)
     });
