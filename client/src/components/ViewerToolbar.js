@@ -3,51 +3,8 @@ import { IconButton, Stack, Tooltip } from "@mui/material";
 import { KeyboardArrowDownIcon, KeyboardArrowUpIcon, HomeIcon, ZoomInIcon, ZoomOutIcon, TonalityIcon, AutoModeIcon } from '../icons';
 import vars from '../theme/variables';
 
-const options = [
-    {
-        title: "Previous slice",
-        Icon: <KeyboardArrowUpIcon />,
-        onClickFunc: () => console.log("Previous slice"),
-        isVisible: true
-    },
-    {
-        title: "Center stack",
-        Icon: <HomeIcon />,
-        onClickFunc: () => console.log("Center stack"),
-        isVisible: true
-    },
-    {
-        title: "Next slice",
-        Icon: <KeyboardArrowDownIcon />,
-        onClickFunc: () => console.log("Next slice"),
-        isVisible: true
-    },
-    {
-        title: "Auto scroll through slices",
-        Icon: <AutoModeIcon />,
-        onClickFunc: () => console.log("Auto scroll through slices"),
-        isVisible: true
-    },
-    {
-        title: "Zoom in",
-        Icon: <ZoomInIcon />,
-        onClickFunc: () => console.log("Zoom in"),
-        isVisible: true
-    },
-    {
-        title: "Zoom out",
-        Icon: <ZoomOutIcon />,
-        onClickFunc: () => console.log("Zoom out"),
-        isVisible: true
-    },
-    {
-        title: "Switch to wireframe",
-        Icon: <TonalityIcon />,
-        onClickFunc: () => console.log("Switch to wireframe"),
-        isVisible: true
-    }
-]
-export const ViewerToolbar = () => {
+
+export const ViewerToolbar = ({options}) => {
 
     return (
         <Stack spacing={0.5} sx={{
