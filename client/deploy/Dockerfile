@@ -15,4 +15,11 @@ RUN npm install  --legacy-peer-deps
 # Copy the content of the /client directory to the container
 COPY client/ ./
 
-CMD ["npm", "start"]
+# Build the React app for production
+RUN npm run build
+
+# Install the 'serve' package to serve the static files
+RUN npm install -g serve
+
+# Command to run the application
+CMD ["serve", "-s", "build"]
