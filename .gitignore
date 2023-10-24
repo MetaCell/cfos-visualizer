@@ -1,7 +1,7 @@
 client/node_modules/
 processor/data/*
 processor/process/*
-data/
+processor/output/*
 processor/application_default_credentials.json
 processor/.env
 processor/helpers/__pycache__/

@@ -4,6 +4,7 @@ import http.server
 import socketserver
 import threading
 import time 
+from datetime import datetime  # Import the datetime module
 
 from dotenv import load_dotenv
 
@@ -28,6 +29,11 @@ wireframe = True
 web_directory = os.path.dirname(os.path.abspath(__file__))
 download_dir = web_directory + "/process"
 data_dir = web_directory + "/data/"
+
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # Generate timestamp
+output_folder = f"output/{timestamp}/"  # Create a new folder with the timestamp
+output_directory = os.path.join(web_directory, output_folder)  # Full path to the output folder
+os.makedirs(output_directory, exist_ok=True)
 
 def wait_for_file(filename, directory_path):
     """
@@ -79,6 +85,9 @@ def process(target_dir, file_name, process_wireframe):
         wait_for_file(processed_file_name, download_dir)
         processed_file_names.append(processed_file_name)
 
+    if process_wireframe:
+        os.remove(target_dir + wireframe_file_name)
+
     print(f"Process completed for { file_name }")
     return processed_file_names
 
@@ -94,7 +103,7 @@ if __name__ == "__main__":
     options = Options()
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--verbose")
-    options.add_argument("--headless")
+    #options.add_argument("--headless")
 
     options.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
@@ -105,30 +114,29 @@ if __name__ == "__main__":
     })
 
     driver = webdriver.Chrome(options=options)
-    # Get the current directory using os.getcwd()
-    current_directory = os.getcwd()
 
-    target_dir = current_directory + "/data/"
-
-    sub_folders = ["atlas", "activityMap"]
+    sub_folders = ["Atlas", "ActivityMap"]
 
     for sub_folder in sub_folders:
-        target_sub_dir = target_dir + sub_folder + "/"
+        source_sub_dir = data_dir + sub_folder + "/"
+        target_sub_dir = output_directory + sub_folder + "/"
+        os.makedirs(target_sub_dir, exist_ok=True)
         # Use os.listdir() to get a list of all files and directories in the current directory
-        files = os.listdir(target_sub_dir)
+        files = os.listdir(source_sub_dir)
 
         # Filter out only the files (excluding directories)
-        files = [file for file in files if os.path.isfile(os.path.join(target_sub_dir, file))]
+        files = [file for file in files if os.path.isfile(os.path.join(source_sub_dir, file))]
 
         # Print the list of files
         for file in files:
             print(f"Processing ${file}...")
             full_name = sub_folder + "/" + file
-            processed_file_names = process(target_dir, full_name, process_wireframe=wireframe)
-            #copy file back to the original location
+            processed_file_names = process(data_dir, full_name, process_wireframe=wireframe)
+
+            #copy file back to the target location
             for processed_file in processed_file_names:
                 os.rename(download_dir + "/" + processed_file, target_sub_dir + processed_file)
             
 
-        process_bucket_upload(bucket_name, target_sub_dir, sub_folder)
+        process_bucket_upload(bucket_name, output_directory, sub_folder)
 
