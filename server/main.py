@@ -69,15 +69,9 @@ def init_webapp_routes(app):
     def activity_map(id):
         return download_as_stream("ActivityMap", id)
 
-    # TODO: update to no longer be a placeholder
     @app.route('/cfos-visualizer-stanford/Experiment/<id>')
     def experiment(id):
-        # Dummy response for the new route
-        response_data = {
-            "experiment_name": f"Experiment {id}",
-            "contributor": "John Doe"
-        }
-        return jsonify(response_data)
+        return download_as_stream("Experiment", id)
 
     @app.route('/cfos-visualizer-stanford/index.json')
     def index():
