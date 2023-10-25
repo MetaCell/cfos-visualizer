@@ -77,7 +77,7 @@ def init_webapp_routes(app):
         }
         return jsonify(response_data)
 
-    @app.route('/cfos-visualizer-stanford')
+    @app.route('/cfos-visualizer-stanford/index.json')
     def index():
         return download_as_json("index.json")
 
