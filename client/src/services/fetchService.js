@@ -9,9 +9,7 @@ export async function fetchModelStructure() {
     try {
         const response = await fetch(`${BASE_URL}/index.json`);
         if (!response.ok) throw new Error('Network response was not ok');
-        const json = await response.json();
-        return JSON.parse(json);
-
+        return await response.json();
     } catch (error) {
         console.error(`Failed to fetch model structure: ${error.message}`);
         throw error;

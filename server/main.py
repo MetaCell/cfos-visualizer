@@ -1,3 +1,4 @@
+import json
 import os
 from io import BytesIO
 
@@ -49,8 +50,9 @@ def download_as_json(object_name):
         # Download the content of the blob
         content = blob.download_as_text()
 
-        # response_data = {"content": content}
-        return jsonify(content)
+        content_dict = json.loads(content)
+
+        return jsonify(content_dict)
 
     except Exception as e:
         return str(e), 500
