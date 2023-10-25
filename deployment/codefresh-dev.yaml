@@ -3,6 +3,7 @@ stages:
   - prepare
   - build
   - deploy
+
 steps:
   main_clone:
     title: 'Cloning main repository...'
@@ -11,6 +12,7 @@ steps:
     repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
     revision: '${{CF_BRANCH}}'
     git: github
+
   build_application_images:
     type: build
     stage: build
@@ -20,7 +22,8 @@ steps:
     image_name: cfos-visualizer
     title: CFOS-Visualizer
     working_directory: './'
-    tag: '${{DEPLOYMENT_PUBLISH_TAG}}'
+    tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
+
   deployment:
     stage: deploy
     type: helm
@@ -37,7 +40,5 @@ steps:
         - deployment/helm/values.yaml
       custom_values:
         - image.repository=${{REGISTRY}}/cfos-visualizer
-        - image.tag=${{DEPLOYMENT_PUBLISH_TAG}}
+        - image.tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}  # Dynamic tag based on branch and commit hash
         - ingress.hosts[0].host=${{DOMAIN}}
-
-
