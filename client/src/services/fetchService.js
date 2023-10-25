@@ -7,6 +7,7 @@ import {originalFilenameToNewExtension} from "../utils";
 
 export async function fetchModelStructure() {
     try {
+        console.log("BASE_URL: ", process.env.REACT_APP_SERVER_URL);
         const response = await fetch(`${BASE_URL}`);
         if (!response.ok) throw new Error('Network response was not ok');
         const json = await response.json();
