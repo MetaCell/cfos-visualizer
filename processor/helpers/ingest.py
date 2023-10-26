@@ -4,7 +4,7 @@ from tqdm import tqdm
 import os
 
 
-def upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_path):
+def upload_local_folder_to_bucket(bucket_name, local_folder_path):
     # Initialize a client using Application Default Credentials
     client = storage.Client()
 
@@ -15,7 +15,7 @@ def upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_
     for root, dirs, files in os.walk(local_folder_path):
         for file in files:
             local_file_path = os.path.join(root, file)
-            remote_file_path = os.path.join(remote_folder_path, os.path.relpath(local_file_path, local_folder_path))
+            remote_file_path = os.path.join(os.path.relpath(local_file_path, local_folder_path))
 
             blob = bucket.blob(remote_file_path)
 
@@ -47,8 +47,8 @@ def list_bucket_files(bucket_name, prefix=None):
   return file_list
 
 
-def process_bucket_upload(bucket_name, local_folder_path, remote_folder_path):
-    upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_path)
+def process_bucket_upload(bucket_name, local_folder_path):
+    upload_local_folder_to_bucket(bucket_name, local_folder_path)
     #handle wireframe conversion
     files = list_bucket_files(bucket_name)
     print(files)

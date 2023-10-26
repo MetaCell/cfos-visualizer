@@ -139,5 +139,5 @@ if __name__ == "__main__":
                 os.rename(download_dir + "/" + processed_file, target_sub_dir + processed_file)
             
 
-        process_bucket_upload(bucket_name, output_directory, sub_folder)
+        process_bucket_upload(bucket_name, output_directory)
 
