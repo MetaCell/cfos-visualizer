@@ -23,8 +23,8 @@ bucket_name = os.environ.get("GCLOUD_PROJECT")
 server_started_event = threading.Event()
 
 driver = None
-
 wireframe = True
+headless = True
 
 web_directory = os.path.dirname(os.path.abspath(__file__))
 download_dir = web_directory + "/process"
@@ -34,6 +34,8 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # Generate timestamp
 output_folder = f"output/{timestamp}/"  # Create a new folder with the timestamp
 output_directory = os.path.join(web_directory, output_folder)  # Full path to the output folder
 os.makedirs(output_directory, exist_ok=True)
+
+sub_folders = ["_Atlas", "_ActivityMap"]
 
 def wait_for_file(filename, directory_path):
     """
@@ -103,7 +105,8 @@ if __name__ == "__main__":
     options = Options()
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--verbose")
-    #options.add_argument("--headless")
+    if headless:
+        options.add_argument("--headless")
 
     options.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
@@ -114,8 +117,6 @@ if __name__ == "__main__":
     })
 
     driver = webdriver.Chrome(options=options)
-
-    sub_folders = ["Atlas", "ActivityMap"]
 
     for sub_folder in sub_folders:
         source_sub_dir = data_dir + sub_folder + "/"
