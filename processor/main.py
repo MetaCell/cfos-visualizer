@@ -34,6 +34,7 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # Generate timestamp
 output_folder = f"output/{timestamp}/"  # Create a new folder with the timestamp
 output_directory = os.path.join(web_directory, output_folder)  # Full path to the output folder
 os.makedirs(output_directory, exist_ok=True)
+os.makedirs(download_dir, exist_ok=True)
 
 sub_folders = ["_Atlas", "_ActivityMap"]
 
