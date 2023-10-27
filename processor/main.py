@@ -27,11 +27,11 @@ wireframe = True
 headless = True
 
 web_directory = os.path.dirname(os.path.abspath(__file__))
-download_dir = web_directory + "/process"
-data_dir = web_directory + "/data/"
+download_dir = os.path.join(web_directory, "process")
+data_dir = os.path.join(web_directory, "data")
 
 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # Generate timestamp
-output_folder = f"output/{timestamp}/"  # Create a new folder with the timestamp
+output_folder = os.path.normpath(os.path.join("output", timestamp))  # Create a new folder with the timestamp
 output_directory = os.path.join(web_directory, output_folder)  # Full path to the output folder
 os.makedirs(output_directory, exist_ok=True)
 os.makedirs(download_dir, exist_ok=True)
@@ -71,7 +71,9 @@ def process(target_dir, file_name, process_wireframe):
     wireframe_file_name  = file_name.replace(".nii.gz", "-wireframe.nii.gz")
 
     if process_wireframe:
-        process_nifti_file(target_dir + file_name, target_dir + wireframe_file_name)
+        target_file_path = os.path.join(target_dir, file_name)
+        wireframe_file_path = os.path.join(target_dir, wireframe_file_name)
+        process_nifti_file(target_file_path, wireframe_file_path)
 
     http_file_path = "http://localhost:8888/website/index.html?file="+file_name
     driver.get(http_file_path)
@@ -89,7 +91,8 @@ def process(target_dir, file_name, process_wireframe):
         processed_file_names.append(processed_file_name)
 
     if process_wireframe:
-        os.remove(target_dir + wireframe_file_name)
+        target_file_path = os.path.join(target_dir, wireframe_file_name)
+        os.remove(target_file_path)
 
     print(f"Process completed for { file_name }")
     return processed_file_names
@@ -120,8 +123,8 @@ if __name__ == "__main__":
     driver = webdriver.Chrome(options=options)
 
     for sub_folder in sub_folders:
-        source_sub_dir = data_dir + sub_folder + "/"
-        target_sub_dir = output_directory + sub_folder + "/"
+        source_sub_dir = os.path.normpath(os.path.join(data_dir, sub_folder))
+        target_sub_dir = os.path.normpath(os.path.join(output_directory, sub_folder))
         os.makedirs(target_sub_dir, exist_ok=True)
         # Use os.listdir() to get a list of all files and directories in the current directory
         files = os.listdir(source_sub_dir)
@@ -132,12 +135,14 @@ if __name__ == "__main__":
         # Print the list of files
         for file in files:
             print(f"Processing ${file}...")
-            full_name = sub_folder + "/" + file
+            full_name = os.path.normpath(os.path.join(sub_folder, file))
             processed_file_names = process(data_dir, full_name, process_wireframe=wireframe)
 
             #copy file back to the target location
             for processed_file in processed_file_names:
-                os.rename(download_dir + "/" + processed_file, target_sub_dir + processed_file)
+                source_path = os.path.join(download_dir, processed_file)
+                target_path = os.path.join(target_sub_dir, processed_file)
+                os.rename(source_path, target_path)
             
 
         process_bucket_upload(bucket_name, output_directory)
