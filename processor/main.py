@@ -38,19 +38,26 @@ os.makedirs(download_dir, exist_ok=True)
 
 sub_folders = ["_Atlas", "_ActivityMap"]
 
-def wait_for_file(filename, directory_path):
+def wait_for_file(filename, directory_path, timeout_seconds=300):
     """
-    Wait for a specific file to appear in a directory.
+    Wait for a specific file to appear in a directory or until the timeout is reached.
     
     Args:
         filename (str): The name of the file to wait for.
         directory_path (str): The path to the directory to watch.
+        timeout_seconds (int): The maximum number of seconds to wait.
     """
-    while not os.path.exists(os.path.join(directory_path, filename)):
+    deadline = time.time() + timeout_seconds  # Set the deadline based on current time and timeout
+
+    while time.time() < deadline:  # Check if the current time is past the deadline
+        if os.path.exists(os.path.join(directory_path, filename)):
+            print(f"{filename} has appeared in {directory_path}.")
+            return True
         print(f"Waiting for {filename} to appear in {directory_path}...")
         time.sleep(1)  # Wait for 1 second before checking again
 
-    print(f"{filename} has appeared in {directory_path}.")
+    print(f"Timeout reached. {filename} did not appear in {directory_path} within {timeout_seconds} seconds.")
+    return False  # Return False if the timeout is reached and the file did not appear
 
 def start_http_server(directory, port):
     try:
@@ -68,7 +75,7 @@ def start_http_server(directory, port):
 def process(target_dir, file_name, process_wireframe):
 
     processed_file_names = []
-    wireframe_file_name  = file_name.replace(".nii.gz", "-wireframe.nii.gz")
+    wireframe_file_name  = file_name.replace(".nii.gz", "W.nii.gz")
 
     if process_wireframe:
         target_file_path = os.path.join(target_dir, file_name)
@@ -79,7 +86,7 @@ def process(target_dir, file_name, process_wireframe):
     driver.get(http_file_path)
 
     processed_file_name = os.path.basename(file_name).replace("nii.gz", "msgpack")
-    wait_for_file(processed_file_name, download_dir)
+    processed = wait_for_file(processed_file_name, download_dir) #we could do something with this flag at this point like attempting a retry
     processed_file_names.append(processed_file_name)
 
     if process_wireframe:
@@ -87,7 +94,7 @@ def process(target_dir, file_name, process_wireframe):
         driver.get(http_file_path)
 
         processed_file_name = os.path.basename(wireframe_file_name).replace("nii.gz", "msgpack")
-        wait_for_file(processed_file_name, download_dir)
+        processed = wait_for_file(processed_file_name, download_dir)
         processed_file_names.append(processed_file_name)
 
     if process_wireframe:

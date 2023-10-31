@@ -15,10 +15,10 @@ def process_nifti_file(nifti_file_location, target_file_location):
     data = img.get_fdata()
 
     # Determine the image orientation
-    orientation = nib.aff2axcodes(img.affine)
+    #orientation = nib.aff2axcodes(img.affine)
 
     # Define transformations based on orientation
-    transformation = None
+    #transformation = None
 
     # if orientation == ('R', 'A', 'S'):
     #     # Axial orientation (Right-to-Left, Anterior-to-Posterior, Superior-to-Inferior)
@@ -57,7 +57,7 @@ def process_nifti_file(nifti_file_location, target_file_location):
         slice_data = data[:, :, slice_idx]
 
         # Apply the custom color transformation to the slice
-        colorized_slice = transform_slice(slice_data, transformation, True)
+        colorized_slice = transform_slice(slice_data, None, True)
 
         # Append the transformed slice to the list
         transformed_slices.append(colorized_slice)

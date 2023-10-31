@@ -21,8 +21,9 @@ def upload_local_folder_to_bucket(bucket_name, local_folder_path):
 
             # Check if the file already exists in the bucket
             if blob.exists():
-                print(f"File '{remote_file_path}' already exists in the bucket. Skipping upload.")
-                continue
+                print(f"File '{remote_file_path}' already exists in the bucket. Deleting remote file.")
+                blob.delete()  # Delete the remote file if it already exists
+
 
             # Get the file size for progress tracking
             file_size = os.path.getsize(local_file_path)
@@ -56,7 +57,7 @@ def process_bucket_upload(bucket_name, local_folder_path):
     upload_local_folder_to_bucket(bucket_name, local_folder_path)
     #handle wireframe conversion
     files = list_bucket_files(bucket_name)
-    print(files)
+    print(f"Processed ${len(files)} files in bucket...")
 
     #store to file so the client can access it
     print("Folder structure replicated to the bucket.")
