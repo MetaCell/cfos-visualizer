@@ -1,5 +1,5 @@
 client/node_modules/
-processor/process/*
+client/build/
 processor/data/*
 processor/process/*
 processor/output/*
