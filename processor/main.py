@@ -1,20 +1,63 @@
 import sys
-import requests
-from bs4 import BeautifulSoup
 import os
 import http.server
 import socketserver
 import threading
 import time 
+from datetime import datetime  # Import the datetime module
+
+from dotenv import load_dotenv
 
 from helpers.wireframe import process_nifti_file
+from helpers.ingest import process_bucket_upload
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 
+load_dotenv()
+
+bucket_name = os.environ.get("GCLOUD_PROJECT")
+
 server_started_event = threading.Event()
+
+driver = None
+wireframe = True
+headless = True
+
+web_directory = os.path.dirname(os.path.abspath(__file__))
+download_dir = os.path.join(web_directory, "process")
+data_dir = os.path.join(web_directory, "data")
+
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # Generate timestamp
+output_folder = os.path.normpath(os.path.join("output", timestamp))  # Create a new folder with the timestamp
+output_directory = os.path.join(web_directory, output_folder)  # Full path to the output folder
+os.makedirs(output_directory, exist_ok=True)
+os.makedirs(download_dir, exist_ok=True)
+
+sub_folders = ["_Atlas", "_ActivityMap"]
+
+def wait_for_file(filename, directory_path, timeout_seconds=300):
+    """
+    Wait for a specific file to appear in a directory or until the timeout is reached.
+    
+    Args:
+        filename (str): The name of the file to wait for.
+        directory_path (str): The path to the directory to watch.
+        timeout_seconds (int): The maximum number of seconds to wait.
+    """
+    deadline = time.time() + timeout_seconds  # Set the deadline based on current time and timeout
+
+    while time.time() < deadline:  # Check if the current time is past the deadline
+        if os.path.exists(os.path.join(directory_path, filename)):
+            print(f"{filename} has appeared in {directory_path}.")
+            return True
+        print(f"Waiting for {filename} to appear in {directory_path}...")
+        time.sleep(1)  # Wait for 1 second before checking again
+
+    print(f"Timeout reached. {filename} did not appear in {directory_path} within {timeout_seconds} seconds.")
+    return False  # Return False if the timeout is reached and the file did not appear
 
 def start_http_server(directory, port):
     try:
@@ -29,27 +72,40 @@ def start_http_server(directory, port):
         server_started_event.set()
         httpd.serve_forever()
 
-if __name__ == "__main__":
-    # Check if the number of arguments is correct
-    if len(sys.argv) != 2:
-        sys.argv.append("gubra_ano_combined_25um_boundary.nii.gz")
-        sys.argv.append("False")
-        #print("Usage: python script.py arg1 arg2 arg3")
-        #sys.exit(1)
+def process(target_dir, file_name, process_wireframe):
 
-    file_name = sys.argv[1]
-    process_wireframe = not (sys.argv[2] == "False")
-
-    wireframe_file_name  = file_name.replace(".nii.gz", "-wireframe.nii.gz")
-    compressed_file_name = file_name.replace(".nii.gz", "-compressed.msgpack")
+    processed_file_names = []
+    wireframe_file_name  = file_name.replace(".nii.gz", "W.nii.gz")
 
     if process_wireframe:
-        process_nifti_file(file_name, wireframe_file_name)
+        target_file_path = os.path.join(target_dir, file_name)
+        wireframe_file_path = os.path.join(target_dir, wireframe_file_name)
+        process_nifti_file(target_file_path, wireframe_file_path)
 
+    http_file_path = "http://localhost:8888/website/index.html?file="+file_name
+    driver.get(http_file_path)
+
+    processed_file_name = os.path.basename(file_name).replace("nii.gz", "msgpack")
+    processed = wait_for_file(processed_file_name, download_dir) #we could do something with this flag at this point like attempting a retry
+    processed_file_names.append(processed_file_name)
+
+    if process_wireframe:
+        http_file_path = "http://localhost:8888/website/index.html?file="+wireframe_file_name
+        driver.get(http_file_path)
+
+        processed_file_name = os.path.basename(wireframe_file_name).replace("nii.gz", "msgpack")
+        processed = wait_for_file(processed_file_name, download_dir)
+        processed_file_names.append(processed_file_name)
+
+    if process_wireframe:
+        target_file_path = os.path.join(target_dir, wireframe_file_name)
+        os.remove(target_file_path)
+
+    print(f"Process completed for { file_name }")
+    return processed_file_names
+
+if __name__ == "__main__":
     port = 8888
-    web_directory = os.path.dirname(os.path.abspath(__file__))
-    download_dir = web_directory + "/process"
-
     # Create a thread for the HTTP server
     http_server_thread = threading.Thread(target=start_http_server, args=(web_directory, port))
     http_server_thread.start()
@@ -60,7 +116,8 @@ if __name__ == "__main__":
     options = Options()
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--verbose")
-    #options.add_argument("--headless")
+    if headless:
+        options.add_argument("--headless")
 
     options.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
@@ -72,43 +129,31 @@ if __name__ == "__main__":
 
     driver = webdriver.Chrome(options=options)
 
-    #start the server
-    files_directory = os.path.dirname(os.path.abspath(__file__)) + "/data/sample_dataset/Atlas"
+    for sub_folder in sub_folders:
+        source_sub_dir = os.path.normpath(os.path.join(data_dir, sub_folder))
+        target_sub_dir = os.path.normpath(os.path.join(output_directory, sub_folder))
+        os.makedirs(target_sub_dir, exist_ok=True)
+        # Use os.listdir() to get a list of all files and directories in the current directory
+        files = os.listdir(source_sub_dir)
 
-    # List all files in the folder
-    files = [f for f in os.listdir(files_directory) if os.path.isfile(os.path.join(files_directory, f))]
+        # Filter out only the files (excluding directories)
+        files = [file for file in files if os.path.isfile(os.path.join(source_sub_dir, file))]
 
-    prev_file = None 
+        # Print the list of files
+        for file in files:
+            print(f"Processing ${file}...")
+            full_name = os.path.normpath(os.path.join(sub_folder, file))
+            processed_file_names = process(data_dir, full_name, process_wireframe=wireframe)
 
-    def wait_for_new_files(directory_path, timeout=None):
-      start_time = time.time()
-      prev_file_list = [] 
+            #copy file back to the target location
+            for processed_file in processed_file_names:
+                source_path = os.path.join(download_dir, processed_file)
+                target_path = os.path.join(target_sub_dir, processed_file)
+                os.rename(source_path, target_path)
+            
 
-      while True:
-          files = os.listdir(directory_path)
-          if len(files) > len(prev_file_list):
-              print("New file(s) detected:")
-              for file in files:
-                  print(os.path.join(directory_path, file))
-              prev_file_list = files
-              return  # Return when new files are found
-          else:
-              print("Waiting for new files...")
-              time.sleep(1)  # Wait for 1 second before checking again
+        process_bucket_upload(bucket_name, output_directory)
 
-          # Check for timeout (optional)
-          if timeout is not None and time.time() - start_time >= timeout:
-              print("Timeout reached. No new files found.")
-              return
-
-    for file in files:
-      #driver.send_keys(Keys.CONTROL + 't')
-      #if prev_file: 
-        #wait_for_new_files(download_dir)
-
-      http_file_path = "http://localhost:8888/website/index.html?file=/sample_dataset/Atlas/" + file
-      driver.get(http_file_path)
-      prev_file = file 
-
-    print()
-
+    driver.quit()
+    print("Process completed. Now exiting...")
+    sys.exit(0)

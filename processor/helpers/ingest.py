@@ -3,7 +3,8 @@ from tqdm import tqdm
 
 import os
 
-def upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_path):
+
+def upload_local_folder_to_bucket(bucket_name, local_folder_path):
     # Initialize a client using Application Default Credentials
     client = storage.Client()
 
@@ -14,19 +15,26 @@ def upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_
     for root, dirs, files in os.walk(local_folder_path):
         for file in files:
             local_file_path = os.path.join(root, file)
-            remote_file_path = os.path.join(remote_folder_path, os.path.relpath(local_file_path, local_folder_path))
+            remote_file_path = os.path.join(os.path.relpath(local_file_path, local_folder_path))
 
             blob = bucket.blob(remote_file_path)
 
-            # Upload the file in chunks with a progress bar
-            with tqdm(total=os.path.getsize(local_file_path), unit='B', unit_scale=True, unit_divisor=1024) as pbar:
-                def progress_callback(bytes_uploaded):
-                    pbar.update(bytes_uploaded - pbar.n)
+            # Check if the file already exists in the bucket
+            if blob.exists():
+                print(f"File '{remote_file_path}' already exists in the bucket. Deleting remote file.")
+                blob.delete()  # Delete the remote file if it already exists
 
-                blob.resumable_upload_from_filename(local_file_path, callback=progress_callback)
-                
-            pbar.close()
 
+            # Get the file size for progress tracking
+            file_size = os.path.getsize(local_file_path)
+
+            with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
+                # Upload the file in chunks
+                with open(local_file_path, 'rb') as file:
+                    blob.upload_from_file(file)
+                    pbar.update(file_size)
+
+                pbar.close()
 
 def list_bucket_files(bucket_name, prefix=None):
   # Initialize a client using Application Default Credentials
@@ -44,14 +52,12 @@ def list_bucket_files(bucket_name, prefix=None):
 
   return file_list
 
-if __name__ == "__main__":
-    bucket_name = "your_bucket_name"
-    local_folder_path = "/path/to/local/folder"
-    remote_folder_path = "path/on/bucket"
 
-    upload_local_folder_to_bucket(bucket_name, local_folder_path, remote_folder_path)
+def process_bucket_upload(bucket_name, local_folder_path):
+    upload_local_folder_to_bucket(bucket_name, local_folder_path)
     #handle wireframe conversion
     files = list_bucket_files(bucket_name)
+    print(f"Processed ${len(files)} files in bucket...")
 
     #store to file so the client can access it
     print("Folder structure replicated to the bucket.")
