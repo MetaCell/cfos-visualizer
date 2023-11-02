@@ -154,3 +154,6 @@ if __name__ == "__main__":
 
         process_bucket_upload(bucket_name, output_directory)
 
+    driver.quit()
+    print("Process completed. Now exiting...")
+    sys.exit(0)
