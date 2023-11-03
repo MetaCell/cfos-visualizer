@@ -1,8 +1,8 @@
 import Immutable from 'seamless-immutable';
 
 export const Entities = {
-    ATLAS: 'Atlas',
-    ACTIVITY_MAP: 'ActivityMap',
+    ATLAS: '_Atlas',
+    ACTIVITY_MAP: '_ActivityMap',
     EXPERIMENT: 'Experiment',
     LUT: 'Lut',
 }
