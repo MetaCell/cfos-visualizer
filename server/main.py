@@ -1,3 +1,4 @@
+import json
 import os
 from io import BytesIO
 
@@ -49,8 +50,9 @@ def download_as_json(object_name):
         # Download the content of the blob
         content = blob.download_as_text()
 
-        # response_data = {"content": content}
-        return jsonify(content)
+        content_dict = json.loads(content)
+
+        return jsonify(content_dict)
 
     except Exception as e:
         return str(e), 500
@@ -67,17 +69,11 @@ def init_webapp_routes(app):
     def activity_map(id):
         return download_as_stream("ActivityMap", id)
 
-    # TODO: update to no longer be a placeholder
     @app.route('/cfos-visualizer-stanford/Experiment/<id>')
     def experiment(id):
-        # Dummy response for the new route
-        response_data = {
-            "experiment_name": f"Experiment {id}",
-            "contributor": "John Doe"
-        }
-        return jsonify(response_data)
+        return download_as_stream("Experiment", id)
 
-    @app.route('/cfos-visualizer-stanford')
+    @app.route('/cfos-visualizer-stanford/index.json')
     def index():
         return download_as_json("index.json")
 

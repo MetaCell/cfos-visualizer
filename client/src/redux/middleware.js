@@ -78,8 +78,7 @@ export const middleware = store => next => async action => {
                     store.dispatch(startLoading('Fetching experiment metadata...'))
                     data = await fetchExperimentMetadata(experimentID);
                 } catch (error) {
-                    store.dispatch(setError(error.message));
-                    return
+                    console.warn("No metadata found")
                 }
                 store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
             }

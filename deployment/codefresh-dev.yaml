@@ -40,5 +40,5 @@ steps:
         - deployment/helm/values.yaml
       custom_values:
         - image.repository=${{REGISTRY}}/cfos-visualizer
-        - image.tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}  # Dynamic tag based on branch and commit hash
+        - image.tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}
         - ingress.hosts[0].host=${{DOMAIN}}
