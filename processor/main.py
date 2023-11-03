@@ -155,7 +155,7 @@ if __name__ == "__main__":
                 os.rename(source_path, target_path)
             
 
-        #process_bucket_upload(bucket_name, output_directory)
+        process_bucket_upload(bucket_name, output_directory)
 
     driver.quit()
     print("Process completed. Now exiting...")
