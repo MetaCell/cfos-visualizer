@@ -9,7 +9,7 @@ from datetime import datetime  # Import the datetime module
 from dotenv import load_dotenv
 
 from helpers.wireframe import process_nifti_file
-from helpers.ingest import process_bucket_upload
+from helpers.ingest import process_bucket_upload, upload_file_to_bucket_root
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -106,6 +106,7 @@ def process(target_dir, file_name, process_wireframe):
     return processed_file_names
 
 if __name__ == "__main__":
+
     port = 8888
     # Create a thread for the HTTP server
     http_server_thread = threading.Thread(target=start_http_server, args=(web_directory, port))
@@ -156,6 +157,10 @@ if __name__ == "__main__":
             
 
         process_bucket_upload(bucket_name, output_directory)
+
+    #last call for index file
+    index_location = os.path.join(data_dir, "index.json")
+    upload_file_to_bucket_root(bucket_name, index_location)
 
     driver.quit()
     print("Process completed. Now exiting...")
