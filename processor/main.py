@@ -37,6 +37,7 @@ os.makedirs(output_directory, exist_ok=True)
 os.makedirs(download_dir, exist_ok=True)
 
 sub_folders = ["Atlas", "ActivityMap"]
+sub_folders_process_wireframe = ["Atlas"]
 
 def wait_for_file(filename, directory_path, timeout_seconds=300):
     """
@@ -139,11 +140,13 @@ if __name__ == "__main__":
         # Filter out only the files (excluding directories)
         files = [file for file in files if os.path.isfile(os.path.join(source_sub_dir, file))]
 
+        should_sub_folders_process_wireframe = sub_folder in sub_folders_process_wireframe
+
         # Print the list of files
         for file in files:
             print(f"Processing ${file}...")
             full_name = os.path.normpath(os.path.join(sub_folder, file))
-            processed_file_names = process(data_dir, full_name, process_wireframe=wireframe)
+            processed_file_names = process(data_dir, full_name, process_wireframe=should_sub_folders_process_wireframe)
 
             #copy file back to the target location
             for processed_file in processed_file_names:
@@ -152,7 +155,7 @@ if __name__ == "__main__":
                 os.rename(source_path, target_path)
             
 
-        process_bucket_upload(bucket_name, output_directory)
+        #process_bucket_upload(bucket_name, output_directory)
 
     driver.quit()
     print("Process completed. Now exiting...")
