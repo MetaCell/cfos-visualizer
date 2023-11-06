@@ -34,7 +34,7 @@ theme = createTheme( {
           boxShadow: '0rem 0.5rem 0.5rem -0.25rem rgba(16, 24, 40, 0.03), 0rem 1.25rem 1.5rem -0.25rem rgba(16, 24, 40, 0.08)',
         },
         paperWidthXs: {
-          maxWidth: '20.375rem'
+          maxWidth: '15.375rem'
         }
       }
     },
