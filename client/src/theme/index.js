@@ -34,7 +34,7 @@ theme = createTheme( {
           boxShadow: '0rem 0.5rem 0.5rem -0.25rem rgba(16, 24, 40, 0.03), 0rem 1.25rem 1.5rem -0.25rem rgba(16, 24, 40, 0.08)',
         },
         paperWidthXs: {
-          maxWidth: '15.375rem'
+          maxWidth: '20.375rem'
         }
       }
     },
@@ -194,7 +194,7 @@ theme = createTheme( {
       styleOverrides: {
         paper: {
           marginTop: '0.25rem',
-          width: '28.125rem',
+          width: '40.125rem',
           borderRadius: '0.5rem',
           right: '0.75rem',
           background: headerBorderColor,
