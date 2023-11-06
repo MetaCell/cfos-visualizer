@@ -5,6 +5,7 @@ import socketserver
 import threading
 import time 
 from datetime import datetime  # Import the datetime module
+import shutil
 
 from dotenv import load_dotenv
 
@@ -98,10 +99,6 @@ def process(target_dir, file_name, process_wireframe):
         processed = wait_for_file(processed_file_name, download_dir)
         processed_file_names.append(processed_file_name)
 
-    if process_wireframe:
-        target_file_path = os.path.join(target_dir, wireframe_file_name)
-        os.remove(target_file_path)
-
     print(f"Process completed for { file_name }")
     return processed_file_names
 
@@ -150,13 +147,25 @@ if __name__ == "__main__":
             processed_file_names = process(data_dir, full_name, process_wireframe=should_sub_folders_process_wireframe)
 
             #copy file back to the target location
+            source_original_file = os.path.join(source_sub_dir, file)
+            target_original_file = os.path.join(target_sub_dir, file)
+
+            shutil.copy(source_original_file, target_original_file)
+
+            if should_sub_folders_process_wireframe:
+                wireframe_file_name = file.replace(".nii.gz", "W.nii.gz")
+                source_wireframe_file = os.path.join(source_sub_dir, wireframe_file_name)
+                target_wireframe_file = os.path.join(target_sub_dir, wireframe_file_name)
+                shutil.copy(source_wireframe_file, target_wireframe_file)
+                os.remove(source_wireframe_file)
+
+            #finally the message packed files
             for processed_file in processed_file_names:
                 source_path = os.path.join(download_dir, processed_file)
                 target_path = os.path.join(target_sub_dir, processed_file)
                 os.rename(source_path, target_path)
-            
 
-        process_bucket_upload(bucket_name, output_directory)
+    process_bucket_upload(bucket_name, output_directory)
 
     #last call for index file
     index_location = os.path.join(data_dir, "index.json")

@@ -38,7 +38,7 @@ def process_nifti_file(nifti_file_location, target_file_location):
     for slice_idx in range(data.shape[-1]):
         slice_data = data[:, :, slice_idx]
         # Apply edge detection to the slice
-        edge_slice = transform_slice(slice_data)
+        edge_slice = transform_slice(slice_data, True)
         # Append the transformed slice to the list
         transformed_slices.append(edge_slice)
 
