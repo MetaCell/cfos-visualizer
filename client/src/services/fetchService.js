@@ -7,7 +7,7 @@ import {originalFilenameToNewExtension} from "../utils";
 
 export async function fetchModelStructure() {
     try {
-        const response = await fetch(`${BASE_URL}/index.json`);
+        const response = await fetch(`${BASE_URL}/index.json?metacell=1`);
         if (!response.ok) throw new Error('Network response was not ok');
         return await response.json();
     } catch (error) {
