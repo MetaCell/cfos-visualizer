@@ -194,7 +194,7 @@ theme = createTheme( {
       styleOverrides: {
         paper: {
           marginTop: '0.25rem',
-          width: '28.125rem',
+          width: '40.125rem',
           borderRadius: '0.5rem',
           right: '0.75rem',
           background: headerBorderColor,
