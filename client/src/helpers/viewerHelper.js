@@ -76,3 +76,14 @@ const updateCameraDimensions = (camera, container) => {
     };
     return camera
 }
+
+export const resize = (containerRef, rendererRef, cameraRef) => {
+    if (containerRef.current && rendererRef.current && cameraRef.current) {
+        // Update camera aspect ratio and renderer size
+        const width = containerRef.current.clientWidth;
+        const height = containerRef.current.clientHeight;
+        cameraRef.current.aspect = width / height;
+        cameraRef.current.updateProjectionMatrix();
+        rendererRef.current.setSize(width, height);
+    }
+};

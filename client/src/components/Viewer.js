@@ -82,11 +82,17 @@ export const Viewer = (props) => {
 
     const subscribeEvents = () => {
         containerRef.current.addEventListener('wheel', handleScroll);
+        window.addEventListener('resize', onWindowResize);
     };
 
     const unSubscribeEvents = () => {
         containerRef.current?.removeEventListener('wheel', handleScroll);
+        window.removeEventListener('resize', onWindowResize);
     };
+
+    const onWindowResize = (event) => {
+        viewerHelper.resize(containerRef, rendererRef, cameraRef)
+    }
 
     const handleScroll = (event) => {
         const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP;
@@ -418,7 +424,6 @@ export const Viewer = (props) => {
             </Popover>
             <Box sx={{position: "absolute", top: 0, left: 0, height: "100%", width: "100%",}}
                  ref={containerRef}>
-                {/* <Typography> Viewer </Typography> */}
             </Box>
         </Box>
     );
