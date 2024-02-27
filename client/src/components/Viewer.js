@@ -50,6 +50,7 @@ export const Viewer = (props) => {
     const currentAtlasStackHelperRef = useRef(null);
     const activityMapsStackHelpersRef = useRef({});
 
+    const previousAtlasIdRef = useRef(null);
     const activityMapsRef = useRef(activeActivityMaps);
 
     // On Mount
@@ -153,7 +154,12 @@ export const Viewer = (props) => {
     // On atlas changes
     useEffect(() => {
         if (activeAtlas) {
-            viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
+            const hasAtlasChanged = previousAtlasIdRef.current !== activeAtlas.id;
+
+            if(hasAtlasChanged){
+                viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
+                previousAtlasIdRef.current =activeAtlas.id;
+            }
 
             const targetStack = wireframeMode ? activeAtlas.wireframeStack : activeAtlas.stack;
 
