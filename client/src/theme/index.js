@@ -181,7 +181,7 @@ theme = createTheme( {
         },
         rail: {
           opacity: 1,
-          background: 'linear-gradient(90deg, #FFF 0%, #030203 100%)'
+          background: '#000'
         },
         track: {
           border: 'none',

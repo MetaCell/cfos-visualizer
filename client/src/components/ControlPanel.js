@@ -2,12 +2,10 @@ import { Box, Typography } from "@mui/material";
 import React from "react";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import vars from "../theme/variables";
-import CustomSlider from "./Slider";
 import Table from "./Table";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {messages} from "../redux/constants";
-import {getOriginalHexColor, getOriginalOpacity} from "../helpers/gradientHelper";
-import {changeAllViewerObjectsOpacity, changeViewerObjectOpacity} from "../redux/actions";
+
 
 const { headerBorderLeftColor, headingColor, accordianTextColor } = vars;
 
@@ -61,10 +59,7 @@ const styles = {
 
 const ControlPanel = () =>
 {
-	const dispatch = useDispatch();
-
 	const [ open, setOpen ] = React.useState( true );
-	const [ opacity, setOpacity ] = React.useState( 0 );
 	const activeAtlas = useSelector(state => state.viewer.atlas);
 	const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
 
@@ -83,8 +78,9 @@ const ControlPanel = () =>
 					id: activityMapId,
 					name: activityMapMetadata.name,
 					description: activityMapMetadata.description || messages.NO_DESCRIPTION,
-					color: getOriginalHexColor(activityMap.colorGradient),
-					opacity: getOriginalOpacity(activityMap.opacityGradient),
+					colorRange: activityMap.colorRange,
+					intensityRange: [...activityMap.intensityRange],
+					stackIntensityRange: [...activityMap.stack.minMax],
 					isVisible: activityMap.visibility
 				});
 			}
@@ -97,18 +93,21 @@ const ControlPanel = () =>
 				id: atlasId,
 				name: atlasMetadata.name,
 				description: atlasMetadata.description || messages.NO_DESCRIPTION,
-				color: null,
-				opacity: activeAtlas.opacity,
+				colorRange: null,
+				intensityRange: [...activeAtlas.intensityRange],
+				stackIntensityRange: [...activeAtlas.stack.minMax],
 				isVisible: activeAtlas.visibility
 			});
 		}
 		return viewerObjects
 	}
 
-	const onOpacityChange = (newValue) => {
-		setOpacity(newValue)
-		dispatch(changeAllViewerObjectsOpacity(newValue));
-	}
+
+	// TODO: Should the slider affect the atlas too?
+	// const onIntensityChange = (newValue) => {
+	// 	setOpacity(newValue)
+	// 	dispatch(changeAllViewerObjectsOpacity(newValue));
+	// }
 
 	const viewerObjects = getViewerObjectsData()
 
@@ -135,12 +134,12 @@ const ControlPanel = () =>
 						<Typography sx={styles.controlPanelHeaderHeading}>
 							Control panel
 							<Typography sx={ styles.controlPanelHeaderSubHeading } component='span'>
-								3 active statistical maps
+								{Object.keys(activeActivityMaps).length} active statistical maps
 							</Typography>
 						</Typography>
 					</Box>
 
-					<CustomSlider value={ opacity } width='30%' heading="Global intensity" onChange={(newValue) => onOpacityChange(newValue)} />
+					{/*<CustomSlider value={ opacity } width='30%' heading="Global intensity" onChange={(newValue) => onIntensityChange(newValue)} />*/}
 				</Box>
 
 				<Box

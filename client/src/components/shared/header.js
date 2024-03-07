@@ -77,11 +77,6 @@ export const Header = () => {
           configuration={dynamicToolbarMenu}
           menuHandler={menuHandler}
         />
-        {/* <Button disableRipple sx={classes.button}>
-          <ArticleIcon />
-          Effect of psilocybin on c-Fos-IF in distinct contexts
-          <DropdownIcon />
-        </Button> */}
       </Box>
     </Box>
   )

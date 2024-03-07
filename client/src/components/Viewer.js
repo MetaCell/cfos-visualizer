@@ -179,8 +179,6 @@ export const Viewer = (props) => {
                 }
 
                 stackHelper.visible = activeAtlas.visibility;
-                stackHelper.slice.opacity = activeAtlas.opacity;
-
                 stackHelper.atlasId = activeAtlas.id;
 
                 if (currentAtlasStackHelperRef.current) {
@@ -203,7 +201,6 @@ export const Viewer = (props) => {
                 });
             } else {
                 currentAtlasStackHelperRef.current.visible = activeAtlas.visibility;
-                currentAtlasStackHelperRef.current.slice.opacity = activeAtlas.opacity;
             }
         }
     }, [activeAtlas, wireframeMode]);
@@ -234,9 +231,9 @@ export const Viewer = (props) => {
                     activityMapStackHelper.visible = activityMap.visibility
                 }
                 // change LUT
-                if (activityMapStackHelper.colorGradient !== JSON.stringify(activityMap.colorGradient) ||
-                    activityMapStackHelper.opacityGradient !== JSON.stringify(activityMap.opacityGradient)) {
-                    updateLUT(activityMap.colorGradient, activityMap.opacityGradient, activityMapStackHelper)
+                if (activityMapStackHelper.colorRange !== JSON.stringify(activityMap.colorRange) ||
+                    activityMapStackHelper.intensityRange !== JSON.stringify(activityMap.intensityRange)) {
+                    updateLUT(activityMap.colorRange, activityMap.intensityRange, activityMapStackHelper)
                 }
             }
         })
@@ -273,19 +270,19 @@ export const Viewer = (props) => {
     const toolbarOptions = [
         {
             title: "Previous slice",
-            Icon: <KeyboardArrowUpIcon />,
+            Icon: <KeyboardArrowUpIcon/>,
             onClickFunc: handlePreviousSlice,
             isVisible: true
         },
         {
             title: "Center stack",
-            Icon: <HomeIcon />,
+            Icon: <HomeIcon/>,
             onClickFunc: handleCenterStack,
             isVisible: true
         },
         {
             title: "Next slice",
-            Icon: <KeyboardArrowDownIcon />,
+            Icon: <KeyboardArrowDownIcon/>,
             onClickFunc: handleNextSlice,
             isVisible: true
         },
@@ -309,7 +306,7 @@ export const Viewer = (props) => {
         // },
         {
             title: "Switch to wireframe",
-            Icon: <TonalityIcon />,
+            Icon: <TonalityIcon/>,
             onClickFunc: () => setWireframeMode(prevMode => !prevMode),
             isVisible: true
         }
@@ -366,59 +363,62 @@ export const Viewer = (props) => {
                 <Box px={2} pt={1.25}>
                     {orderedExperiments.map((experimentName, experimentIndex) => {
                         const experimentActivityMaps = experimentsActivityMaps[experimentName] || [];
-                        return (<Box key={experimentName}>
-                            {experimentIndex !== 0 &&
-                                <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
-                            <Box sx={{
-                                height: '1.875rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                background: headerBorderColor,
-                                '& .MuiTypography-root': {
-                                    fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
-                                }
-                            }}>
-                                <Typography>{experimentName}</Typography>
-                                {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
-                            </Box>
-                            <FormGroup>
-                                {experimentActivityMaps.map((activityMapID, mapIndex) => (
-                                    <Box key={activityMapID} sx={{
-                                        position: 'relative', paddingLeft: '0.25rem', '&:hover': {
-                                            '&:before': {
-                                                background: primaryActiveColor,
-                                            }
-                                        }, '&:before': {
-                                            content: '""',
-                                            height: '100%',
-                                            width: '0.125rem',
-                                            background: headerBorderColor,
-                                            position: 'absolute',
-                                            left: 0,
-                                            top: 0,
-                                        },
-                                    }}>
-                                        <FormControlLabel
+                        return (
+                            <Box key={experimentName + experimentIndex}>
+                                {experimentIndex !== 0 &&
+                                    <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
+                                <Box sx={{
+                                    height: '1.875rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    background: headerBorderColor,
+                                    '& .MuiTypography-root': {
+                                        fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
+                                    }
+                                }}>
+                                    <Typography>{experimentName}</Typography>
+                                    {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
+                                </Box>
+                                <FormGroup>
+                                    {experimentActivityMaps.map((activityMapID, mapIndex) => (
+                                        <Box
                                             key={activityMapID}
-                                            control={
-                                                <Switch
-                                                    checked={!!activeActivityMaps[activityMapID]}
-                                                    onChange={(event) => {
-                                                        if (event.target.checked) {
-                                                            dispatch(fetchAndAddActivityMapToViewer(activityMapID));
-                                                            handlePopoverClose()
-                                                        } else {
-                                                            dispatch(removeActivityMapFromViewer(activityMapID));
-                                                        }
-                                                    }}
-                                                />}
-                                            labelPlacement="start"
-                                            label={activityMapsMetadata[activityMapID]?.name}
-                                        />
-                                    </Box>))}
-                            </FormGroup>
-                        </Box>)
+                                            sx={{
+                                                position: 'relative', paddingLeft: '0.25rem', '&:hover': {
+                                                    '&:before': {
+                                                        background: primaryActiveColor,
+                                                    }
+                                                }, '&:before': {
+                                                    content: '""',
+                                                    height: '100%',
+                                                    width: '0.125rem',
+                                                    background: headerBorderColor,
+                                                    position: 'absolute',
+                                                    left: 0,
+                                                    top: 0,
+                                                },
+                                            }}>
+                                            <FormControlLabel
+                                                key={activityMapID}
+                                                control={
+                                                    <Switch
+                                                        checked={!!activeActivityMaps[activityMapID]}
+                                                        onChange={(event) => {
+                                                            if (event.target.checked) {
+                                                                dispatch(fetchAndAddActivityMapToViewer(activityMapID));
+                                                                handlePopoverClose()
+                                                            } else {
+                                                                dispatch(removeActivityMapFromViewer(activityMapID));
+                                                            }
+                                                        }}
+                                                    />}
+                                                labelPlacement="start"
+                                                label={activityMapsMetadata[activityMapID]?.name}
+                                            />
+                                        </Box>))}
+                                </FormGroup>
+                            </Box>)
                     })}
                 </Box>
             </Popover>
