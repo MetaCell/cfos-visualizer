@@ -1,0 +1,40 @@
+{
+  "experimentsAtlas": {
+    "Experiment1": [
+      "Atlas1",
+      "Atlas2",
+      "Atlas3"
+    ],
+    "Experiment2": [
+      "Atlas4",
+      "Atlas5"
+    ]
+  },
+  "atlasActivityMap": {
+    "Atlas1": [
+      "ActivityMap1",
+      "ActivityMap2"
+    ],
+    "Atlas2": [
+      "ActivityMap3",
+      "ActivityMap4"
+    ],
+    "Atlas3": [
+      "ActivityMap5"
+    ]
+  },
+  "experimentsActivityMap": {
+    "Experiment1": [
+      "ActivityMap1",
+      "ActivityMap2"
+    ],
+    "Experiment2": [
+      "ActivityMap3",
+      "ActivityMap4"
+    ],
+    "Experiment3": [
+      "ActivityMap5"
+    ]
+  },
+  "luts": ["1"]
+}

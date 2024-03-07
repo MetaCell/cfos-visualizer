@@ -1,0 +1,9 @@
+client/node_modules/
+client/build/
+processor/data/*
+processor/process/*
+processor/output/*
+processor/application_default_credentials.json
+processor/.env
+processor/helpers/__pycache__/
+processor/.DS_Store
