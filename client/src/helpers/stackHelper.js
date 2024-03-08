@@ -55,6 +55,20 @@ export const getLUTHelper = (colorRange, intensityRange, stackIntensityRange) =>
     return new HelpersLut(dummyElement, 'custom', 'custom', colorGradient, opacityGradient);
 }
 
+export const makeSliceTransparent = (stackHelper) => {
+    const material = getMaterial(stackHelper)
+    material.transparent = true;
+}
+
+export const getMaterial = (stackHelper) => {
+    let meshIndex = 0
+    if (stackHelper.children.length > STACK_MESH_INDEX) {
+        meshIndex = STACK_MESH_INDEX
+    }
+    return stackHelper.children[meshIndex].children[0].material
+}
+
+
 export const removeBackground = (stackHelper) => {
     for (let i = stackHelper.children.length - 1; i >= 0; i--) {
         if (i !== STACK_MESH_INDEX) {
@@ -63,3 +77,4 @@ export const removeBackground = (stackHelper) => {
         }
     }
 }
+

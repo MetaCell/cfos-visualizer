@@ -1,4 +1,4 @@
-import {getLUTHelper, removeBackground} from "./stackHelper";
+import {getLUTHelper, makeSliceTransparent, removeBackground} from "./stackHelper";
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
 
 export function postProcessActivityMap(stackHelper, activityMap, orientation, index) {
@@ -9,6 +9,7 @@ export function postProcessActivityMap(stackHelper, activityMap, orientation, in
     stackHelper.index = index;
     stackHelper.orientation = orientation
 
+    makeSliceTransparent(stackHelper);
     updateLUT(activityMap.colorRange, activityMap.intensityRange, stackHelper);
 
     return stackHelper
