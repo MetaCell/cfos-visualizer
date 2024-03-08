@@ -15,7 +15,7 @@ import {actions} from "./constants";
 import {Experiment, ActivityMap, Atlas} from "../model/models";
 import {
     DEFAULT_COLOR_RANGE,
-    DEFAULT_VISIBILITY,
+    DEFAULT_VISIBILITY, INTENSITY_VALUE_ERROR,
 } from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 import {getCustomColorRange} from "../helpers/gradientHelper";
@@ -85,6 +85,12 @@ export const middleware = store => next => async action => {
                     store.dispatch(stopLoading());
                     return;
                 }
+
+                if (atlasStack.minMax[0] === Infinity) {
+                    store.dispatch(setError(INTENSITY_VALUE_ERROR));
+                    store.dispatch(stopLoading());
+                    return
+                }
                 try {
                     atlasWireframeStack = await fetchAtlasWireframeStack(atlasMetadata.file);
                 } catch (error) {
@@ -117,6 +123,12 @@ export const middleware = store => next => async action => {
                 stack = await fetchActivityMapStack(activityMapMetadata.file);
             } catch (error) {
                 store.dispatch(setError(error.message));
+                store.dispatch(stopLoading());
+                return
+            }
+
+            if (stack.minMax[0] === Infinity) {
+                store.dispatch(setError(INTENSITY_VALUE_ERROR));
                 store.dispatch(stopLoading());
                 return
             }
