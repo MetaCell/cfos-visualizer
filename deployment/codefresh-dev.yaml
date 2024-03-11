@@ -46,7 +46,7 @@ steps:
   test_image:
       title: "Building Integration Image"
       type: "build"
-      stage: "test"
+      stage: "qa"
       image_name: "cfos-e2e"
       tag: '${{CF_SHORT_REVISION}}'
       working_directory: ./tests/e2e
