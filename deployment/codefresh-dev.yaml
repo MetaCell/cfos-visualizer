@@ -3,6 +3,7 @@ stages:
   - prepare
   - build
   - deploy
+  - qa
 
 steps:
   main_clone:
@@ -42,3 +43,23 @@ steps:
         - image.repository=${{REGISTRY}}/cfos-visualizer
         - image.tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}
         - ingress.hosts[0].host=${{DOMAIN}}
+  test:
+    test_image:
+      title: "Building Integration Image"
+      type: "build"
+      stage: "test"
+      image_name: "cfos-e2e"
+      tag: '${{CF_SHORT_REVISION}}'
+      working_directory: ./tests/e2e
+      disable_push: True
+    e2e_tests:
+      title: "End to End tests"
+      stage: "qa"
+      image: '${{test_image}}'
+      fail_fast: false
+      environment:
+        - url=https://${{PUBLIC_URL}}
+      commands:
+        - bash -c "rm -rf /codefresh/volume/NetPyNE-UI/tests"
+        - echo $url
+        - bash -c "cd / && npm test"
