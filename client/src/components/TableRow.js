@@ -103,6 +103,7 @@ const TableRow = ({index, data, isAtlas}) => {
                                   onChange={(newValue) => onIntensityChange(id, newValue)}
                                   minColor={minColorHex}
                                   maxColor={maxColorHex}
+                                  disabled={isAtlas}
                     />
                 </Box>
             </Box>

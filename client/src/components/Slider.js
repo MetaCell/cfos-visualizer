@@ -1,9 +1,6 @@
 import React from "react";
 import vars from "../theme/variables";
 import {Box, Button, Slider, Typography} from "@mui/material";
-import {useDispatch} from "react-redux";
-import {changeActivityMapColor, changeViewerObjectIntensityRange} from "../redux/actions";
-import {getColorGradient, getOpacityGradient} from "../helpers/gradientHelper";
 
 const {resetButtonColor, labelColor, resetButtonActiveColor, tooltipBgColor, whiteColor} = vars;
 
@@ -38,7 +35,8 @@ const CustomSlider = ({
                           max = 100,
                           minColor = tooltipBgColor,
                           maxColor = whiteColor,
-                          numberOfSteps = 100
+                          numberOfSteps = 100,
+                          disabled = false
                       }) => {
 
     const step = (max - min) / numberOfSteps;
@@ -59,10 +57,17 @@ const CustomSlider = ({
             </Typography>
             <Slider
                 sx={{
-                    '& .MuiSlider-track': {
-                        opacity: 1,
-                        background: `linear-gradient(90deg, ${minColor} 0%, ${maxColor} 100%)`
-                    },
+                    ...(disabled ? {
+                        '& .MuiSlider-track': {
+                            opacity: 0.5,
+                            background: `linear-gradient(90deg, ${resetButtonColor} 0%, ${resetButtonColor} 100%)`
+                        },
+                    } : {
+                        '& .MuiSlider-track': {
+                            opacity: 1,
+                            background: `linear-gradient(90deg, ${minColor} 0%, ${maxColor} 100%)`
+                        },
+                    }),
                 }}
                 step={step}
                 value={value}
@@ -71,15 +76,15 @@ const CustomSlider = ({
                 max={max}
                 valueLabelDisplay="auto"
                 valueLabelFormat={formatValueLabel}
-
+                disabled={disabled}
             />
             <Button
                 disableRipple
-                disabled={value === 0}
+                disabled={disabled}
                 onClick={() => onChange([min, max])}
                 sx={{
                     ...styles.button,
-                    color: `${value === 0 ? resetButtonColor : resetButtonActiveColor} !important`,
+                    color: `${disabled ? resetButtonColor : resetButtonActiveColor} !important`,
                 }}
             >
                 Reset
