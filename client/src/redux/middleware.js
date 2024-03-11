@@ -100,7 +100,6 @@ export const middleware = store => next => async action => {
 
                 const atlas = new Atlas(
                     atlasID,
-                    [...atlasStack.minMax],
                     DEFAULT_VISIBILITY,
                     atlasStack,
                     atlasWireframeStack

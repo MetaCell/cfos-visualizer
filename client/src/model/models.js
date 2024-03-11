@@ -8,9 +8,9 @@ export const Entities = {
 }
 
 export class Atlas {
-    constructor(id, intensityRange, visibility, stack, wireframeStack) {
+    constructor(id, visibility, stack, wireframeStack) {
         return {
-            ...Immutable({id, intensityRange, visibility}, {deep: true}),
+            ...Immutable({id, visibility}, {deep: true}),
             stack,
             wireframeStack
         };

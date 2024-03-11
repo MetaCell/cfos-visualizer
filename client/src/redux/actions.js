@@ -30,15 +30,15 @@ export const toggleViewerObjectVisibility = (id) => ({
     payload: id
 });
 
-export const changeViewerObjectIntensityRange = (id, intensityRange) => ({
-    type: actions.CHANGE_VIEWER_OBJECT_INTENSITY_RANGE,
-    payload: { id, intensityRange: intensityRange }
+export const changeActivityMapIntensityRange = (id, intensityRange) => ({
+    type: actions.CHANGE_ACTIVITY_MAP_INTENSITY_RANGE,
+    payload: { id, intensityRange }
 });
 
-// export const changeAllViewerObjectsOpacity = (opacity) => ({
-//     type: actions.CHANGE_ALL_VIEWER_OBJECTS_OPACITY,
-//     payload: opacity
-// });
+export const changeAllActivityMapsIntensityRange = (intensityRange) => ({
+    type: actions.CHANGE_ALL_ACTIVITY_MAP_INTENSITY_RANGE,
+    payload: intensityRange
+});
 
 export const changeActivityMapColor = (activityMapID, colorRange) => ({
     type: actions.CHANGE_ACTIVITY_MAP_COLOR_RANGE,

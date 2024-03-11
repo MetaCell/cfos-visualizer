@@ -54,7 +54,6 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state,
                     atlas: new Atlas(
                         atlas.id,
-                        atlas.intensityRange,
                         !atlas.visibility,
                         atlas.stack,
                         atlas.wireframeStack
@@ -65,7 +64,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 return state;
             }
 
-        case actions.CHANGE_VIEWER_OBJECT_INTENSITY_RANGE:
+        case actions.CHANGE_ACTIVITY_MAP_INTENSITY_RANGE:
             if (state.activityMaps[action.payload.id]) {
                 const activityMap = state.activityMaps[action.payload.id];
                 return {
@@ -80,19 +79,6 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                             activityMap.stack,
                         )
                     }
-                };
-            }
-            else if (state.atlas && state.atlas.id === action.payload.id) {
-                const atlas = state.atlas;
-                return {
-                    ...state,
-                    atlas: new Atlas(
-                        atlas.id,
-                        action.payload.intensityRange,
-                        atlas.visibility,
-                        atlas.stack,
-                        atlas.wireframeStack
-                    )
                 };
             }
             else {

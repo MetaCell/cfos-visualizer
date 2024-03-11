@@ -12,7 +12,7 @@ import GrainIcon from '@mui/icons-material/Grain';
 import {tableStyles} from './Table';
 import Picker from './Picker';
 import {
-    changeViewerObjectIntensityRange,
+    changeActivityMapIntensityRange,
     downloadViewerObject,
     removeActivityMapFromViewer,
     toggleViewerObjectVisibility
@@ -28,12 +28,14 @@ const {
 } = vars;
 
 
-const TableRow = ({index, data, isAtlas}) => {
+const TableRow = ({data, isAtlas}) => {
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const {id, name, intensityRange, stackIntensityRange, colorRange, isVisible, description} = data;
     const minColorHex = colorRange ? normalizedRgbToHex(colorRange[0]) : tooltipBgColor
     const maxColorHex = colorRange ? normalizedRgbToHex(colorRange[1]) : whiteColor
+    const min = stackIntensityRange ? stackIntensityRange[0] : 0
+    const max = stackIntensityRange ? stackIntensityRange[1] : 100
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -44,7 +46,7 @@ const TableRow = ({index, data, isAtlas}) => {
     };
 
     const onIntensityChange = (id, newValue) => {
-        dispatch(changeViewerObjectIntensityRange(id, newValue));
+        dispatch(changeActivityMapIntensityRange(id, newValue));
     }
 
     const open = Boolean(anchorEl);
@@ -96,8 +98,8 @@ const TableRow = ({index, data, isAtlas}) => {
                 </Box>
 
                 <Box sx={{gap: '0.75rem !important'}}>
-                    <CustomSlider min={stackIntensityRange[0]}
-                                  max={stackIntensityRange[1]}
+                    <CustomSlider min={min}
+                                  max={max}
                                   value={intensityRange}
                                   heading="Intensity"
                                   onChange={(newValue) => onIntensityChange(id, newValue)}
