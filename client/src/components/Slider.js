@@ -57,10 +57,17 @@ const CustomSlider = ({
             </Typography>
             <Slider
                 sx={{
-                    '& .MuiSlider-track': {
-                        opacity: 1,
-                        background: `linear-gradient(90deg, ${minColor} 0%, ${maxColor} 100%)`
-                    },
+                    ...(disabled ? {
+                        '& .MuiSlider-track': {
+                            opacity: 0.5,
+                            background: `linear-gradient(90deg, ${resetButtonColor} 0%, ${resetButtonColor} 100%)`
+                        },
+                    } : {
+                        '& .MuiSlider-track': {
+                            opacity: 1,
+                            background: `linear-gradient(90deg, ${minColor} 0%, ${maxColor} 100%)`
+                        },
+                    }),
                 }}
                 step={step}
                 value={value}

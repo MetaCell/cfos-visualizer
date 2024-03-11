@@ -64,11 +64,11 @@ const ControlPanel = () => {
     const [open, setOpen] = useState(true);
     const activeAtlas = useSelector(state => state.viewer.atlas);
     const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
+    const intensityRange = useSelector(state => state.viewer.activityMapsIntensityRange);
 
     const atlasesMetadata = useSelector(state => state.model.Atlases);
     const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
 
-    const [intensityRange, setIntensityRange] = useState([0, 100]);
     const [globalIntensityRange, setGlobalIntensityRange] = useState([0, 100]);
     const getViewerObjectsData = () => {
         const viewerObjects = []
@@ -98,8 +98,8 @@ const ControlPanel = () => {
                 name: atlasMetadata.name,
                 description: atlasMetadata.description || messages.NO_DESCRIPTION,
                 colorRange: null,
-                intensityRange: null,
-                stackIntensityRange: null,
+                intensityRange: [...activeAtlas.stack.minMax],
+                stackIntensityRange: [...activeAtlas.stack.minMax],
                 isVisible: activeAtlas.visibility
             });
         }
@@ -129,7 +129,6 @@ const ControlPanel = () => {
 
 
     const onIntensityChange = (newValue) => {
-        setIntensityRange(newValue)
         dispatch(changeAllActivityMapsIntensityRange(newValue));
     }
 
