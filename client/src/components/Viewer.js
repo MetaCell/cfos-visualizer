@@ -25,6 +25,9 @@ const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, heade
 
 const StackHelper = AMI.stackHelperFactory(THREE);
 
+const DELTA_SLICE_BUTTON = 1 ;
+const DELTA_SLICE_MOUSE = 5;
+
 
 export const Viewer = (props) => {
 
@@ -98,12 +101,15 @@ export const Viewer = (props) => {
     const handleScroll = (event) => {
         const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP;
         const currentAtlas = currentAtlasStackHelperRef.current;
+        handleScrollHelper(currentAtlas, direction, DELTA_SLICE_MOUSE);
+    };
 
-        const newIndex = getNewSliceIndex(currentAtlas, direction);
+    const handleScrollHelper = (atlas, direction, delta) => {
+        const newIndex = getNewSliceIndex(atlas, direction, delta);
         if (newIndex !== null) {
             setSliceIndex(newIndex);
         }
-    };
+    }
 
 
     const updateAllStackHelpersIndex = (newIndex) => {
@@ -118,14 +124,14 @@ export const Viewer = (props) => {
 
     const handlePreviousSlice = () => {
         if (sliceIndex && sliceIndex > 0) {
-            setSliceIndex(sliceIndex - 1);
+            handleScrollHelper(currentAtlasStackHelperRef.current, DIRECTIONS.DOWN, DELTA_SLICE_BUTTON);
         }
     };
 
     const handleNextSlice = () => {
         const currentAtlas = currentAtlasStackHelperRef.current;
         if (sliceIndex && currentAtlas && sliceIndex < currentAtlas.orientationMaxIndex - 1) {
-            setSliceIndex(sliceIndex + 1)
+            handleScrollHelper(currentAtlasStackHelperRef.current, DIRECTIONS.UP, DELTA_SLICE_BUTTON);
         }
     };
 

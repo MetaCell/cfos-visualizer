@@ -27,15 +27,15 @@ function isVector3Object(obj) {
     return obj && typeof obj === 'object' && 'x' in obj && 'y' in obj && 'z' in obj;
 }
 
-export const getNewSliceIndex = (stackHelper, direction) => {
+export const getNewSliceIndex = (stackHelper, direction, delta = 1) => {
     if (!stackHelper) {
         return null;
     }
 
     if (direction === DIRECTIONS.UP && stackHelper.index < stackHelper.orientationMaxIndex - 1) {
-        return stackHelper.index + 1;
+        return stackHelper.index + delta;
     } else if (direction === DIRECTIONS.DOWN && stackHelper.index > 0) {
-        return stackHelper.index - 1;
+        return stackHelper.index - delta;
     }
 
     return null;
