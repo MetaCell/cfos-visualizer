@@ -8,9 +8,9 @@ export const Entities = {
 }
 
 export class Atlas {
-    constructor(id, opacity, visibility, stack, wireframeStack) {
+    constructor(id, visibility, stack, wireframeStack) {
         return {
-            ...Immutable({id, opacity, visibility}, {deep: true}),
+            ...Immutable({id, visibility}, {deep: true}),
             stack,
             wireframeStack
         };
@@ -18,9 +18,9 @@ export class Atlas {
 }
 
 export class ActivityMap {
-    constructor(id, colorGradient, opacityGradient, visibility, stack) {
+    constructor(id, colorRange, intensityRange, visibility, stack) {
         return {
-            ...Immutable({id, colorGradient, opacityGradient, visibility}, {deep: true}),
+            ...Immutable({id, colorRange, intensityRange, visibility}, {deep: true}),
             stack,
         };
     }

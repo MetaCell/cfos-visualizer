@@ -1,11 +1,8 @@
 import React from "react";
 import vars from "../theme/variables";
 import {Box, Button, Slider, Typography} from "@mui/material";
-import {useDispatch} from "react-redux";
-import {changeActivityMapColor, changeViewerObjectOpacity} from "../redux/actions";
-import {getColorGradient, getOpacityGradient} from "../helpers/gradientHelper";
 
-const {resetButtonColor, labelColor, resetButtonActiveColor} = vars;
+const {resetButtonColor, labelColor, resetButtonActiveColor, tooltipBgColor, whiteColor} = vars;
 
 const styles = {
     heading: {
@@ -25,7 +22,25 @@ const styles = {
     }
 };
 
-const CustomSlider = ({heading, width = 1, onChange, value}) => {
+const formatValueLabel = (value) => {
+    return `${Number(value).toFixed(2)}`;
+};
+
+const CustomSlider = ({
+                          heading,
+                          width = 1,
+                          onChange,
+                          value,
+                          min = 0,
+                          max = 100,
+                          minColor = tooltipBgColor,
+                          maxColor = whiteColor,
+                          numberOfSteps = 100,
+                          disabled = false
+                      }) => {
+
+    const step = (max - min) / numberOfSteps;
+
     return (
         <Box
             width={width}
@@ -40,14 +55,36 @@ const CustomSlider = ({heading, width = 1, onChange, value}) => {
             >
                 {heading}
             </Typography>
-            <Slider value={value} onChange={(event, newValue) => onChange(newValue)}/>
+            <Slider
+                sx={{
+                    ...(disabled ? {
+                        '& .MuiSlider-track': {
+                            opacity: 0.5,
+                            background: `linear-gradient(90deg, ${resetButtonColor} 0%, ${resetButtonColor} 100%)`
+                        },
+                    } : {
+                        '& .MuiSlider-track': {
+                            opacity: 1,
+                            background: `linear-gradient(90deg, ${minColor} 0%, ${maxColor} 100%)`
+                        },
+                    }),
+                }}
+                step={step}
+                value={value}
+                onChange={(event, newValue) => onChange(newValue)}
+                min={min}
+                max={max}
+                valueLabelDisplay="auto"
+                valueLabelFormat={formatValueLabel}
+                disabled={disabled}
+            />
             <Button
                 disableRipple
-                disabled={value === 0}
-                onClick={() => onChange(0)}
+                disabled={disabled}
+                onClick={() => onChange([min, max])}
                 sx={{
                     ...styles.button,
-                    color: `${value === 0 ? resetButtonColor : resetButtonActiveColor} !important`,
+                    color: `${disabled ? resetButtonColor : resetButtonActiveColor} !important`,
                 }}
             >
                 Reset

@@ -2,7 +2,7 @@ import {INIT_STATE} from "./store";
 import {actions} from "./constants";
 import {ActivityMap, Atlas} from "../model/models";
 import {DEFAULT_LOADING_MESSAGE} from "../settings";
-import {getOpacityGradient} from "../helpers/gradientHelper";
+import {getAdjustIntensityRange} from "../utils";
 
 
 const viewerReducer = (state = INIT_STATE.viewer, action) => {
@@ -16,21 +16,45 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
             };
 
         case actions.ADD_ACTIVITY_MAP_TO_VIEWER:
+            let newGlobalIntensityRange = state.activityMapsIntensityRange;
+            const activityMapIntensityRange = [...action.payload.intensityRange];
+
+            if (!newGlobalIntensityRange || newGlobalIntensityRange.length === 0) {
+                newGlobalIntensityRange = activityMapIntensityRange;
+            } else {
+                const adjustedActivityMap = {
+                    ...action.payload,
+                    intensityRange: getAdjustIntensityRange(newGlobalIntensityRange, action.payload.stack.minMax),
+                };
+
+                return {
+                    ...state,
+                    activityMaps: {
+                        ...state.activityMaps,
+                        [adjustedActivityMap.id]: adjustedActivityMap,
+                    },
+                    order: [...state.order, adjustedActivityMap.id],
+                    activityMapsIntensityRange: newGlobalIntensityRange,
+                };
+            }
+
             return {
                 ...state,
                 activityMaps: {
                     ...state.activityMaps,
                     [action.payload.id]: action.payload,
                 },
-                order: [...state.order, action.payload.id]
+                order: [...state.order, action.payload.id],
+                activityMapsIntensityRange: newGlobalIntensityRange,
             };
 
+
         case actions.REMOVE_ACTIVITY_MAP_FROM_VIEWER:
-            const nextActivityMaps = { ...state.activityMaps };
+            const nextActivityMaps = {...state.activityMaps};
             delete nextActivityMaps[action.payload];
 
             const newOrder = state.order.filter(id => id !== action.payload);
-            return { ...state, activityMaps: nextActivityMaps, order: newOrder};
+            return {...state, activityMaps: nextActivityMaps, order: newOrder};
 
         case actions.TOGGLE_VIEWER_OBJECT_VISIBILITY:
             if (state.activityMaps[action.payload]) {
@@ -41,32 +65,29 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload]: new ActivityMap(
                             activityMap.id,
-                            activityMap.colorGradient,
-                            activityMap.opacityGradient,
+                            activityMap.colorRange,
+                            activityMap.intensityRange,
                             !activityMap.visibility,
                             activityMap.stack,
                         )
                     }
                 };
-            }
-            else if (state.atlas && state.atlas.id === action.payload) {
+            } else if (state.atlas && state.atlas.id === action.payload) {
                 const atlas = state.atlas;
                 return {
                     ...state,
                     atlas: new Atlas(
                         atlas.id,
-                        atlas.opacity,
                         !atlas.visibility,
                         atlas.stack,
                         atlas.wireframeStack
                     )
                 };
-            }
-            else {
+            } else {
                 return state;
             }
 
-        case actions.CHANGE_VIEWER_OBJECT_OPACITY:
+        case actions.CHANGE_ACTIVITY_MAP_INTENSITY_RANGE:
             if (state.activityMaps[action.payload.id]) {
                 const activityMap = state.activityMaps[action.payload.id];
                 return {
@@ -75,57 +96,41 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         ...state.activityMaps,
                         [action.payload.id]: new ActivityMap(
                             activityMap.id,
-                            activityMap.colorGradient,
-                            getOpacityGradient(action.payload.opacity),
+                            activityMap.colorRange,
+                            action.payload.intensityRange,
                             activityMap.visibility,
                             activityMap.stack,
                         )
                     }
                 };
-            }
-            else if (state.atlas && state.atlas.id === action.payload.id) {
-                const atlas = state.atlas;
-                return {
-                    ...state,
-                    atlas: new Atlas(
-                        atlas.id,
-                        action.payload.opacity / 100,
-                        atlas.visibility,
-                        atlas.stack,
-                        atlas.wireframeStack
-                    )
-                };
-            }
-            else {
+            } else {
                 return state;
             }
 
-        case actions.CHANGE_ALL_VIEWER_OBJECTS_OPACITY:
+        case actions.CHANGE_ALL_ACTIVITY_MAP_INTENSITY_RANGE:
             const updatedActivityMaps = Object.keys(state.activityMaps).reduce((acc, activityMapID) => {
                 const activityMap = state.activityMaps[activityMapID];
+
+                const adjustedIntensityRange = getAdjustIntensityRange([...action.payload],
+                    activityMap.stack.minMax)
+
                 acc[activityMapID] = new ActivityMap(
                     activityMap.id,
-                    activityMap.colorGradient,
-                    getOpacityGradient(action.payload),
+                    activityMap.colorRange,
+                    adjustedIntensityRange,
                     activityMap.visibility,
                     activityMap.stack,
                 );
                 return acc;
             }, {});
-            const atlas = state.atlas;
             return {
                 ...state,
                 activityMaps: updatedActivityMaps,
-                atlas: new Atlas(
-                    atlas.id,
-                    action.payload / 100,
-                    atlas.visibility,
-                    atlas.stack,
-                    atlas.wireframeStack
-                )
+                activityMapsIntensityRange: action.payload
             };
 
-        case actions.CHANGE_ACTIVITY_MAP_COLOR_GRADIENT:
+
+        case actions.CHANGE_ACTIVITY_MAP_COLOR_RANGE:
             const activityMap = state.activityMaps[action.payload.activityMapID];
             return {
                 ...state,
@@ -133,8 +138,8 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     ...state.activityMaps,
                     [action.payload.activityMapID]: new ActivityMap(
                         activityMap.id,
-                        action.payload.colorGradient,
-                        activityMap.opacityGradient,
+                        action.payload.colorRange,
+                        activityMap.intensityRange,
                         activityMap.visibility,
                         activityMap.stack,
                     )
@@ -199,4 +204,4 @@ const uiReducer = (state = INIT_STATE.ui, action) => {
     }
 };
 
-export { viewerReducer, currentExperimentReducer, modelReducer, uiReducer };
+export {viewerReducer, currentExperimentReducer, modelReducer, uiReducer};

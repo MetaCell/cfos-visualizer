@@ -25,6 +25,9 @@ const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, heade
 
 const StackHelper = AMI.stackHelperFactory(THREE);
 
+const DELTA_SLICE_BUTTON = 1 ;
+const DELTA_SLICE_MOUSE = 5;
+
 
 export const Viewer = (props) => {
 
@@ -50,6 +53,7 @@ export const Viewer = (props) => {
     const currentAtlasStackHelperRef = useRef(null);
     const activityMapsStackHelpersRef = useRef({});
 
+    const previousAtlasIdRef = useRef(null);
     const activityMapsRef = useRef(activeActivityMaps);
 
     // On Mount
@@ -97,12 +101,15 @@ export const Viewer = (props) => {
     const handleScroll = (event) => {
         const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP;
         const currentAtlas = currentAtlasStackHelperRef.current;
+        handleScrollHelper(currentAtlas, direction, DELTA_SLICE_MOUSE);
+    };
 
-        const newIndex = getNewSliceIndex(currentAtlas, direction);
+    const handleScrollHelper = (atlas, direction, delta) => {
+        const newIndex = getNewSliceIndex(atlas, direction, delta);
         if (newIndex !== null) {
             setSliceIndex(newIndex);
         }
-    };
+    }
 
 
     const updateAllStackHelpersIndex = (newIndex) => {
@@ -117,14 +124,14 @@ export const Viewer = (props) => {
 
     const handlePreviousSlice = () => {
         if (sliceIndex && sliceIndex > 0) {
-            setSliceIndex(sliceIndex - 1);
+            handleScrollHelper(currentAtlasStackHelperRef.current, DIRECTIONS.DOWN, DELTA_SLICE_BUTTON);
         }
     };
 
     const handleNextSlice = () => {
         const currentAtlas = currentAtlasStackHelperRef.current;
         if (sliceIndex && currentAtlas && sliceIndex < currentAtlas.orientationMaxIndex - 1) {
-            setSliceIndex(sliceIndex + 1)
+            handleScrollHelper(currentAtlasStackHelperRef.current, DIRECTIONS.UP, DELTA_SLICE_BUTTON);
         }
     };
 
@@ -153,7 +160,12 @@ export const Viewer = (props) => {
     // On atlas changes
     useEffect(() => {
         if (activeAtlas) {
-            viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
+            const hasAtlasChanged = previousAtlasIdRef.current !== activeAtlas.id;
+
+            if(hasAtlasChanged){
+                viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
+                previousAtlasIdRef.current =activeAtlas.id;
+            }
 
             const targetStack = wireframeMode ? activeAtlas.wireframeStack : activeAtlas.stack;
 
@@ -179,8 +191,6 @@ export const Viewer = (props) => {
                 }
 
                 stackHelper.visible = activeAtlas.visibility;
-                stackHelper.slice.opacity = activeAtlas.opacity;
-
                 stackHelper.atlasId = activeAtlas.id;
 
                 if (currentAtlasStackHelperRef.current) {
@@ -203,7 +213,6 @@ export const Viewer = (props) => {
                 });
             } else {
                 currentAtlasStackHelperRef.current.visible = activeAtlas.visibility;
-                currentAtlasStackHelperRef.current.slice.opacity = activeAtlas.opacity;
             }
         }
     }, [activeAtlas, wireframeMode]);
@@ -234,9 +243,9 @@ export const Viewer = (props) => {
                     activityMapStackHelper.visible = activityMap.visibility
                 }
                 // change LUT
-                if (activityMapStackHelper.colorGradient !== JSON.stringify(activityMap.colorGradient) ||
-                    activityMapStackHelper.opacityGradient !== JSON.stringify(activityMap.opacityGradient)) {
-                    updateLUT(activityMap.colorGradient, activityMap.opacityGradient, activityMapStackHelper)
+                if (activityMapStackHelper.colorRange !== JSON.stringify(activityMap.colorRange) ||
+                    activityMapStackHelper.intensityRange !== JSON.stringify(activityMap.intensityRange)) {
+                    updateLUT(activityMap.colorRange, activityMap.intensityRange, activityMapStackHelper)
                 }
             }
         })
@@ -273,19 +282,19 @@ export const Viewer = (props) => {
     const toolbarOptions = [
         {
             title: "Previous slice",
-            Icon: <KeyboardArrowUpIcon />,
+            Icon: <KeyboardArrowUpIcon/>,
             onClickFunc: handlePreviousSlice,
             isVisible: true
         },
         {
             title: "Center stack",
-            Icon: <HomeIcon />,
+            Icon: <HomeIcon/>,
             onClickFunc: handleCenterStack,
             isVisible: true
         },
         {
             title: "Next slice",
-            Icon: <KeyboardArrowDownIcon />,
+            Icon: <KeyboardArrowDownIcon/>,
             onClickFunc: handleNextSlice,
             isVisible: true
         },
@@ -309,7 +318,7 @@ export const Viewer = (props) => {
         // },
         {
             title: "Switch to wireframe",
-            Icon: <TonalityIcon />,
+            Icon: <TonalityIcon/>,
             onClickFunc: () => setWireframeMode(prevMode => !prevMode),
             isVisible: true
         }
@@ -366,59 +375,62 @@ export const Viewer = (props) => {
                 <Box px={2} pt={1.25}>
                     {orderedExperiments.map((experimentName, experimentIndex) => {
                         const experimentActivityMaps = experimentsActivityMaps[experimentName] || [];
-                        return (<Box key={experimentName}>
-                            {experimentIndex !== 0 &&
-                                <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
-                            <Box sx={{
-                                height: '1.875rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                background: headerBorderColor,
-                                '& .MuiTypography-root': {
-                                    fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
-                                }
-                            }}>
-                                <Typography>{experimentName}</Typography>
-                                {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
-                            </Box>
-                            <FormGroup>
-                                {experimentActivityMaps.map((activityMapID, mapIndex) => (
-                                    <Box key={activityMapID} sx={{
-                                        position: 'relative', paddingLeft: '0.25rem', '&:hover': {
-                                            '&:before': {
-                                                background: primaryActiveColor,
-                                            }
-                                        }, '&:before': {
-                                            content: '""',
-                                            height: '100%',
-                                            width: '0.125rem',
-                                            background: headerBorderColor,
-                                            position: 'absolute',
-                                            left: 0,
-                                            top: 0,
-                                        },
-                                    }}>
-                                        <FormControlLabel
+                        return (
+                            <Box key={experimentName + experimentIndex}>
+                                {experimentIndex !== 0 &&
+                                    <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
+                                <Box sx={{
+                                    height: '1.875rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    background: headerBorderColor,
+                                    '& .MuiTypography-root': {
+                                        fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
+                                    }
+                                }}>
+                                    <Typography>{experimentName}</Typography>
+                                    {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
+                                </Box>
+                                <FormGroup>
+                                    {experimentActivityMaps.map((activityMapID, mapIndex) => (
+                                        <Box
                                             key={activityMapID}
-                                            control={
-                                                <Switch
-                                                    checked={!!activeActivityMaps[activityMapID]}
-                                                    onChange={(event) => {
-                                                        if (event.target.checked) {
-                                                            dispatch(fetchAndAddActivityMapToViewer(activityMapID));
-                                                            handlePopoverClose()
-                                                        } else {
-                                                            dispatch(removeActivityMapFromViewer(activityMapID));
-                                                        }
-                                                    }}
-                                                />}
-                                            labelPlacement="start"
-                                            label={activityMapsMetadata[activityMapID]?.name}
-                                        />
-                                    </Box>))}
-                            </FormGroup>
-                        </Box>)
+                                            sx={{
+                                                position: 'relative', paddingLeft: '0.25rem', '&:hover': {
+                                                    '&:before': {
+                                                        background: primaryActiveColor,
+                                                    }
+                                                }, '&:before': {
+                                                    content: '""',
+                                                    height: '100%',
+                                                    width: '0.125rem',
+                                                    background: headerBorderColor,
+                                                    position: 'absolute',
+                                                    left: 0,
+                                                    top: 0,
+                                                },
+                                            }}>
+                                            <FormControlLabel
+                                                key={activityMapID}
+                                                control={
+                                                    <Switch
+                                                        checked={!!activeActivityMaps[activityMapID]}
+                                                        onChange={(event) => {
+                                                            if (event.target.checked) {
+                                                                dispatch(fetchAndAddActivityMapToViewer(activityMapID));
+                                                                handlePopoverClose()
+                                                            } else {
+                                                                dispatch(removeActivityMapFromViewer(activityMapID));
+                                                            }
+                                                        }}
+                                                    />}
+                                                labelPlacement="start"
+                                                label={activityMapsMetadata[activityMapID]?.name}
+                                            />
+                                        </Box>))}
+                                </FormGroup>
+                            </Box>)
                     })}
                 </Box>
             </Popover>

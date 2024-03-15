@@ -1,80 +1,116 @@
-import {DEFAULT_COLOR_GRADIENT, GRADIENT_STEPS} from "../settings";
+import {DEFAULT_COLOR_RANGE} from "../settings";
 
-
-export function getOriginalHexColor(gradient) {
-    // Find the color associated with color stop 0
-    const originalColor = gradient.find(color => color[0] === 0);
-    if (!originalColor) {
-        console.warn("Color stop 0 not found in gradient");
-        return null;
+export function getLUTGradients(colorRange, intensityRange, stackIntensityRange) {
+    // Adjust intensityRange if it's outside stackIntensityRange
+    if (intensityRange[0] < stackIntensityRange[0] || intensityRange[1] > stackIntensityRange[1]) {
+        console.error('IntensityRange is outside StackIntensityRange. Using StackIntensityRange instead.');
+        intensityRange = [...stackIntensityRange];
     }
 
-    const r = Math.round(originalColor[1] * 255);
-    const g = Math.round(originalColor[2] * 255);
-    const b = Math.round(originalColor[3] * 255);
+    // Normalize the intensity range
+    const normalizedMinIntensity = (intensityRange[0] - stackIntensityRange[0]) / (stackIntensityRange[1] - stackIntensityRange[0]);
+    const normalizedMaxIntensity = (intensityRange[1] - stackIntensityRange[0]) / (stackIntensityRange[1] - stackIntensityRange[0]);
 
-    return rgbToHex(r, g, b);
-}
+    let colorGradient, opacityGradient;
 
-function rgbToHex(r, g, b) {
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-}
-
-
-export function getColorGradient(hex) {
-    const originalColor = hexToRgb(hex);
-
-    if (!originalColor) {
-        console.warn(`Invalid hex color provided: ${hex}`);
-        return DEFAULT_COLOR_GRADIENT;
+    if (normalizedMinIntensity === 0 && normalizedMaxIntensity === 1) {
+        // Simplify gradients when intensityRange matches stackIntensityRange
+        colorGradient = [
+            [0.0, ...colorRange[0], 1], // Min color at start of intensity range
+            [1.0, ...colorRange[1], 1] // Max color at end of intensity range
+        ];
+        opacityGradient = [
+            [0.0, 1], // Fully opaque across the range
+            [1.0, 1] // Maintain opacity
+        ];
+    } else {
+        // Define gradients with transitions
+        colorGradient = [
+            [0.0, 0, 0, 0, 0], // Transparent below intensity range
+            [normalizedMinIntensity, ...colorRange[0], 1], // Min color at start of intensity range
+            [normalizedMaxIntensity, ...colorRange[1], 1], // Max color at end of intensity range
+            [1.0, 0, 0, 0, 0] // Transparent above intensity range
+        ];
+        opacityGradient = [
+            [0.0, 0], // Fully transparent below intensity range
+            [normalizedMinIntensity, 1], // Opaque within intensity range
+            [normalizedMaxIntensity, 1], // Opaque within intensity range
+            [1.0, 0] // Fully transparent above intensity range
+        ];
     }
 
-    const complementaryColor = getComplementaryColor(originalColor);
-
-    // Create an array to store the gradient steps
-    let gradient = [];
+    return {colorGradient, opacityGradient};
+}
 
 
-    for (let i = 0; i < GRADIENT_STEPS; i++) {
-        const step = i / (GRADIENT_STEPS - 1);  // t ranges from 0 to 1
-        gradient.push([
-            step,  // Color stop position
-            lerp(originalColor.r, complementaryColor.r, step),
-            lerp(originalColor.g, complementaryColor.g, step),
-            lerp(originalColor.b, complementaryColor.b, step)
-        ]);
+export function normalizedRgbToHex(rgbArray) {
+    // Ensure the input is an array of three normalized values
+    if (!Array.isArray(rgbArray) || rgbArray.length !== 3) {
+        throw new Error("Input must be an array of three normalized RGB values");
     }
 
-    return gradient;
+    // Convert each normalized float to an integer and then to a hex string
+    const hex = rgbArray.map(normalizedValue => {
+        // Ensure the value is within the expected range
+        if (normalizedValue < 0 || normalizedValue > 1) {
+            throw new Error("Each value in the array must be between 0 and 1");
+        }
+
+        // Convert to an integer in the range 0-255
+        const intValue = Math.round(normalizedValue * 255);
+        // Convert the integer to a hex string and pad with leading zero if necessary
+        return intValue.toString(16).padStart(2, '0');
+    }).join('');
+
+    return `#${hex}`;
 }
 
-export function hexToRgb(hex) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16) / 255,
-        g: parseInt(result[2], 16) / 255,
-        b: parseInt(result[3], 16) / 255
-    } : null;
+export function getCustomColorRange(inputColor) {
+    let rgb = [];
+
+    if (typeof inputColor === 'string' && isValidHex(inputColor)) {
+        rgb = hexToRgb(inputColor);
+    } else if (isValidRgba(inputColor)) {
+        rgb = [inputColor.r, inputColor.g, inputColor.b]; // Ignoring alpha for complementary calculation
+    } else {
+        return DEFAULT_COLOR_RANGE; // Default normalized color range for invalid input
+    }
+
+    return getComplementaryColor(rgb);
 }
 
-export function getComplementaryColor(color) {
-    return {
-        r: 1 - color.r,
-        g: 1 - color.g,
-        b: 1 - color.b
-    };
+function isValidHex(hex) {
+    return /^#([0-9A-F]{3}){1,2}$/i.test(hex) || /^#([0-9A-F]{4}){2}$/i.test(hex);
 }
 
-// Linear interpolation function
-function lerp(start, end, step) {
-    return start * (1 - step) + end * step;
+function isValidRgba(rgba) {
+    return typeof rgba === 'object' &&
+        rgba !== null &&
+        'r' in rgba && rgba.r >= 0 && rgba.r <= 255 &&
+        'g' in rgba && rgba.g >= 0 && rgba.g <= 255 &&
+        'b' in rgba && rgba.b >= 0 && rgba.b <= 255 &&
+        'a' in rgba && rgba.a >= 0 && rgba.a <= 1;
 }
 
-
-export function getOpacityGradient(opacityPercentage) {
-    return [[0, 0], [1, opacityPercentage / 100]]
+function hexToRgb(hex) {
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 4) {
+        r = parseInt(hex[1] + hex[1], 16);
+        g = parseInt(hex[2] + hex[2], 16);
+        b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+        r = parseInt(hex[1] + hex[2], 16);
+        g = parseInt(hex[3] + hex[4], 16);
+        b = parseInt(hex[5] + hex[6], 16);
+    }
+    return [r, g, b];
 }
 
-export function getOriginalOpacity(gradientOpacity) {
-    return gradientOpacity[1][1]
+function getComplementaryColor(rgb) {
+    // Calculate complementary color, then normalize the RGB values
+    return rgb.map(c => (255 - c) / 255);
+}
+
+export function rgbaObjectToNormalizedRgb(rgba) {
+  return [rgba.r / 255, rgba.g / 255, rgba.b / 255];
 }

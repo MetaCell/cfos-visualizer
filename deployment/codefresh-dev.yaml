@@ -23,7 +23,7 @@ steps:
     image_name: cfos-visualizer
     title: CFOS-Visualizer
     working_directory: './'
-    tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
+    tag: '${{CF_BUILD_ID}}'
 
   deployment:
     stage: deploy
@@ -41,7 +41,7 @@ steps:
         - deployment/helm/values.yaml
       custom_values:
         - image.repository=${{REGISTRY}}/cfos-visualizer
-        - image.tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}
+        - image.tag=${{CF_BUILD_ID}}
         - ingress.hosts[0].host=${{DOMAIN}}
   test_image:
       title: "Building Integration Image"
