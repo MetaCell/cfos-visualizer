@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY package.json .
 COPY package-lock.json .
 
-RUN npm ci
+RUN npm i
 
 COPY . .
 	
