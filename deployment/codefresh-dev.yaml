@@ -59,6 +59,6 @@ steps:
       environment:
         - url=https://${{PUBLIC_URL}}
       commands:
-        - bash -c "rm -rf /codefresh/volume/NetPyNE-UI/tests"
+        - bash -c "rm -rf /codefresh/volume/cfos-visualizer/tests"
         - echo $url
         - bash -c "cd / && npm test"
