@@ -19,8 +19,8 @@ const SNAPSHOT_OPTIONS = {
 
 
 jest.setTimeout(300000);
-let scm_test_browser: any;
-let scm_test_page: any;
+let cp_test_browser: any;
+let cp_test_page: any;
 
 declare global {
     namespace jest {
@@ -34,7 +34,7 @@ describe('Control Panel Test', () => {
 
 
     beforeAll(async () => {
-        scm_test_browser = await puppeteer.launch({
+        cp_test_browser = await puppeteer.launch({
             args: ['--no-sandbox', '--disable-setuid-sandbox', "--ignore-certificate-errors"],
             headless: true,
             devtools: false,
@@ -43,43 +43,44 @@ describe('Control Panel Test', () => {
                 height: 1000,
             },
         });
-        scm_test_page = await scm_test_browser.newPage();
+        cp_test_page = await cp_test_browser.newPage();
     });
 
     afterAll(async () => {
-        await scm_test_browser.close();
+        await cp_test_browser.close();
     });
 
     test('Load the page', async () => {
         console.log('Loading the page ...')
 
-        await scm_test_page.goto(URL);
-        await scm_test_page.waitForSelector('.jss3', { timeout: TIMEOUT, hidden: false });
-        await scm_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false });
+        await cp_test_page.goto(URL);
+        await cp_test_page.waitForSelector('.jss3', { timeout: TIMEOUT, hidden: false });
+        console.log(cp_test_page.url());
+        await cp_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false });
 
-        await scm_test_page.waitForSelector('.MuiBox-root > h6.MuiTypography-root.MuiTypography-h6', { timeout: TIMEOUT, hidden: false });
+        await cp_test_page.waitForSelector('.MuiBox-root > h6.MuiTypography-root.MuiTypography-h6', { timeout: TIMEOUT, hidden: false });
 
         const selector = '.MuiBox-root > h6.MuiTypography-root.MuiTypography-h6';
 
-        await scm_test_page.waitForFunction(
+        await cp_test_page.waitForFunction(
             (selector, text) => document.querySelector(selector).innerText === text,
             { timeout: TIMEOUT * 3 },
             selector,
             'Fetching atlas...'
         );
 
-        await scm_test_page.waitForFunction(
+        await cp_test_page.waitForFunction(
             (selector, text) => document.querySelector(selector).innerText !== text,
             { timeout: TIMEOUT * 5 },
             selector,
             'Fetching atlas...'
         );
 
-        await scm_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false });
-        const textContent = await scm_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
+        await cp_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false });
+        const textContent = await cp_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
         expect(textContent).toBe('MDMA (social context) maps');
 
-        const element = await scm_test_page.$('canvas');
+        const element = await cp_test_page.$('canvas');
         const screenshot = await element.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
@@ -92,9 +93,9 @@ describe('Control Panel Test', () => {
 
     test('Control Panel: Hide', async () => {
         console.log('Hiding the Atlas Map ...')
-        await scm_test_page.waitForSelector('button[aria-label="Hide"]', { timeout: TIMEOUT, hidden: false });
-        await scm_test_page.click('button[aria-label="Hide"]');
-        const element = await scm_test_page.$('canvas');
+        await cp_test_page.waitForSelector('button[aria-label="Hide"]', { timeout: TIMEOUT, hidden: false });
+        await cp_test_page.click('button[aria-label="Hide"]');
+        const element = await cp_test_page.$('canvas');
         const screenshot = await element.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
@@ -109,9 +110,9 @@ describe('Control Panel Test', () => {
 
     test('Control Panel: Show', async () => {
         console.log('Displaying the Atlas Map ...')
-        await scm_test_page.waitForSelector('button[aria-label="Show"]', { timeout: TIMEOUT, hidden: false });
-        await scm_test_page.click('button[aria-label="Show"]');
-        const element = await scm_test_page.$('canvas');
+        await cp_test_page.waitForSelector('button[aria-label="Show"]', { timeout: TIMEOUT, hidden: false });
+        await cp_test_page.click('button[aria-label="Show"]');
+        const element = await cp_test_page.$('canvas');
         const screenshot = await element.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
@@ -126,15 +127,15 @@ describe('Control Panel Test', () => {
         const downloadPath = path.resolve(__dirname, 'downloads');
     
         // Set the download behavior
-        await scm_test_page._client.send('Page.setDownloadBehavior', {
+        await cp_test_page._client.send('Page.setDownloadBehavior', {
             behavior: 'allow',
             downloadPath: downloadPath,
         });
     
         // Click the 'Download' button
-        await scm_test_page.waitForSelector('button[aria-label="Download"]', { timeout: TIMEOUT, hidden: false });
-        await scm_test_page.click('button[aria-label="Download"]');
-        await scm_test_page.waitForTimeout(3000);
+        await cp_test_page.waitForSelector('button[aria-label="Download"]', { timeout: TIMEOUT, hidden: false });
+        await cp_test_page.click('button[aria-label="Download"]');
+        await cp_test_page.waitForTimeout(3000);
     
         // Get the list of files in the download path
         const filesInDownloadPath = fs.readdirSync(downloadPath);

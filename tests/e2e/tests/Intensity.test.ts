@@ -53,6 +53,7 @@ describe('Intensity Test', () => {
 
         await intensity_test_page.goto(URL);
         await intensity_test_page.waitForSelector('.jss3', { timeout: TIMEOUT, hidden: false });
+        console.log(intensity_test_page.url());
         await intensity_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false });
 
         await intensity_test_page.waitForSelector('.MuiBox-root > h6.MuiTypography-root.MuiTypography-h6', { timeout: TIMEOUT, hidden: false });
