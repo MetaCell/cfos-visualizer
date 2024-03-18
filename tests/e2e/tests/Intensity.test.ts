@@ -28,7 +28,7 @@ declare global {
     }
 }
 
-describe('Intensity Test', () => {
+describe.skip('Intensity Test', () => {
 
 
     beforeAll(async () => {

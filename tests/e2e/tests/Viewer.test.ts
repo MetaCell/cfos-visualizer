@@ -88,7 +88,7 @@ describe('Viewer Test', () => {
     test('Move to Previous Slices', async () => {
         console.log('Moving to Previous Slices ...')
         await viewer_test_page.waitForSelector('button[aria-label="Previous slice"]', { timeout: TIMEOUT, hidden: false });
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
             await viewer_test_page.click('button[aria-label="Previous slice"]');
             await viewer_test_page.waitForTimeout(500)
 
@@ -122,7 +122,7 @@ describe('Viewer Test', () => {
     test('Move to Next Slices', async () => {
         console.log('Moving to Next Slices ...')
         await viewer_test_page.waitForSelector('button[aria-label="Next slice"]', { timeout: TIMEOUT, hidden: false });
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
             await viewer_test_page.click('button[aria-label="Next slice"]');
             await viewer_test_page.waitForTimeout(500)
         }

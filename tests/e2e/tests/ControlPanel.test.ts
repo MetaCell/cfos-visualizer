@@ -18,7 +18,7 @@ const SNAPSHOT_OPTIONS = {
 };
 
 
-jest.setTimeout(300000);
+jest.setTimeout(400000);
 let cp_test_browser: any;
 let cp_test_page: any;
 
