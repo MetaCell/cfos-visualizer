@@ -77,8 +77,8 @@ describe('Social Context Map Test', () => {
         const textContent = await scm_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
         expect(textContent).toBe('MDMA (social context) maps');
 
-        const element = await scm_test_page.$('canvas'); 
-        const screenshot = await element.screenshot();
+        // const element = await scm_test_page.$('canvas'); 
+        const screenshot = await scm_test_page.screenshot();
         
         expect(screenshot).toMatchImageSnapshot({
           ...SNAPSHOT_OPTIONS,
@@ -127,8 +127,8 @@ describe('Social Context Map Test', () => {
 
     test('Context Map Comparison', async () => {
         console.log('Comparing Context Maps ...');
-        const element = await scm_test_page.$('canvas'); 
-        const screenshot = await element.screenshot();
+        // const element = await scm_test_page.$('canvas'); 
+        const screenshot = await scm_test_page.screenshot();
         
         expect(screenshot).toMatchImageSnapshot({
           ...SNAPSHOT_OPTIONS,

@@ -93,8 +93,8 @@ describe('Viewer Test', () => {
             await viewer_test_page.waitForTimeout(500)
 
         }
-        const element = await viewer_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await viewer_test_page.$('canvas');
+        const screenshot = await viewer_test_page.screenshot();
         await viewer_test_page.waitForTimeout(3000)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
@@ -109,8 +109,8 @@ describe('Viewer Test', () => {
         await viewer_test_page.waitForSelector('button[aria-label="Center stack"]', { timeout: TIMEOUT, hidden: false });
         await viewer_test_page.click('button[aria-label="Center stack"]');
 
-        const element = await viewer_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await viewer_test_page.$('canvas');
+        const screenshot = await viewer_test_page.screenshot();
         await viewer_test_page.waitForTimeout(3000)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
@@ -126,8 +126,8 @@ describe('Viewer Test', () => {
             await viewer_test_page.click('button[aria-label="Next slice"]');
             await viewer_test_page.waitForTimeout(500)
         }
-        const element = await viewer_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await viewer_test_page.$('canvas');
+        const screenshot = await viewer_test_page.screenshot();
         await viewer_test_page.waitForTimeout(300)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
@@ -151,8 +151,8 @@ describe('Viewer Test', () => {
         await viewer_test_page.click('button[aria-label="Center stack"]');
         await viewer_test_page.waitForTimeout(500)
         
-        const element = await viewer_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await viewer_test_page.$('canvas');
+        const screenshot = await viewer_test_page.screenshot();
         await viewer_test_page.waitForTimeout(300)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,

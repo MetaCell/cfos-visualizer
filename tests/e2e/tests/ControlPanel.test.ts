@@ -80,8 +80,8 @@ describe('Control Panel Test', () => {
         const textContent = await cp_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
         expect(textContent).toBe('MDMA (social context) maps');
 
-        const element = await cp_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await cp_test_page.$('canvas');
+        const screenshot = await cp_test_page.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
@@ -95,8 +95,8 @@ describe('Control Panel Test', () => {
         console.log('Hiding the Atlas Map ...')
         await cp_test_page.waitForSelector('button[aria-label="Hide"]', { timeout: TIMEOUT, hidden: false });
         await cp_test_page.click('button[aria-label="Hide"]');
-        const element = await cp_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await cp_test_page.$('canvas');
+        const screenshot = await cp_test_page.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
@@ -112,8 +112,8 @@ describe('Control Panel Test', () => {
         console.log('Displaying the Atlas Map ...')
         await cp_test_page.waitForSelector('button[aria-label="Show"]', { timeout: TIMEOUT, hidden: false });
         await cp_test_page.click('button[aria-label="Show"]');
-        const element = await cp_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await cp_test_page.$('canvas');
+        const screenshot = await cp_test_page.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,

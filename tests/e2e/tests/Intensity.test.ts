@@ -78,8 +78,8 @@ describe.skip('Intensity Test', () => {
         const textContent = await intensity_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
         expect(textContent).toBe('MDMA (social context) maps');
 
-        const element = await intensity_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await intensity_test_page.$('canvas');
+        const screenshot = await intensity_test_page.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
