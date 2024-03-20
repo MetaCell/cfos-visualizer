@@ -3,7 +3,7 @@ import 'expect-puppeteer';
 import { toMatchImageSnapshot } from 'jest-image-snapshot'
 expect.extend({ toMatchImageSnapshot })
 
-const URL = process.env.APP_URL || "https://cfos.dev.metacell.us/";
+const URL = process.env.url || "https://cfos.dev.metacell.us/";
 const TIMEOUT = 60000;
 
 

@@ -5,7 +5,7 @@ expect.extend({ toMatchImageSnapshot })
 const fs = require('fs');
 const path = require('path');
 
-const URL = process.env.APP_URL || "https://cfos.dev.metacell.us/";
+const URL = process.env.url || "https://cfos.dev.metacell.us/";
 const TIMEOUT = 60000;
 
 

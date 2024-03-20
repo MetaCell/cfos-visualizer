@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "sleep 30 && jest --verbose ControlPanel Intensity SocialContextMap Viewer"
+    "test": "sleep 30 && jest --verbose ControlPanel Intensity SocialContextMap Viewer",
+    "puppeteer_test" : "jest --verbose"
   },
   "author": "",
   "license": "ISC",
