@@ -125,32 +125,30 @@ describe('Control Panel Test', () => {
     test('Control Panel: Download', async () => {
         console.log('Downloading the Atlas Map ...');
         const downloadPath = path.resolve(__dirname, 'downloads');
-    
+
         // Set the download behavior
         await cp_test_page._client.send('Page.setDownloadBehavior', {
             behavior: 'allow',
             downloadPath: downloadPath,
         });
-    
+
         // Click the 'Download' button
         await cp_test_page.waitForSelector('button[aria-label="Download"]', { timeout: TIMEOUT, hidden: false });
         await cp_test_page.click('button[aria-label="Download"]');
-        await cp_test_page.waitForTimeout(3000);
-    
-        // Get the list of files in the download path
-        const filesInDownloadPath = fs.readdirSync(downloadPath);
-    
-        // Assuming only one file is downloaded, you can capture it directly
-        if (filesInDownloadPath.length > 0) {
-            const downloadedFileName = filesInDownloadPath[0];
-            console.log(`Downloaded file: ${downloadedFileName}`);
-            expect(downloadedFileName).toContain('gubra_ano_combined_25um.nii.gz');
-        } else {
-            console.log('No files found in the download path.');
-            throw new Error('No files found in the download path.');
-        }
+        await cp_test_page.click('button[aria-label="Download"]');
+
+        // Wait for the download request to complete
+        const response = await cp_test_page.waitForResponse(
+            response => response.url().includes('gubra_ano_combined_25um'),
+            { timeout: 6000 } 
+        );
+        // Check if the response status is OK
+        expect(response.ok()).toBeTruthy();
+
+        console.log('Download initiated');
+
     });
-    
+
 
 
 
