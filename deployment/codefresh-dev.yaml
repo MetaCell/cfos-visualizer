@@ -57,7 +57,7 @@ steps:
       image: '${{test_image}}'
       fail_fast: false
       environment:
-        - url=https://${{PUBLIC_URL}}
+        - url=https://${{DOMAIN}}
       commands:
         - bash -c "rm -rf /codefresh/volume/cfos-visualizer/tests"
         - echo $url
