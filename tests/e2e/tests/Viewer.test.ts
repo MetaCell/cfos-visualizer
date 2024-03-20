@@ -74,8 +74,8 @@ describe('Viewer Test', () => {
             'Fetching atlas...'
         );
 
-        const element = await viewer_test_page.$('canvas');
-        const screenshot = await element.screenshot();
+        // const element = await viewer_test_page.$('canvas');
+        const screenshot = await viewer_test_page.screenshot();
         await viewer_test_page.waitForTimeout(3000)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
