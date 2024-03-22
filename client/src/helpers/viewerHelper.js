@@ -30,8 +30,6 @@ export const getOrthographicCamera = (container) => {
         1,
         1000
     );
-    camera.fov = 50;
-    camera.aspect = 1;
     camera.name = sceneObjects.CAMERA
     return camera;
 }
@@ -81,11 +79,16 @@ export const resize = (containerRef, rendererRef, cameraRef) => {
     if (containerRef.current && rendererRef.current && cameraRef.current) {
         // Delay the resize operation slightly to ensure new dimensions are used
         setTimeout(() => {
-            // Update camera aspect ratio and renderer size
             const width = containerRef.current.clientWidth;
             const height = containerRef.current.clientHeight;
-            cameraRef.current.aspect = width / height;
+
+
+            cameraRef.current.left = width / -2;
+            cameraRef.current.right = width / 2;
+            cameraRef.current.top = height / 2;
+            cameraRef.current.bottom = height / -2;
             cameraRef.current.updateProjectionMatrix();
+
             rendererRef.current.setSize(width, height);
         }, 0);
     }

@@ -161,7 +161,7 @@ The ingestion will take some time, which depends on the host machine running the
 - generate the wireframe for each atlas file.
 - upload all the generated files in the bucket that stores the application data.
 
-## Setup development environment
+# For developers willing to contribute to the codebase - Setup development environment
 
 ### Backend
 

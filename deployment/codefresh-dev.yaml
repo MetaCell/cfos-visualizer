@@ -3,6 +3,7 @@ stages:
   - prepare
   - build
   - deploy
+  - qa
 
 steps:
   main_clone:
@@ -22,7 +23,7 @@ steps:
     image_name: cfos-visualizer
     title: CFOS-Visualizer
     working_directory: './'
-    tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
+    tag: '${{CF_BUILD_ID}}'
 
   deployment:
     stage: deploy
@@ -40,5 +41,24 @@ steps:
         - deployment/helm/values.yaml
       custom_values:
         - image.repository=${{REGISTRY}}/cfos-visualizer
-        - image.tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}
+        - image.tag=${{CF_BUILD_ID}}
         - ingress.hosts[0].host=${{DOMAIN}}
+  test_image:
+      title: "Building Integration Image"
+      type: "build"
+      stage: "qa"
+      image_name: "cfos-e2e"
+      tag: '${{CF_SHORT_REVISION}}'
+      working_directory: ./tests/e2e
+      disable_push: True
+  e2e_tests:
+      title: "End to End tests"
+      stage: "qa"
+      image: '${{test_image}}'
+      fail_fast: false
+      environment:
+        - url=https://${{DOMAIN}}
+      commands:
+        - bash -c "rm -rf /codefresh/volume/cfos-visualizer/tests"
+        - echo $url
+        - bash -c "cd / && npm test"

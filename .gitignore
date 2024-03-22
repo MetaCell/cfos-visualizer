@@ -8,3 +8,6 @@ processor/.env
 processor/helpers/__pycache__/
 processor/.DS_Store
 processor/samples/
+application_default_credentials.json
+server/.env
+client/yarn.lock
