@@ -46,7 +46,7 @@ describe('Middleware', () => {
     });
 
     it('should handle FETCH_MODEL', async () => {
-        const mockData = require('./resources/index.json');
+        const mockData = require('./resources/index_95.json');
         fetchModelStructure.mockResolvedValueOnce(mockData);
         const mockLUTData = require('./resources/lut.json');
 

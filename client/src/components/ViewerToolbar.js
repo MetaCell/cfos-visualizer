@@ -1,6 +1,5 @@
 import React from 'react';
 import { IconButton, Stack, Tooltip } from "@mui/material";
-import { KeyboardArrowDownIcon, KeyboardArrowUpIcon, HomeIcon, ZoomInIcon, ZoomOutIcon, TonalityIcon, AutoModeIcon } from '../icons';
 import vars from '../theme/variables';
 
 
