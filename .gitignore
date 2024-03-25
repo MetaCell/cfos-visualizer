@@ -9,7 +9,6 @@ processor/helpers/__pycache__/
 processor/.DS_Store
 .vite/
 application_default_credentials.json
-client/src/components/Viewer/
 client/yarn.lock
 processor/samples/
 server/.env
