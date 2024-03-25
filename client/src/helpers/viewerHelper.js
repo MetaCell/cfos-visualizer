@@ -93,3 +93,17 @@ export const resize = (containerRef, rendererRef, cameraRef) => {
         }, 0);
     }
 };
+
+export const filterExperimentsByInnerExperiment = (atlas, experimentName) => {
+    // Find the inner experiments for the given experiment name
+    const targetExperiment = atlas.ExperimentsAtlas.find(experiment => experiment.name === experimentName);
+    if (!targetExperiment) return [];
+  
+    const innerExperiments = targetExperiment.inner_experiments;
+  
+    // Filter experiments sharing the same inner experiments, excluding the target experiment itself
+    return atlas.ExperimentsAtlas.filter(experiment => 
+      experiment.name !== experimentName && 
+      experiment.inner_experiments.some(inner => innerExperiments.includes(inner))
+    ).map(experiment => experiment.name);
+  }

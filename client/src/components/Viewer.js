@@ -2,9 +2,7 @@ import * as THREE from "three";
 import * as AMI from 'ami.js';
 
 import React, {useEffect, useRef} from "react";
-import {
-    Badge, Box, Button, Chip, Divider, FormControlLabel, FormGroup, Popover, Switch, Typography
-} from "@mui/material";
+import { Box } from "@mui/material";
 import {useSelector, useDispatch} from "react-redux";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import * as viewerHelper from '../helpers/viewerHelper';
@@ -19,9 +17,9 @@ import {
 import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
 import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} from "../icons";
-import PopoverMenu from "./PopoverMenu";
+import { filterExperimentsByInnerExperiment } from "../helpers/viewerHelper";
 
-const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
+import PopoverMenu from "./PopoverMenu";
 
 const StackHelper = AMI.stackHelperFactory(THREE);
 
@@ -276,8 +274,7 @@ export const Viewer = (props) => {
         setAnchorEl(null);
     };
 
-    const orderedExperiments = [currentExperiment?.id, ...Object.keys(experimentsActivityMaps)
-        .filter(experiment => experiment !== currentExperiment?.id)];
+    const groupedByTagsExperiments = filterExperimentsByInnerExperiment(activeAtlas, currentExperiment.name);
 
     const toolbarOptions = [
         {
@@ -335,7 +332,7 @@ export const Viewer = (props) => {
             <PopoverMenu
                 isOpen={Boolean(anchorEl)}
                 handlePopoverClose={handlePopoverClose}
-                orderedExperiments={Object.keys(experimentsActivityMaps)} 
+                groupedByTagsExperiments={groupedByTagsExperiments} 
                 experimentsActivityMaps={experimentsActivityMaps}
                 currentExperiment={currentExperiment}
                 activityMapsMetadata={activityMapsMetadata}
