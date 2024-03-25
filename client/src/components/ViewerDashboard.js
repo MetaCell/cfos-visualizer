@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, Backdrop, Box, Snackbar, Typography} from "@mui/material";
-import { Viewer } from './Viewer';
+import { Viewer } from './Viewer/Viewer';
 import ControlPanel from './ControlPanel';
 import {useDispatch, useSelector} from "react-redux";
 import {SNACKBAR_TIMEOUT} from "../settings";

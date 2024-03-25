@@ -1,7 +1,6 @@
 import React from 'react';
 import { IconButton, Stack, Tooltip } from "@mui/material";
-import vars from '../theme/variables';
-
+import vars from '../../theme/variables';
 
 export const ViewerToolbar = ({options}) => {
 

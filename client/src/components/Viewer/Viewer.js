@@ -3,28 +3,25 @@ import * as AMI from 'ami.js';
 
 import React, {useEffect, useRef} from "react";
 import {
-    Badge, Box, Button, Chip, Divider, FormControlLabel, FormGroup, Popover, Switch, Typography
+    Box
 } from "@mui/material";
 import {useSelector, useDispatch} from "react-redux";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import * as viewerHelper from '../helpers/viewerHelper';
-import vars from "../theme/variables";
+import * as viewerHelper from '../../helpers/viewerHelper';
+
 import {ViewerToolbar} from "./ViewerToolbar";
-import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
-import {STACK_HELPER_BORDER_COLOR} from "../settings";
-import {DIRECTIONS} from "../constants";
+import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../../redux/actions";
+import {STACK_HELPER_BORDER_COLOR} from "../../settings";
+import {DIRECTIONS} from "../../constants";
 import {
     getNewSliceIndex, updateStackHelperIndex
-} from "../helpers/stackHelper";
-import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
-import {sceneObjects} from "../redux/constants";
-import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} from "../icons";
-
-
-const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
+} from "../../helpers/stackHelper";
+import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../../helpers/activityMapHelper";
+import {sceneObjects} from "../../redux/constants";
+import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon} from "../../icons";
+import PopoverMenu from "./PopoverMenu";
 
 const StackHelper = AMI.stackHelperFactory(THREE);
-
 
 export const Viewer = (props) => {
 
@@ -320,108 +317,21 @@ export const Viewer = (props) => {
 
     return (
         <Box sx={{position: "relative", height: "100%", width: "100%"}}>
-            <Box sx={{position: 'absolute', top: '0.75rem', left: '0.75rem', zIndex: 9}}>
-                <ViewerToolbar options={toolbarOptions}/>
-            </Box>
-            <Badge badgeContent={activeActivityMaps.length} color="primary">
-                <Button sx={{
-                    '&.MuiButton-root': {
-                        position: 'absolute',
-                        right: '0.75rem',
-                        height: '2.25rem',
-                        borderRadius: '0.5rem',
-                        border: `0.0625rem solid ${activeActivityMaps.length > 0}`,
-                        fontSize: '0.875rem',
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        background: headerBg,
-                        boxShadow: '0rem 0.0625rem 0.125rem 0rem rgba(16, 24, 40, 0.05)',
-                        top: '0.75rem',
-                        zIndex: 9,
-                        gap: '0.5rem',
-                        '&:hover': {
-                            background: headerBorderColor
-                        }
-                    }
-                }
-                } aria-describedby={popoverID} variant="contained" onClick={handlePopoverOpen} disableRipple>
-                    Statistical maps
-                    <KeyboardArrowDownIcon sx={{fontSize: '1.25rem', color: headerButtonColor}}/>
-                </Button>
-            </Badge>
-
-            <Popover
-                id={popoverID}
-                sx={{maxHeight: '20rem'}}
-                open={isOpen}
+            <ViewerToolbar options={toolbarOptions} />
+            <PopoverMenu
+                isOpen={Boolean(anchorEl)}
+                handlePopoverClose={handlePopoverClose}
+                orderedExperiments={Object.keys(experimentsActivityMaps)} 
+                experimentsActivityMaps={experimentsActivityMaps}
+                currentExperiment={currentExperiment}
+                activityMapsMetadata={activityMapsMetadata}
+                dispatch={dispatch}
+                fetchAndAddActivityMapToViewer={fetchAndAddActivityMapToViewer}
+                removeActivityMapFromViewer={removeActivityMapFromViewer}
                 anchorEl={anchorEl}
-                onClose={handlePopoverClose}
-                anchorOrigin={{
-                    vertical: 'bottom', horizontal: 'right',
-                }}
-                transformOrigin={{
-                    vertical: 'top', horizontal: 'right',
-                }}
-            >
-                <Box px={2} pt={1.25}>
-                    {orderedExperiments.map((experimentName, experimentIndex) => {
-                        const experimentActivityMaps = experimentsActivityMaps[experimentName] || [];
-                        return (<Box key={experimentName}>
-                            {experimentIndex !== 0 &&
-                                <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
-                            <Box sx={{
-                                height: '1.875rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                background: headerBorderColor,
-                                '& .MuiTypography-root': {
-                                    fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
-                                }
-                            }}>
-                                <Typography>{experimentName}</Typography>
-                                {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
-                            </Box>
-                            <FormGroup>
-                                {experimentActivityMaps.map((activityMapID, mapIndex) => (
-                                    <Box key={activityMapID} sx={{
-                                        position: 'relative', paddingLeft: '0.25rem', '&:hover': {
-                                            '&:before': {
-                                                background: primaryActiveColor,
-                                            }
-                                        }, '&:before': {
-                                            content: '""',
-                                            height: '100%',
-                                            width: '0.125rem',
-                                            background: headerBorderColor,
-                                            position: 'absolute',
-                                            left: 0,
-                                            top: 0,
-                                        },
-                                    }}>
-                                        <FormControlLabel
-                                            key={activityMapID}
-                                            control={
-                                                <Switch
-                                                    checked={!!activeActivityMaps[activityMapID]}
-                                                    onChange={(event) => {
-                                                        if (event.target.checked) {
-                                                            dispatch(fetchAndAddActivityMapToViewer(activityMapID));
-                                                            handlePopoverClose()
-                                                        } else {
-                                                            dispatch(removeActivityMapFromViewer(activityMapID));
-                                                        }
-                                                    }}
-                                                />}
-                                            labelPlacement="start"
-                                            label={activityMapsMetadata[activityMapID]?.name}
-                                        />
-                                    </Box>))}
-                            </FormGroup>
-                        </Box>)
-                    })}
-                </Box>
-            </Popover>
+                activeActivityMaps={activeActivityMaps}
+                handlePopoverOpen={handlePopoverOpen}
+            />
             <Box sx={{position: "absolute", top: 0, left: 0, height: "100%", width: "100%",}}
                  ref={containerRef}>
             </Box>
