@@ -19,8 +19,7 @@ const PopoverMenu = ({
     removeActivityMapFromViewer,
     activeActivityMaps,
     anchorEl,
-    badgeContent, // TODO check this
-    handlePopoverOpen, // Event handler for opening the popover
+    handlePopoverOpen, 
 }) => {
     const popoverID = isOpen ? 'simple-popover' : undefined;
 
