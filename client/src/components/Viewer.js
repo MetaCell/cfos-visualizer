@@ -19,13 +19,14 @@ import {
 import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
 import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} from "../icons";
+import {getUpdatedProbeWidget} from "../helpers/probeHelper";
 
 
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
 
 const StackHelper = AMI.stackHelperFactory(THREE);
 
-const DELTA_SLICE_BUTTON = 1 ;
+const DELTA_SLICE_BUTTON = 1;
 const DELTA_SLICE_MOUSE = 5;
 
 
@@ -52,6 +53,8 @@ export const Viewer = (props) => {
 
     const currentAtlasStackHelperRef = useRef(null);
     const activityMapsStackHelpersRef = useRef({});
+
+    const probeWidgetRef = useRef(null);
 
     const previousAtlasIdRef = useRef(null);
     const activityMapsRef = useRef(activeActivityMaps);
@@ -162,9 +165,9 @@ export const Viewer = (props) => {
         if (activeAtlas) {
             const hasAtlasChanged = previousAtlasIdRef.current !== activeAtlas.id;
 
-            if(hasAtlasChanged){
+            if (hasAtlasChanged) {
                 viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
-                previousAtlasIdRef.current =activeAtlas.id;
+                previousAtlasIdRef.current = activeAtlas.id;
             }
 
             const targetStack = wireframeMode ? activeAtlas.wireframeStack : activeAtlas.stack;
@@ -266,6 +269,14 @@ export const Viewer = (props) => {
 
 
     }, [activeActivityMaps]);
+
+
+    useEffect(() => {
+        if (currentAtlasStackHelperRef.current) {
+            probeWidgetRef.current = getUpdatedProbeWidget(probeWidgetRef.current, currentAtlasStackHelperRef.current,
+                activityMapsStackHelpersRef.current, controlsRef.current);
+        }
+    }, [currentAtlasStackHelperRef.current, activityMapsStackHelpersRef.current]);
 
 
     const handlePopoverOpen = (event) => {
