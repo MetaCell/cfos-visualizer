@@ -37,8 +37,8 @@ output_directory = os.path.join(web_directory, output_folder)  # Full path to th
 os.makedirs(output_directory, exist_ok=True)
 os.makedirs(download_dir, exist_ok=True)
 
-sub_folders = ["Atlas", "ActivityMap"]
-sub_folders_process_wireframe = ["Atlas"]
+sub_folders = ["Atlas"]
+sub_folders_process_wireframe = ["Atlas", "ActivityMaps"]
 
 def wait_for_file(filename, directory_path, timeout_seconds=300):
     """
@@ -165,11 +165,11 @@ if __name__ == "__main__":
                 target_path = os.path.join(target_sub_dir, processed_file)
                 os.rename(source_path, target_path)
 
-    #process_bucket_upload(bucket_name, output_directory)
+    process_bucket_upload(bucket_name, output_directory)
 
     #last call for index file
-    #index_location = os.path.join(data_dir, "index.json")
-    #upload_file_to_bucket_root(bucket_name, index_location)
+    index_location = os.path.join(data_dir, "index.json")
+    upload_file_to_bucket_root(bucket_name, index_location)
 
     driver.quit()
     print("Process completed. Now exiting...")
