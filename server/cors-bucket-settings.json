@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://cfos.dev.metacell.us", "https://cfos.dev.metacell.us"],
+    "responseHeader": ["Content-Type"],
+    "method": ["GET", "POST"],
+    "maxAgeSeconds": 3600
+  }
+]
