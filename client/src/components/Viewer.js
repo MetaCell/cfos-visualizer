@@ -38,6 +38,7 @@ export const Viewer = (props) => {
     const experimentsActivityMaps = useSelector(state => state.model.ExperimentsActivityMap);
     const currentExperiment = useSelector(state => state.currentExperiment);
     const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
+    const atlasActivityMaps = useSelector( state => state.model.AtlasActivityMap );
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [wireframeMode, setWireframeMode] = React.useState(false);
@@ -276,9 +277,6 @@ export const Viewer = (props) => {
         setAnchorEl(null);
     };
 
-    const orderedExperiments = [currentExperiment?.id, ...Object.keys(experimentsActivityMaps)
-        .filter(experiment => experiment !== currentExperiment?.id)];
-
     const toolbarOptions = [
         {
             title: "Previous slice",
@@ -373,11 +371,11 @@ export const Viewer = (props) => {
                 }}
             >
                 <Box px={2} pt={1.25}>
-                    {orderedExperiments.map((experimentName, experimentIndex) => {
-                        const experimentActivityMaps = experimentsActivityMaps[experimentName] || [];
+                    {[activeAtlas].map((atlas, altasIndex) => {
+                        const selectedAtlasActivityMaps = atlasActivityMaps[atlas.id] || [];
                         return (
-                            <Box key={experimentName + experimentIndex}>
-                                {experimentIndex !== 0 &&
+                            <Box key={atlas.name + altasIndex}>
+                                {altasIndex !== 0 &&
                                     <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
                                 <Box sx={{
                                     height: '1.875rem',
@@ -389,11 +387,10 @@ export const Viewer = (props) => {
                                         fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
                                     }
                                 }}>
-                                    <Typography>{experimentName}</Typography>
-                                    {experimentIndex === 0 && currentExperiment && <Chip label="Current Experiment"/>}
+                                    <Typography>{atlas.id}</Typography>
                                 </Box>
                                 <FormGroup>
-                                    {experimentActivityMaps.map((activityMapID, mapIndex) => (
+                                    {selectedAtlasActivityMaps.map((activityMapID, mapIndex) => (
                                         <Box
                                             key={activityMapID}
                                             sx={{
