@@ -19,7 +19,7 @@ import {
 import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
 import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} from "../icons";
-import {getUpdatedProbeWidget} from "../helpers/probeHelper";
+import {getProbeWidget} from "../helpers/probeHelper";
 
 
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
@@ -273,10 +273,20 @@ export const Viewer = (props) => {
 
     useEffect(() => {
         if (currentAtlasStackHelperRef.current) {
-            probeWidgetRef.current = getUpdatedProbeWidget(probeWidgetRef.current, currentAtlasStackHelperRef.current,
-                activityMapsStackHelpersRef.current, controlsRef.current);
+            // Check if an existing probe widget exists and dispose of it properly
+            if (probeWidgetRef.current) {
+                probeWidgetRef.current.free();
+                probeWidgetRef.current = null;
+            }
+
+
+            probeWidgetRef.current = getProbeWidget(
+                currentAtlasStackHelperRef.current,
+                activityMapsStackHelpersRef.current,
+                controlsRef.current
+            );
         }
-    }, [currentAtlasStackHelperRef.current, activityMapsStackHelpersRef.current]);
+    }, [activeActivityMaps, activeAtlas, sliceIndex]);
 
 
     const handlePopoverOpen = (event) => {

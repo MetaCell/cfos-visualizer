@@ -1,24 +1,23 @@
 import * as THREE from "three";
-import {customWidgetsVoxelprobe} from "./onHoverAmiWidget";
+import {customWidgetsVoxelProbe} from "./onHoverAmiWidget";
 
-const VoxelProbe = customWidgetsVoxelprobe(THREE);
+const VoxelProbe = customWidgetsVoxelProbe(THREE);
 
 
-export const getUpdatedProbeWidget = (probeWidget, currentAtlasStackHelperRef, activityMapsStackHelpersRef, controls) => {
+export const getProbeWidget = (currentAtlasStackHelper, activityMapsStackHelpers, controls) => {
 
-    if (!currentAtlasStackHelperRef.current) {
+    if (!currentAtlasStackHelper) {
         return null
     }
 
-    const stacks = [currentAtlasStackHelperRef.current.stack];
-    Object.values(activityMapsStackHelpersRef.current).forEach(helper => stacks.push(helper.stack));
+    const stacks = [currentAtlasStackHelper.stack];
+    Object.values(activityMapsStackHelpers).forEach(helper => stacks.push(helper.stack));
 
     const params = {
-        stack: currentAtlasStackHelperRef.current.stack,
+        stack: currentAtlasStackHelper.stack,
     };
 
-    if (!probeWidget) {
-        return new VoxelProbe(currentAtlasStackHelperRef.current.slice.mesh, controls, params)
-    }
+
+    return new VoxelProbe(currentAtlasStackHelper.slice.mesh, controls, params)
 
 };

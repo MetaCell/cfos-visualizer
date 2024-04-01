@@ -21,6 +21,16 @@ export function deserializeStack(decodedData) {
         }
     }
 
+    if (stack.frame && !stack.frame.getPixelData) {
+        stack.frame.getPixelData = function (column, row) {
+            if (column >= 0 && column < this._columns && row >= 0 && row < this._rows) {
+                return this.pixelData[column + this._columns * row];
+            } else {
+                return null;
+            }
+        };
+    }
+
     return stack;
 }
 
