@@ -64,7 +64,7 @@ const PopoverMenu = ({
                     vertical: 'top', horizontal: 'right',
                 }}
             >
-                <Box px={2} pt={1.25}>
+                { groupedByTagsExperiments && <Box px={2} pt={1.25}>
                     {Object.entries(groupedByTagsExperiments).map(([tag, experimentsUnderTag], tagIndex) => (
                         <Box key={tag}>
                             {/* Optionally render a tag header */}
@@ -130,8 +130,8 @@ const PopoverMenu = ({
                             })}
                         </Box>
                     ))}
-                </Box>
-            </Popover>
+                </Box> }
+            </Popover> 
         </>
     );
 };

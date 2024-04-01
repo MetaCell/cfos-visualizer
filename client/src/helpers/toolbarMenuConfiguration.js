@@ -8,78 +8,82 @@ const { primaryFont, headerButtonColor, headerBorderColor } = vars;
 
 export const generateToolbarItems = (experimentsAtlas, currentExperiment, currentAtlasID, atlasesMetadata) => {
   const toolbarItems = [];
+  const experimentID = 'test';
 
-  for (const [experimentID, atlasArray] of Object.entries(experimentsAtlas)) {
-    const atlasList = atlasArray.map(atlasID => {
-      const atlasName = atlasesMetadata[atlasID].name;
-      const atlasMetadata = atlasesMetadata[atlasID].metadata || messages.NO_METADATA
-      return {
+  Object.keys(experimentsAtlas).forEach((experimentAtlasItemKey)=>{ 
+    console.log(experimentAtlasItemKey);
+    const currentAtlas = experimentsAtlas[experimentAtlasItemKey]
+    const atlasName = currentAtlas.name ;
+    const atlasID = currentAtlas.name ;
+    
+    const atlasMetadata = currentAtlas.metadata || messages.NO_METADATA
+    return {
+      label: (
+          <Box display="flex" alignItems="center" gap={1}>
+            <Typography>{atlasName}</Typography>
+          {atlasID === currentAtlasID && experimentID === currentExperiment?.id && <AtlasSelectedIcon />}
+        </Box>
+    ),
+    icon: "",
+    action: {
+      handlerAction: 'null',
+      parameters: []
+    },
+    className: 'secondary-color',
+    list: [
+      {
+        label: "Atlas metadata",
+        icon: "",
+        action: {
+          handlerAction: 'null',
+          parameters: []
+        },
+        className: 'list-heading'
+      },
+      {
         label: (
-            <Box display="flex" alignItems="center" gap={1}>
-              <Typography>{atlasName}</Typography>
-            {atlasID === currentAtlasID && experimentID === currentExperiment?.id && <AtlasSelectedIcon />}
-          </Box>
-      ),
-      icon: "",
-      action: {
-        handlerAction: 'null',
-        parameters: []
-      },
-      className: 'secondary-color',
-      list: [
-        {
-          label: "Atlas metadata",
-          icon: "",
-          action: {
-            handlerAction: 'null',
-            parameters: []
-          },
-          className: 'list-heading'
+            <>
+              <Typography sx={{ fontSize: '0.875rem', color: '#FCFCFD' }}>
+                {atlasID}
+              </Typography>
+              <Box sx={{ fontSize: '0.875rem', marginTop: '10px', padding: '10px', color: '#8D8D91', borderRadius: '4px', border: '1px solid #302F31' }}>
+                {atlasMetadata}
+              </Box>
+            </>
+        ),
+        icon: "",
+        action: {
+          handlerAction: actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS,
+          parameters: [experimentID, atlasID]
         },
-        {
-          label: (
-              <>
-                <Typography sx={{ fontSize: '0.875rem', color: '#FCFCFD' }}>
-                  {atlasID}
-                </Typography>
-                <Box sx={{ fontSize: '0.875rem', marginTop: '10px', padding: '10px', color: '#8D8D91', borderRadius: '4px', border: '1px solid #302F31' }}>
-                  {atlasMetadata}
-                </Box>
-              </>
-          ),
-          icon: "",
-          action: {
-            handlerAction: actions.FETCH_AND_SET_CURRENT_EXPERIMENT_AND_ATLAS,
-            parameters: [experimentID, atlasID]
-          },
-        }
-      ]
-    }});
-
-    const experimentItem = {
-      label: experimentID,
-      icon: experimentID === currentExperiment?.id ? "fa fa-check" : "",
-      position: "right-start",
-      action: {
-        handlerAction: 'null',
-        parameters: []
-      },
-      list: [
-        {
-          label: "Atlas",
-          icon: "",
-          action: {
-            handlerAction: 'null',
-            parameters: []
-          },
-          className: 'list-heading'
-        },
-        ...atlasList
-      ]
-    };
-
-    toolbarItems.push(experimentItem);
+      }
+    ]
   }
+  });
+
+  const experimentItem = {
+    label: experimentID,
+    icon: experimentID === currentExperiment?.id ? "fa fa-check" : "",
+    position: "right-start",
+    action: {
+      handlerAction: 'null',
+      parameters: []
+    },
+    list: [
+      {
+        label: "Atlas",
+        icon: "",
+        action: {
+          handlerAction: 'null',
+          parameters: []
+        },
+        className: 'list-heading'
+      },
+      //...atlasList
+    ]
+  }
+    
+  toolbarItems.push(experimentItem);
 
   return toolbarItems;
 }

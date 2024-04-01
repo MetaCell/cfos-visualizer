@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import * as AMI from 'ami.js';
 
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Box } from "@mui/material";
 import {useSelector, useDispatch} from "react-redux";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -53,6 +53,8 @@ export const Viewer = (props) => {
 
     const previousAtlasIdRef = useRef(null);
     const activityMapsRef = useRef(activeActivityMaps);
+
+    const [groupedByTagsExperiments, setGroupedByTagsExperiments] = useState(null);
 
     // On Mount
     useEffect(() => {
@@ -212,6 +214,9 @@ export const Viewer = (props) => {
             } else {
                 currentAtlasStackHelperRef.current.visible = activeAtlas.visibility;
             }
+            const experiments = filterExperimentsByInnerExperiment(activeAtlas, currentExperiment.name);
+            setGroupedByTagsExperiments(experiments);
+
         }
     }, [activeAtlas, wireframeMode]);
 
@@ -262,7 +267,6 @@ export const Viewer = (props) => {
             activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
         });
 
-
     }, [activeActivityMaps]);
 
 
@@ -273,8 +277,6 @@ export const Viewer = (props) => {
     const handlePopoverClose = () => {
         setAnchorEl(null);
     };
-
-    const groupedByTagsExperiments = filterExperimentsByInnerExperiment(activeAtlas, currentExperiment.name);
 
     const toolbarOptions = [
         {
