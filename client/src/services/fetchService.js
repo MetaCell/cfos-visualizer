@@ -1,6 +1,6 @@
 import {decode} from '@msgpack/msgpack';
 import {BASE_URL, COMPRESSED_EXTENSION, WIREFRAME_IDENTIFIER} from "../settings";
-import {deserializeStack} from "../helpers/stackHelper";
+import {deserializeStack} from "../helpers/deserializerHelper";
 import {Entities} from "../model/models";
 import {originalFilenameToNewExtension} from "../utils";
 

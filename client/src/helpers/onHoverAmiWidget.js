@@ -7,16 +7,6 @@ const widgetsHandleFactory = AMI.handleWidgetFactory
 const CoreUtils = AMI.UtilsCore
 
 
-function getPixelData(stack, coordinate) {
-    let value = null; // Default to null if outside the image bounds
-    if (coordinate.z >= 0 && coordinate.z < stack._frame.length) {
-        const frame = stack._frame[coordinate.z];
-        if (frame && coordinate.x >= 0 && coordinate.x < frame._columns && coordinate.y >= 0 && coordinate.y < frame._rows) {
-            value = frame._pixelData[coordinate.x + frame._columns * coordinate.y];
-        }
-    }
-    return value;
-}
 
 
 /**
@@ -192,7 +182,7 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             this._voxel.dataCoordinates = CoreUtils.worldToData(this._stack.lps2IJK, this._worldPosition);
 
             // update value
-            let value = getPixelData(this._stack, this._voxel.dataCoordinates);
+        let value = CoreUtils.getPixelData(this._stack, this._voxel.dataCoordinates);
 
             this._voxel.value =
                 value === null || this._stack.numberOfChannels > 1

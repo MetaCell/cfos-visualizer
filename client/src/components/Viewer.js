@@ -273,6 +273,8 @@ export const Viewer = (props) => {
 
     useEffect(() => {
         if (currentAtlasStackHelperRef.current) {
+            // FIXME: Workaround to fix initial handle misposition
+            onWindowResize()
             // Check if an existing probe widget exists and dispose of it properly
             if (probeWidgetRef.current) {
                 probeWidgetRef.current.free();

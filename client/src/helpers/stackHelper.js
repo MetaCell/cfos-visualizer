@@ -4,39 +4,8 @@ import {DIRECTIONS} from "../constants";
 import {LUT_DATA, STACK_MESH_INDEX} from "../settings";
 import {getLUTGradients} from "./gradientHelper";
 
-const StackModel = AMI.StackModel;
+
 const HelpersLut = AMI.lutHelperFactory(THREE);
-
-export function deserializeStack(decodedData) {
-    const stack = new StackModel();
-
-    // Iterate over all properties of the stack
-    for (let prop in stack) {
-        if (stack.hasOwnProperty(prop) && decodedData.hasOwnProperty(prop)) {
-            if (isVector3Object(decodedData[prop])) {
-                stack[prop] = new THREE.Vector3(decodedData[prop].x, decodedData[prop].y, decodedData[prop].z);
-            } else {
-                stack[prop] = decodedData[prop];
-            }
-        }
-    }
-
-    if (stack.frame && !stack.frame.getPixelData) {
-        stack.frame.getPixelData = function (column, row) {
-            if (column >= 0 && column < this._columns && row >= 0 && row < this._rows) {
-                return this.pixelData[column + this._columns * row];
-            } else {
-                return null;
-            }
-        };
-    }
-
-    return stack;
-}
-
-function isVector3Object(obj) {
-    return obj && typeof obj === 'object' && 'x' in obj && 'y' in obj && 'z' in obj;
-}
 
 export const getNewSliceIndex = (stackHelper, direction, delta = 1) => {
     if (!stackHelper) {
