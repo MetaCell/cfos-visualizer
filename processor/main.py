@@ -165,11 +165,11 @@ if __name__ == "__main__":
                 target_path = os.path.join(target_sub_dir, processed_file)
                 os.rename(source_path, target_path)
 
-    #process_bucket_upload(bucket_name, output_directory)
+    process_bucket_upload(bucket_name, output_directory)
 
     #last call for index file
-    #index_location = os.path.join(data_dir, "index.json")
-    #upload_file_to_bucket_root(bucket_name, index_location)
+    index_location = os.path.join(data_dir, "index.json")
+    upload_file_to_bucket_root(bucket_name, index_location)
 
     driver.quit()
     print("Process completed. Now exiting...")
