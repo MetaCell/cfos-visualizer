@@ -3,11 +3,21 @@ import { createTheme } from "@mui/material/styles";
 
 const { primaryFont, primaryBgColor, primaryActiveColor, headerBorderLeftColor, switchTrackColor, headerBorderColor, switchTrackActiveBg, labelColor, chipBg, tooltipBgColor, whiteColor } = vars;
 
-let theme = createTheme();
-
-theme = createTheme( {
+let theme = createTheme( {
   typography: {
     fontFamily: primaryFont,
+    h4: {
+      fontSize: '0.875rem',
+      fontWeight: 500,
+      lineHeight: '1.25rem',
+      whiteSpace: 'normal'
+    },
+    h5: {
+      fontSize: '0.75rem',
+      whiteSpace: 'normal',
+      fontWeight: 400,
+      lineHeight: '1.125rem'
+    }
   },
 
   components: {

@@ -166,8 +166,9 @@ const ControlPanel = () => {
                         <CustomSlider min={globalIntensityRange[0]}
                                       max={globalIntensityRange[1]}
                                       value={intensityRange}
-                                      width='30%'
+                                      width='40%'
                                       heading="Global intensity"
+                                      showPercentageAbsolute={true}
                                       onChange={(newValue) => onIntensityChange(newValue)}/>
                     }
                 </Box>

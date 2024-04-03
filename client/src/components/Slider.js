@@ -1,6 +1,8 @@
 import React from "react";
 import vars from "../theme/variables";
 import {Box, Button, Slider, Typography} from "@mui/material";
+import {CustomToggleButton} from "./CustomToggleButton";
+import CustomTextField from "./CustomTextField";
 
 const {resetButtonColor, labelColor, resetButtonActiveColor, tooltipBgColor, whiteColor} = vars;
 
@@ -27,20 +29,21 @@ const formatValueLabel = (value) => {
 };
 
 const CustomSlider = ({
-                          heading,
-                          width = 1,
-                          onChange,
-                          value,
-                          min = 0,
-                          max = 100,
-                          minColor = tooltipBgColor,
-                          maxColor = whiteColor,
-                          numberOfSteps = 100,
-                          disabled = false
-                      }) => {
+      heading,
+      width = 1,
+      onChange,
+      value,
+      min = 0,
+      max = 100,
+      minColor = tooltipBgColor,
+      maxColor = whiteColor,
+      numberOfSteps = 100,
+      disabled = false,
+      showPercentageAbsolute = false
+  }) => {
+    const [typeOfValue, setTypeOfValue] = React.useState('percentage');
 
     const step = (max - min) / numberOfSteps;
-
     return (
         <Box
             width={width}
@@ -55,6 +58,11 @@ const CustomSlider = ({
             >
                 {heading}
             </Typography>
+            {
+                showPercentageAbsolute &&  <CustomToggleButton typeOfValue={typeOfValue} setTypeOfValue={setTypeOfValue} />
+            }
+            <CustomTextField defaultValue={min} disabled={disabled} typeOfValue={typeOfValue} showPercentageAbsolute={showPercentageAbsolute} />
+
             <Slider
                 sx={{
                     ...(disabled ? {
@@ -78,6 +86,8 @@ const CustomSlider = ({
                 valueLabelFormat={formatValueLabel}
                 disabled={disabled}
             />
+            <CustomTextField defaultValue={max} disabled={disabled} typeOfValue={typeOfValue} showPercentageAbsolute={showPercentageAbsolute} />
+
             <Button
                 disableRipple
                 disabled={disabled}

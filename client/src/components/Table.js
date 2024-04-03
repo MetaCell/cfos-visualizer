@@ -1,8 +1,7 @@
-import {Box, Typography, Link} from "@mui/material";
+import {Box, Typography} from "@mui/material";
 import React from "react";
 import vars from "../theme/variables";
 import TableRow from "./TableRow";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const {
     headerBorderLeftColor,
@@ -24,7 +23,7 @@ export const tableStyles = {
                 borderLeft: `0.0625rem solid ${headerBorderLeftColor}`
             },
             '&:first-of-type': {
-                width: '11.25rem'
+                width: '13.25rem'
             },
             '&:last-of-type': {
                 width: 'calc(35% - 5.625rem)'
@@ -109,7 +108,7 @@ export const tableStyles = {
                 px: '0.75rem',
 
                 '&:first-of-type': {
-                    width: '11.25rem'
+                    width: '13.25rem'
                 },
                 '&:last-of-type': {
                     width: 'calc(35% - 5.625rem)'
