@@ -7,8 +7,6 @@ const widgetsHandleFactory = AMI.handleWidgetFactory
 const CoreUtils = AMI.UtilsCore
 
 
-
-
 /**
  * @module widgets/voxelProbe
  */
@@ -17,9 +15,12 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
         return null;
     }
 
+    const WidgetsHandle = widgetsHandleFactory(three);
+
+
     const Constructor = widgetsBase(three);
     return class extends Constructor {
-        constructor(targetMesh, controls, params = {}) {
+        constructor(targetMesh, controls, viewerCallback, params = {}) {
             super(targetMesh, controls, params);
 
             this._widgetType = 'VoxelProbe';
@@ -34,13 +35,11 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             this._moving = true;
             this._domHovered = false;
 
-            // dom stuff
-            this._label = null;
 
             // handle (represent voxel)
-            const WidgetsHandle = widgetsHandleFactory(three);
             this._handle = new WidgetsHandle(targetMesh, controls, params);
             this.add(this._handle);
+            // this._handle.hide();
 
             this._moveHandle = new WidgetsHandle(targetMesh, controls, params);
             this.add(this._moveHandle);
@@ -50,21 +49,16 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
 
             // event listeners
             this.onMove = this.onMove.bind(this);
-            this.onHover = this.onHover.bind(this);
             this.addEventListeners();
+
+            this.viewerCallback = viewerCallback.bind(this)
         }
 
         addEventListeners() {
-            this._label.addEventListener('mouseenter', this.onHover);
-            this._label.addEventListener('mouseleave', this.onHover);
-
             this._container.addEventListener('mousemove', this.onMove);
         }
 
         removeEventListeners() {
-            this._label.removeEventListener('mouseenter', this.onHover);
-            this._label.removeEventListener('mouseleave', this.onHover);
-
             this._container.removeEventListener('mousemove', this.onMove);
         }
 
@@ -92,8 +86,6 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
                 if (this._moving) {
                     this._handle.worldPosition.add(this._moveHandle.worldPosition.clone().sub(prevPosition));
                 }
-            } else {
-                this.onHover(null);
             }
 
             this._handle.onMove(evt);
@@ -117,53 +109,17 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             this.update();
         }
 
-        onHover(evt) {
-            if (evt) {
-                this.hoverDom(evt);
-            }
-
-            this._hovered = this._handle.hovered || this._domHovered;
-            this._container.style.cursor = this._hovered ? 'pointer' : 'default';
-        }
-
         hoverDom(evt) {
             this._domHovered = evt.type === 'mouseenter';
         }
 
         create() {
             this.createVoxel();
-            this.createDOM();
         }
 
         createVoxel() {
             this._voxel = new ModelsVoxel();
             this._voxel.id = this.id;
-        }
-
-        createDOM() {
-            this._label = document.createElement('div');
-            this._label.className = 'widgets-label';
-
-            // measurements
-            let measurementsContainer = document.createElement('div');
-            // LPS
-            let lpsContainer = document.createElement('div');
-            lpsContainer.className = 'lpsPosition';
-            measurementsContainer.appendChild(lpsContainer);
-            // IJK
-            let ijkContainer = document.createElement('div');
-            ijkContainer.className = 'ijkPosition';
-            measurementsContainer.appendChild(ijkContainer);
-            // Value
-            let valueContainer = document.createElement('div');
-            valueContainer.className = 'value';
-            measurementsContainer.appendChild(valueContainer);
-
-            this._label.appendChild(measurementsContainer);
-
-            this._container.appendChild(this._label);
-
-            this.updateDOMColor();
         }
 
         update() {
@@ -174,7 +130,14 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
 
             this.updateVoxel(); // set data coordinates && value
 
-            this.updateDOM();
+            const info = {
+                worldCoordinates: this._voxel.worldCoordinates,
+                dataCoordinates: this._voxel.dataCoordinates,
+                value: this._voxel.value,
+                screenPosition: this._handle.screenPosition // or any other position info necessary
+            };
+
+            this.viewerCallback(info)
         }
 
         updateVoxel() {
@@ -182,7 +145,7 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             this._voxel.dataCoordinates = CoreUtils.worldToData(this._stack.lps2IJK, this._worldPosition);
 
             // update value
-        let value = CoreUtils.getPixelData(this._stack, this._voxel.dataCoordinates);
+            let value = CoreUtils.getPixelData(this._stack, this._voxel.dataCoordinates);
 
             this._voxel.value =
                 value === null || this._stack.numberOfChannels > 1
@@ -194,31 +157,6 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
                     ).toFixed();
         }
 
-        updateDOM() {
-            const rasContainer = this._label.querySelector('.lpsPosition');
-            const ijkContainer = this._label.querySelector('.ijkPosition');
-            const valueContainer = this._label.querySelector('.value');
-
-            rasContainer.innerHTML = `LPS: 
-      ${this._voxel.worldCoordinates.x.toFixed(2)} :
-      ${this._voxel.worldCoordinates.y.toFixed(2)} :
-      ${this._voxel.worldCoordinates.z.toFixed(2)}`;
-            ijkContainer.innerHTML = `IJK: 
-      ${this._voxel.dataCoordinates.x} :
-      ${this._voxel.dataCoordinates.y} :
-      ${this._voxel.dataCoordinates.z}`;
-            valueContainer.innerHTML = `Value: ${this._voxel.value}`;
-
-            this.updateDOMColor();
-
-            const transform = this.adjustLabelTransform(this._label, this._handle.screenPosition, true);
-
-            this._label.style.transform = `translate3D(${transform.x}px, ${transform.y}px, 0)`;
-        }
-
-        updateDOMColor() {
-            this._label.style.borderColor = this._color;
-        }
 
         free() {
             this.removeEventListeners();
@@ -230,8 +168,6 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             this._moveHandle.free();
             this._moveHandle = null;
 
-            this._container.removeChild(this._label);
-
             this._stack = null;
             this._voxel = null;
 
@@ -239,12 +175,10 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
         }
 
         hideDOM() {
-            this._label.style.display = 'none';
             this._handle.hideDOM();
         }
 
         showDOM() {
-            this._label.style.display = '';
             this._handle.showDOM();
         }
 

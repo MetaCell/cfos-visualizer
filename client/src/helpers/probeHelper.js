@@ -4,7 +4,7 @@ import {customWidgetsVoxelProbe} from "./onHoverAmiWidget";
 const VoxelProbe = customWidgetsVoxelProbe(THREE);
 
 
-export const getProbeWidget = (currentAtlasStackHelper, activityMapsStackHelpers, controls) => {
+export const getProbeWidget = (currentAtlasStackHelper, activityMapsStackHelpers, controls, onMouseMove) => {
 
     if (!currentAtlasStackHelper) {
         return null
@@ -18,6 +18,6 @@ export const getProbeWidget = (currentAtlasStackHelper, activityMapsStackHelpers
     };
 
 
-    return new VoxelProbe(currentAtlasStackHelper.slice.mesh, controls, params)
+    return new VoxelProbe(currentAtlasStackHelper.slice.mesh, controls, onMouseMove, params)
 
 };

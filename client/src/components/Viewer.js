@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import * as AMI from 'ami.js';
 
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     Badge, Box, Button, Chip, Divider, FormControlLabel, FormGroup, Popover, Switch, Typography
 } from "@mui/material";
@@ -20,6 +20,7 @@ import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers
 import {sceneObjects} from "../redux/constants";
 import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} from "../icons";
 import {getProbeWidget} from "../helpers/probeHelper";
+import ViewerTooltip from "./ViewerTooltip";
 
 
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
@@ -40,9 +41,9 @@ export const Viewer = (props) => {
     const currentExperiment = useSelector(state => state.currentExperiment);
     const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [wireframeMode, setWireframeMode] = React.useState(false);
-    const [sliceIndex, setSliceIndex] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [wireframeMode, setWireframeMode] = useState(false);
+    const [sliceIndex, setSliceIndex] = useState(null);
 
 
     const containerRef = useRef(null);
@@ -55,6 +56,13 @@ export const Viewer = (props) => {
     const activityMapsStackHelpersRef = useRef({});
 
     const probeWidgetRef = useRef(null);
+    const [tooltipData, setTooltipData] = useState({
+        open: false,
+        worldCoordinates: {},
+        dataCoordinates: {},
+        value: '',
+        anchorPosition: null // Screen position for the tooltip
+    });
 
     const previousAtlasIdRef = useRef(null);
     const activityMapsRef = useRef(activeActivityMaps);
@@ -285,11 +293,21 @@ export const Viewer = (props) => {
             probeWidgetRef.current = getProbeWidget(
                 currentAtlasStackHelperRef.current,
                 activityMapsStackHelpersRef.current,
-                controlsRef.current
+                controlsRef.current,
+                handleVoxelHover,
             );
         }
     }, [activeActivityMaps, activeAtlas, sliceIndex]);
 
+    const handleVoxelHover = ({worldCoordinates, dataCoordinates, value, screenPosition}) => {
+        setTooltipData({
+            open: true,
+            worldCoordinates,
+            dataCoordinates,
+            value,
+            anchorPosition: screenPosition
+        });
+    };
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -457,6 +475,13 @@ export const Viewer = (props) => {
                     })}
                 </Box>
             </Popover>
+            <ViewerTooltip
+                open={tooltipData.open}
+                anchorPosition={tooltipData.anchorPosition}
+                worldCoordinates={tooltipData.worldCoordinates}
+                dataCoordinates={tooltipData.dataCoordinates}
+                value={tooltipData.value}
+            />
             <Box sx={{position: "absolute", top: 0, left: 0, height: "100%", width: "100%",}}
                  ref={containerRef}>
             </Box>

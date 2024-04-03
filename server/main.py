@@ -12,6 +12,30 @@ load_dotenv()
 
 bucket_name = os.environ.get("GCLOUD_PROJECT")
 
+static_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+
+# Dictionary mapping identifiers to their mock file names
+mock_files = {
+    "Atlas": "gubra_ano_combined_25um.msgpack",
+    "ActivityMap": "Ketamine-data__uncorr_1-p__nalKet_greater_than_ket.msgpack",
+}
+
+
+def mock_download_as_stream(folder_name, object_name):
+    """
+    Serve the mock file for a given identifier from the static folder.
+    """
+    # Determine the file name from the mock_files dictionary
+    file_name = mock_files.get(folder_name)
+    if file_name:
+        file_path = os.path.join(static_folder_path, file_name)
+        if os.path.exists(file_path):
+            return send_file(file_path, as_attachment=True, download_name=file_name)
+        else:
+            return "Mock file not found", 404
+    else:
+        return "Invalid mock request", 404
+
 
 def download_as_stream(folder_name, object_name):
     try:
@@ -63,11 +87,11 @@ def init_webapp_routes(app):
 
     @app.route('/cfos-visualizer-stanford/Atlas/<id>')
     def download_atlas(id):
-        return download_as_stream("Atlas", id)
+        return mock_download_as_stream("Atlas", id)
 
     @app.route('/cfos-visualizer-stanford/ActivityMap/<id>')
     def activity_map(id):
-        return download_as_stream("ActivityMap", id)
+        return mock_download_as_stream("ActivityMap", id)
 
     @app.route('/cfos-visualizer-stanford/Experiment/<id>')
     def experiment(id):
