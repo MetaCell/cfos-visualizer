@@ -10,6 +10,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import * as viewerHelper from '../helpers/viewerHelper';
 import vars from "../theme/variables";
 import {ViewerToolbar} from "./ViewerToolbar";
+import {ViewerProbe} from "./ViewerProbe";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
 import {DIRECTIONS} from "../constants";
@@ -19,8 +20,6 @@ import {
 import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
 import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} from "../icons";
-import {getProbeWidget} from "../helpers/probeHelper";
-import ViewerTooltip from "./ViewerTooltip";
 
 
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
@@ -45,6 +44,8 @@ export const Viewer = (props) => {
     const [wireframeMode, setWireframeMode] = useState(false);
     const [sliceIndex, setSliceIndex] = useState(null);
 
+    const [probeVersion, setProbeVersion] = useState(0);
+
 
     const containerRef = useRef(null);
     const rendererRef = useRef(null);
@@ -54,15 +55,6 @@ export const Viewer = (props) => {
 
     const currentAtlasStackHelperRef = useRef(null);
     const activityMapsStackHelpersRef = useRef({});
-
-    const probeWidgetRef = useRef(null);
-    const [tooltipData, setTooltipData] = useState({
-        open: false,
-        worldCoordinates: {},
-        dataCoordinates: {},
-        value: '',
-        anchorPosition: null // Screen position for the tooltip
-    });
 
     const previousAtlasIdRef = useRef(null);
     const activityMapsRef = useRef(activeActivityMaps);
@@ -278,36 +270,14 @@ export const Viewer = (props) => {
 
     }, [activeActivityMaps]);
 
-
     useEffect(() => {
         if (currentAtlasStackHelperRef.current) {
             // FIXME: Workaround to fix initial handle misposition
             onWindowResize()
-            // Check if an existing probe widget exists and dispose of it properly
-            if (probeWidgetRef.current) {
-                probeWidgetRef.current.free();
-                probeWidgetRef.current = null;
-            }
-
-
-            probeWidgetRef.current = getProbeWidget(
-                currentAtlasStackHelperRef.current,
-                activityMapsStackHelpersRef.current,
-                controlsRef.current,
-                handleVoxelHover,
-            );
+            setProbeVersion(prev => prev + 1)
         }
     }, [activeActivityMaps, activeAtlas, sliceIndex]);
 
-    const handleVoxelHover = ({worldCoordinates, dataCoordinates, value, screenPosition}) => {
-        setTooltipData({
-            open: true,
-            worldCoordinates,
-            dataCoordinates,
-            value,
-            anchorPosition: screenPosition
-        });
-    };
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -475,12 +445,13 @@ export const Viewer = (props) => {
                     })}
                 </Box>
             </Popover>
-            <ViewerTooltip
-                open={tooltipData.open}
-                anchorPosition={tooltipData.anchorPosition}
-                worldCoordinates={tooltipData.worldCoordinates}
-                dataCoordinates={tooltipData.dataCoordinates}
-                value={tooltipData.value}
+            <ViewerProbe
+                refs={{
+                    stackHelperRef: currentAtlasStackHelperRef,
+                    controlsRef: controlsRef,
+                    activityMapsStackHelpersRef: activityMapsStackHelpersRef
+                }}
+                probeVersion={probeVersion}
             />
             <Box sx={{position: "absolute", top: 0, left: 0, height: "100%", width: "100%",}}
                  ref={containerRef}>

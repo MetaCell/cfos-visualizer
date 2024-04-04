@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import {customWidgetsVoxelProbe} from "./onHoverAmiWidget";
+import {customWidgetsVoxelProbe} from "./probeWidget";
 
 const VoxelProbe = customWidgetsVoxelProbe(THREE);
 
