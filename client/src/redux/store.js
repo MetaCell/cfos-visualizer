@@ -17,7 +17,7 @@ export const INIT_STATE = {
     ExperimentsAtlas: {},
     AtlasActivityMap: {},
     ExperimentsActivityMap: {},
-    Luts: {},
+    Lut: {},
     Atlases: {},
     ActivityMaps:{}
   },

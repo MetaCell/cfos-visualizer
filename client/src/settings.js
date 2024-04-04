@@ -26,3 +26,6 @@ export const COMPRESSED_EXTENSION = '.msgpack'
 export const WIREFRAME_IDENTIFIER = 'W'
 
 export const INTENSITY_VALUE_ERROR = "Something went wrong. Can't read intensity values"
+
+export const INTENSITY_NOT_FOUND_IN_LUT = "Not found"
+export const ABBREVIATION_NOT_FOUND_IN_LUT = "Unknown"

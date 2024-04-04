@@ -1,9 +1,21 @@
 import React from 'react';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import {useSelector} from 'react-redux';
+import {ABBREVIATION_NOT_FOUND_IN_LUT, INTENSITY_NOT_FOUND_IN_LUT} from "../settings";
+
 
 const CustomTooltip = ({open, anchorPosition, dataCoordinates, value}) => {
+    const lut = useSelector(state => state.model.Lut);
+
     if (!open) return null;
+
+    let label;
+    if (value in lut) {
+        label = lut[value]?.abbreviation || ABBREVIATION_NOT_FOUND_IN_LUT;
+    } else {
+        label = INTENSITY_NOT_FOUND_IN_LUT;
+    }
 
     // Define styles for the tooltip
     const tooltipStyle = {
@@ -23,8 +35,9 @@ const CustomTooltip = ({open, anchorPosition, dataCoordinates, value}) => {
 
     return (
         <Paper sx={tooltipStyle}>
-            <Typography variant="caption" display="block">{`[${dataCoordinates.x}, ${dataCoordinates.y}, ${dataCoordinates.z}]`}</Typography>
-            <Typography variant="caption">Value: {value}</Typography>
+            <Typography variant="caption"
+                        display="block">{`[${dataCoordinates.x}, ${dataCoordinates.y}, ${dataCoordinates.z}]`}</Typography>
+            <Typography variant="caption">{label}</Typography>
         </Paper>
     );
 };
