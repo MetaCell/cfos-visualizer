@@ -8,7 +8,6 @@ export const ViewerProbe = ({refs, probeVersion}) => {
 
     const [tooltipData, setTooltipData] = useState({
         open: false,
-        worldCoordinates: {},
         dataCoordinates: {},
         value: '',
         anchorPosition: null,
@@ -40,7 +39,6 @@ export const ViewerProbe = ({refs, probeVersion}) => {
     const handleVoxelHover = ({worldCoordinates, dataCoordinates, value, screenPosition}) => {
         setTooltipData({
             open: true,
-            worldCoordinates,
             dataCoordinates,
             value,
             anchorPosition: screenPosition,
@@ -51,7 +49,6 @@ export const ViewerProbe = ({refs, probeVersion}) => {
         <ViewerTooltip
             open={tooltipData.open}
             anchorPosition={tooltipData.anchorPosition}
-            worldCoordinates={tooltipData.worldCoordinates}
             dataCoordinates={tooltipData.dataCoordinates}
             value={tooltipData.value}
         />
