@@ -131,7 +131,7 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             this.updateVoxel(); // set data coordinates && value
 
             const info = {
-                open: this._handle._raycaster.intersectObject(this.targetMesh).length > 0,
+                isIntersecting: this._handle._raycaster.intersectObject(this.targetMesh).length > 0,
                 dataCoordinates: this._voxel.dataCoordinates,
                 value: this._voxel.value,
                 screenPosition: this._handle.screenPosition // or any other position info necessary

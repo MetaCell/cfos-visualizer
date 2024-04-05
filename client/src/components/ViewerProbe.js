@@ -1,20 +1,21 @@
-// ProbeComponent.js
-import React, {useState, useEffect, useRef} from 'react';
+import * as AMI from "ami.js";
+import React, {useState, useEffect, useRef, useMemo} from 'react';
 import ViewerTooltip from './ViewerTooltip';
 import {getProbeWidget} from "../helpers/probeHelper";
 import LocationPanel from "./LocationPanel";
 
+const CoreUtils = AMI.UtilsCore
+
 const initialTooltipData = {
-    open: false,
+    isIntersecting: false,
     dataCoordinates: {},
     atlasIntensity: '',
     anchorPosition: null,
 }
 export const ViewerProbe = ({refs, probeVersion}) => {
     const {stackHelperRef, controlsRef, activityMapsStackHelpersRef} = refs;
+    const [voxelInformation, setVoxelInformation] = useState({...initialTooltipData});
 
-
-    const [tooltipData, setTooltipData] = useState({...initialTooltipData});
     const probeWidgetRef = useRef(null);
 
     // Setup and cleanup the probe widget
@@ -25,12 +26,11 @@ export const ViewerProbe = ({refs, probeVersion}) => {
 
         probeWidgetRef.current = getProbeWidget(
             stackHelperRef.current,
-            activityMapsStackHelpersRef.current,
             controlsRef.current,
             handleVoxelHover,
         );
 
-        setTooltipData({...initialTooltipData});
+        setVoxelInformation({...initialTooltipData});
 
         return () => {
             if (probeWidgetRef.current) {
@@ -41,26 +41,41 @@ export const ViewerProbe = ({refs, probeVersion}) => {
     }, [probeVersion]);
 
 
-    const handleVoxelHover = ({open, dataCoordinates, value, screenPosition}) => {
-        setTooltipData({
-            open,
+    const handleVoxelHover = ({isIntersecting, dataCoordinates, value, screenPosition}) => {
+        setVoxelInformation({
+            isIntersecting,
             dataCoordinates,
             atlasIntensity: value,
             anchorPosition: screenPosition,
         });
     };
 
+    const activityMapsIntensity = useMemo(() => {
+        if (activityMapsStackHelpersRef.current && Object.keys(voxelInformation.dataCoordinates).length) {
+            return Object.entries(activityMapsStackHelpersRef.current).reduce((acc, [key, stackHelper]) => {
+                const pixelData = CoreUtils.getPixelData(stackHelper.stack, voxelInformation.dataCoordinates);
+                if (pixelData !== null) {
+                    acc[key] = pixelData;
+                }
+                return acc;
+            }, {});
+        }
+        return {};
+    }, [voxelInformation.dataCoordinates, probeVersion]);
+
+
+
     return (
         <>
             <ViewerTooltip
-                open={tooltipData.open}
-                anchorPosition={tooltipData.anchorPosition}
-                atlasIntensity={tooltipData.atlasIntensity}
+                open={voxelInformation.isIntersecting}
+                anchorPosition={voxelInformation.anchorPosition}
+                atlasIntensity={voxelInformation.atlasIntensity}
             />
             <LocationPanel
-                activityMapsIntensity={{'test': '2'}}
-                dataCoordinates={tooltipData.dataCoordinates}
-                atlasIntensity={tooltipData.atlasIntensity}
+                activityMapsIntensity={activityMapsIntensity}
+                dataCoordinates={voxelInformation.dataCoordinates}
+                atlasIntensity={voxelInformation.atlasIntensity}
             />
         </>
     )

@@ -34,28 +34,30 @@ function deserializeFrame(frameData) {
             }
         }
     }
-
     // FIXME: _pixelRepresentation in AMI.js seems to always be set to 0 so we can't know if it's unsigned or signed
     // Handle _pixelData based on _bitsAllocated
     // Assume frameData._pixelData is initially a Uint8Array from serialization
     if (frameData._bitsAllocated === 8) {
-        // For 8 bits, convert to Int8Array
         modelFrame._pixelData = new Int8Array(frameData._pixelData.buffer, frameData._pixelData.byteOffset, frameData._pixelData.length);
     } else if (frameData._bitsAllocated === 16) {
-        // For 16 bits, need to ensure proper byte alignment for Int16Array
-        if (frameData._pixelData.byteOffset % 2 === 0) {
-            modelFrame._pixelData = new Int16Array(frameData._pixelData.buffer, frameData._pixelData.byteOffset, frameData._pixelData.length / 2);
-        } else {
-            // If byteOffset is not aligned, copy into a new buffer that is aligned
-            const alignedBuffer = new ArrayBuffer(frameData._pixelData.length);
-            const uint8View = new Uint8Array(alignedBuffer);
-            uint8View.set(frameData._pixelData); // Copy data into aligned buffer
-            modelFrame._pixelData = new Int16Array(alignedBuffer);
-        }
+        modelFrame._pixelData = ensureAlignmentAndCreateTypedArray(Int16Array, frameData._pixelData);
+    } else if (frameData._bitsAllocated === 32) {
+        modelFrame._pixelData = ensureAlignmentAndCreateTypedArray(Uint32Array, frameData._pixelData);
     }
-    // If needed, add more conditions for other _bitsAllocated values
 
     return modelFrame;
+}
+
+function ensureAlignmentAndCreateTypedArray(arrayType, pixelData) {
+    if (pixelData.byteOffset % arrayType.BYTES_PER_ELEMENT === 0) {
+        return new arrayType(pixelData.buffer, pixelData.byteOffset, pixelData.length / arrayType.BYTES_PER_ELEMENT);
+    } else {
+        // If byteOffset is not aligned, copy into a new buffer that is aligned
+        const alignedBuffer = new ArrayBuffer(pixelData.length);
+        const uint8View = new Uint8Array(alignedBuffer);
+        uint8View.set(pixelData); // Copy data into aligned buffer
+        return new arrayType(alignedBuffer);
+    }
 }
 
 function isVector3Object(obj) {
