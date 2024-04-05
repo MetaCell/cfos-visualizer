@@ -9,12 +9,10 @@ const ViewerTooltip = ({open, anchorPosition, atlasIntensity}) => {
 
 
     const abbreviation = getAbbreviation(lut, atlasIntensity)
-    const name = getName(lut, atlasIntensity)
-
-    if (!open || !name) return null;
+    if (!open || !abbreviation) return null;
 
     return (
-        <CustomTooltip open={open} title={abbreviation} text={name} anchorPosition={anchorPosition}/>
+        <CustomTooltip open={open} text={abbreviation} anchorPosition={anchorPosition}/>
     );
 };
 

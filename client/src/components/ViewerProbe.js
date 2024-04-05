@@ -64,7 +64,6 @@ export const ViewerProbe = ({refs, probeVersion}) => {
     }, [voxelInformation.dataCoordinates, probeVersion]);
 
 
-
     return (
         <>
             <ViewerTooltip
@@ -73,6 +72,7 @@ export const ViewerProbe = ({refs, probeVersion}) => {
                 atlasIntensity={voxelInformation.atlasIntensity}
             />
             <LocationPanel
+                open={voxelInformation.isIntersecting}
                 activityMapsIntensity={activityMapsIntensity}
                 dataCoordinates={voxelInformation.dataCoordinates}
                 atlasIntensity={voxelInformation.atlasIntensity}

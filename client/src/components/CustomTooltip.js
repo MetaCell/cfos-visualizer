@@ -1,6 +1,6 @@
 import { Box, Tooltip, Typography } from "@mui/material";
 
-export const CustomTooltip = ({ open, title, text, anchorPosition }) => {
+export const CustomTooltip = ({ open, text, anchorPosition }) => {
     return (
         <Tooltip
             key={`${anchorPosition.x}-${anchorPosition.y}`}
@@ -8,9 +8,6 @@ export const CustomTooltip = ({ open, title, text, anchorPosition }) => {
             open={open}
             title={
                 <Box>
-                    <Typography whiteSpace='nowrap' variant='h5' color='#B1B1B4'>
-                        {title}
-                    </Typography>
                     <Typography whiteSpace='nowrap' variant='h4' color='#FCFCFD'>
                         {text}
                     </Typography>
