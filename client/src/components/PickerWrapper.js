@@ -1,19 +1,20 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import {Box, Popover, Typography} from '@mui/material';
-import {ChromePicker} from 'react-color';
+import {Box, IconButton, Popover, Stack, Typography} from '@mui/material';
 import vars from '../theme/variables';
 import {useDispatch} from "react-redux";
 import {changeActivityMapColor} from "../redux/actions";
 import {COLOR_RANGES} from "../settings";
 import {getCustomColorRange, rgbaObjectToNormalizedRgb} from "../helpers/gradientHelper";
+import CustomTabs from "./CustomTabs";
+import ColorPicker from "./ColorPicker";
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 
 const {headingColor, headerBorderLeftColor, headerBorderColor} = vars
 
 function CustomTabPanel(props) {
-    const {children, value, index, ...other} = props;
+    const {children, value, index, sx, ...other} = props;
 
     return (
         <Box
@@ -22,6 +23,7 @@ function CustomTabPanel(props) {
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
+            sx={sx}
             {...other}
         >
             {value === index && children}
@@ -34,13 +36,6 @@ CustomTabPanel.propTypes = {
     index: PropTypes.number.isRequired,
     value: PropTypes.number.isRequired,
 };
-
-function a11yProps(index) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
 
 const templateArr = [
     {
@@ -60,14 +55,19 @@ const templateArr = [
     }
 ]
 
-const Picker = ({open, id, anchorEl, selectedColor, onClose}) => {
+const PickerWrapper = ({open, id, anchorEl, selectedColor, onClose}) => {
     const dispatch = useDispatch();
     const [tab, setTab] = React.useState(0);
-
+    const [pickerTab, setPickerTab] = React.useState(0);
 
     const handleTabChange = (event, newValue) => {
         setTab(newValue);
     };
+
+    const handlePickerTabChange = (event, newValue) => {
+        setPickerTab(newValue);
+    };
+
     const handleColorChange = (color) => {
         dispatch(changeActivityMapColor(id, [
             rgbaObjectToNormalizedRgb(color.rgb),
@@ -108,11 +108,7 @@ const Picker = ({open, id, anchorEl, selectedColor, onClose}) => {
                 }
             }}
         >
-            <Tabs value={tab} onChange={handleTabChange}>
-                {['Template', 'Custom'].map((label, index) => <Tab key={index} disableRipple
-                                                                   label={label} {...a11yProps(index)} />)}
-            </Tabs>
-
+            <CustomTabs value={tab} onChange={handleTabChange} labels={['Template', 'Custom']} />
             <CustomTabPanel value={tab} index={0}>
                 <Box display='flex' flexDirection='column' gap={1.5}>
                     {templateArr?.map((template, index) => (
@@ -140,49 +136,30 @@ const Picker = ({open, id, anchorEl, selectedColor, onClose}) => {
                 </Box>
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={1}>
-                <Box sx={{
-                    '& > div': {
-                        width: '100% !important',
-                        boxShadow: 'none !important',
-                        background: 'transparent !important',
-                        fontFamily: "'IBM Plex Sans',sans-serif !important",
-
-                        '& > div:last-of-type': {
-                            '& > div:first-of-type': {
-                                '& > div:first-of-type': {
-                                    '& > div': {
-                                        border: `0.0625rem solid ${headerBorderLeftColor}`
-                                    }
+                <Stack direction='row' alignItems='center' justifyContent='space-between' width={1} >
+                    <CustomTabs value={pickerTab} onChange={handlePickerTabChange} labels={['Min.', 'Max.']} sx={{ padding: '0 0.5rem 0.5rem 0.25rem', borderBottom: 0 }} />
+                    <Tooltip title="Select the colour for min. and max. intensity">
+                        <IconButton>
+                            <HelpOutlineOutlinedIcon sx={{
+                                '&.MuiSvgIcon-root': {
+                                    color:'#5A5A5E',
+                                    fontSize: '1rem'
                                 }
-                            }
-                        },
+                            }} />
+                        </IconButton>
+                    </Tooltip>
+                </Stack>
 
-                        '& svg': {
-                            fill: `${headingColor} !important`,
-                            '&:hover': {
-                                background: `${headerBorderLeftColor} !important`,
-                            }
-                        },
+                <CustomTabPanel value={pickerTab} index={0} sx={{ '&.MuiBox-root': { padding: 0 } }}>
+                    <ColorPicker selectedColor={selectedColor} onChange={handleColorChange} />
+                </CustomTabPanel>
 
-                        '& input': {
-                            backgroundColor: `${headerBorderLeftColor} !important`,
-                            boxShadow: 'none !important',
-                            color: `${headingColor} !important`,
-                            '&:focus': {
-                                boxShadow: 'none !important',
-                                outline: 'none !important',
-                            }
-                        }
-                    }
-                }}>
-                    <ChromePicker
-                        color={selectedColor}
-                        onChange={handleColorChange}
-                    />
-                </Box>
+                <CustomTabPanel value={pickerTab} index={1} sx={{ '&.MuiBox-root': { padding: 0 } }}>
+                    <ColorPicker selectedColor={selectedColor} onChange={handleColorChange} />
+                </CustomTabPanel>
             </CustomTabPanel>
         </Popover>
     )
 };
 
-export default Picker;
+export default PickerWrapper;

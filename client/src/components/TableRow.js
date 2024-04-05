@@ -10,7 +10,7 @@ import CustomSlider from './Slider';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import GrainIcon from '@mui/icons-material/Grain';
 import {tableStyles} from './Table';
-import Picker from './Picker';
+import PickerWrapper from './PickerWrapper';
 import {
     changeActivityMapIntensityRange,
     downloadViewerObject,
@@ -19,6 +19,7 @@ import {
 } from "../redux/actions";
 import {useDispatch} from "react-redux";
 import {normalizedRgbToHex} from "../helpers/gradientHelper";
+import {AtlasIcon, LockIcon} from "../icons";
 
 const {
     headerBorderLeftColor,
@@ -68,6 +69,11 @@ const TableRow = ({data, isAtlas}) => {
                     </Tooltip>
 
                     <Divider sx={{background: headerBorderLeftColor, width: '0.0625rem', height: '100%'}}/>
+                    <Tooltip placement='right' title={"Lock"}>
+                        <IconButton>
+                            <LockIcon />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip placement='right' title={isVisible ? "Hide" : "Show"}>
                         <IconButton onClick={() => dispatch(toggleViewerObjectVisibility(id))}>
                             {isVisible ? <VisibilityOutlinedIcon/> : <VisibilityOffOutlinedIcon/>}
@@ -83,12 +89,12 @@ const TableRow = ({data, isAtlas}) => {
                             <DownloadOutlinedIcon/>
                         </IconButton>
                     </Tooltip>
-
-
                 </Box>
-
                 <Box>
-                    <GrainIcon sx={{color: headerButtonColor, fontSize: '1rem'}}/>
+                    {
+
+                        isAtlas ? <AtlasIcon /> :  <GrainIcon sx={{color: headerButtonColor, fontSize: '1rem'}}/>
+                    }
                     <Typography variant='body1'>
                         {name}
                     </Typography>
@@ -111,7 +117,7 @@ const TableRow = ({data, isAtlas}) => {
             </Box>
 
 
-            <Picker onClose={handleClose} id={id} open={open} anchorEl={anchorEl} selectedColor={minColorHex}/>
+            <PickerWrapper onClose={handleClose} id={id} open={open} anchorEl={anchorEl} selectedColor={minColorHex}/>
         </>
     );
 };

@@ -6,14 +6,27 @@ import {useDispatch, useSelector} from "react-redux";
 import {SNACKBAR_TIMEOUT} from "../settings";
 import {setError} from "../redux/actions";
 import CircularProgress from "@mui/material/CircularProgress";
+import MapDetails from "./MapDetails";
 
-export const ViewerDashboard = ( props ) =>
+export const ViewerDashboard = () =>
 {
     const dispatch = useDispatch();
     const isLoading = useSelector(state => state.ui.isLoading);
     const loadingMessage = useSelector(state => state.ui.loadingMessage);
     const error = useSelector(state => state.ui.errors);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const brainRegion = '(ENTl6a) Entorhinal area, lateral part, layer 6a';
+    const voxels = '54,-52,40';
+    const maps = [
+        'c-Fos__avg__saline2.nii.gz',
+        'c-Fos__EE__minus__HC.nii.gz',
+        'c-Fos__avg__saline2.nii.gz',
+        'c-Fos__EE__minus__HC.nii.gz',
+        'c-Fos__avg__saline2.nii.gz'
+    ];
+    const intensityValues = ['-100', '-23', '-100', '-23', '-100'];
+
     useEffect(() => {
         if (error) {
             setOpenSnackbar(true);
@@ -51,6 +64,13 @@ export const ViewerDashboard = ( props ) =>
                 </Box>
 
                 {/* Control Panel */ }
+                <MapDetails
+                    brainRegion={brainRegion}
+                    voxels={voxels}
+                    maps={maps}
+                    intensityValues={intensityValues}
+                />
+
                 <ControlPanel />
             </Box>
         </>
