@@ -1,24 +1,25 @@
 import {Box, Tooltip, Typography} from "@mui/material";
 
-export const CustomTooltip = ({title, text}) => <Tooltip open={true} title={
-  <Box>
-    <Typography
-      whiteSpace='nowrap'
-      variant='h5'
-      color='#B1B1B4'
+export const CustomTooltip = ({open, title, text}) =>
+    <Tooltip open={open} title={
+        <Box>
+            <Typography
+                whiteSpace='nowrap'
+                variant='h5'
+                color='#B1B1B4'
+            >
+                {title}
+            </Typography>
+            <Typography
+                whiteSpace='nowrap'
+                variant='h4'
+                color='#FCFCFD'
+            >
+                {text}
+            </Typography>
+        </Box>
+
+    }
     >
-      {title}
-    </Typography>
-    <Typography
-      whiteSpace='nowrap'
-      variant='h4'
-      color='#FCFCFD'
-    >
-      {text}
-    </Typography>
-  </Box>
-  
-}
->
-  <Typography> Statistical maps</Typography>
-</Tooltip>
+        <Typography/>
+    </Tooltip>
