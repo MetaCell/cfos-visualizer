@@ -53,6 +53,9 @@ export const ViewerProbe = ({refs, probeVersion}) => {
     const activityMapsIntensity = useMemo(() => {
         if (activityMapsStackHelpersRef.current && Object.keys(voxelInformation.dataCoordinates).length) {
             return Object.entries(activityMapsStackHelpersRef.current).reduce((acc, [key, stackHelper]) => {
+                if (!stackHelper.visible) {
+                    return acc;
+                }
                 const pixelData = CoreUtils.getPixelData(stackHelper.stack, voxelInformation.dataCoordinates);
                 if (pixelData !== null) {
                     acc[key] = pixelData;
