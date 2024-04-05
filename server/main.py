@@ -87,11 +87,11 @@ def init_webapp_routes(app):
 
     @app.route('/cfos-visualizer-stanford/Atlas/<id>')
     def download_atlas(id):
-        return mock_download_as_stream("Atlas", id)
+        return download_as_stream("Atlas", id)
 
     @app.route('/cfos-visualizer-stanford/ActivityMap/<id>')
     def activity_map(id):
-        return mock_download_as_stream("ActivityMap", id)
+        return download_as_stream("ActivityMap", id)
 
     @app.route('/cfos-visualizer-stanford/Experiment/<id>')
     def experiment(id):

@@ -59,6 +59,9 @@ export const Viewer = (props) => {
     const previousAtlasIdRef = useRef(null);
     const activityMapsRef = useRef(activeActivityMaps);
 
+    const resizeObserverRef = useRef(null);
+
+
     // On Mount
     useEffect(() => {
         initViewer();
@@ -90,11 +93,22 @@ export const Viewer = (props) => {
     const subscribeEvents = () => {
         containerRef.current.addEventListener('wheel', handleScroll);
         window.addEventListener('resize', onWindowResize);
+        resizeObserverRef.current = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                onWindowResize();
+            }
+        });
+        if (containerRef.current) {
+            resizeObserverRef.current.observe(containerRef.current);
+        }
     };
 
     const unSubscribeEvents = () => {
         containerRef.current?.removeEventListener('wheel', handleScroll);
         window.removeEventListener('resize', onWindowResize);
+        if (resizeObserverRef.current) {
+            resizeObserverRef.current.disconnect();
+        }
     };
 
     const onWindowResize = (event) => {
