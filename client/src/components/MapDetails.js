@@ -26,7 +26,7 @@ const MapDetails = ({ brainRegion, coordinates, maps, intensityValues }) => {
        direction={isLargeScreen || isSmallScreen ? 'column' : 'row'}
        alignItems={isLargeScreen || isSmallScreen ? 'flex-start' : 'flex-end'}
        justifyContent={isLargeScreen || isSmallScreen ? 'flex-start' : 'flex-end'}
-       backgroundColor='#030203'
+       backgroundColor='transparent'
        width={1}
        p='.75rem'
        id='test'
