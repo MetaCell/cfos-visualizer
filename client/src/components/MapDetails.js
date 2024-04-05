@@ -31,8 +31,9 @@ const MapDetails = ({ brainRegion, coordinates, maps, intensityValues }) => {
        p='.75rem'
        id='test'
        sx={{
-           position: "relative",
-           zIndex: 10
+           position: "absolute",
+           zIndex: 10,
+           bottom: 0
        }}
     >
         <Stack spacing='.5rem' direction='row'>
