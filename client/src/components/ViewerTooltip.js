@@ -10,11 +10,13 @@ const CustomTooltip = ({open, anchorPosition, dataCoordinates, value}) => {
 
     if (!open) return null;
 
-    let label;
+    let abbreviation;
+    let name = ''
     if (value in lut) {
-        label = lut[value]?.abbreviation || ABBREVIATION_NOT_FOUND_IN_LUT;
+        abbreviation = lut[value].abbreviation || ABBREVIATION_NOT_FOUND_IN_LUT;
+        name = lut[value].full_structure_name;
     } else {
-        label = INTENSITY_NOT_FOUND_IN_LUT;
+        abbreviation = `${INTENSITY_NOT_FOUND_IN_LUT}`;
     }
 
     // Define styles for the tooltip
@@ -35,9 +37,8 @@ const CustomTooltip = ({open, anchorPosition, dataCoordinates, value}) => {
 
     return (
         <Paper sx={tooltipStyle}>
-            <Typography variant="caption"
-                        display="block">{`[${dataCoordinates.x}, ${dataCoordinates.y}, ${dataCoordinates.z}]`}</Typography>
-            <Typography variant="caption">{label}</Typography>
+            <Typography variant="caption" display="block">{abbreviation}</Typography>
+            <Typography variant="caption">{name}</Typography>
         </Paper>
     );
 };

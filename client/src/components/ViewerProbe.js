@@ -3,15 +3,17 @@ import React, {useState, useEffect, useRef} from 'react';
 import ViewerTooltip from './ViewerTooltip';
 import {getProbeWidget} from "../helpers/probeHelper";
 
+const initialTooltipData = {
+    open: false,
+    dataCoordinates: {},
+    value: '',
+    anchorPosition: null,
+}
 export const ViewerProbe = ({refs, probeVersion}) => {
     const {stackHelperRef, controlsRef, activityMapsStackHelpersRef} = refs;
 
-    const [tooltipData, setTooltipData] = useState({
-        open: false,
-        dataCoordinates: {},
-        value: '',
-        anchorPosition: null,
-    });
+
+    const [tooltipData, setTooltipData] = useState({...initialTooltipData});
     const probeWidgetRef = useRef(null);
 
     // Setup and cleanup the probe widget
@@ -27,6 +29,8 @@ export const ViewerProbe = ({refs, probeVersion}) => {
             handleVoxelHover,
         );
 
+        setTooltipData({...initialTooltipData});
+
         return () => {
             if (probeWidgetRef.current) {
                 probeWidgetRef.current.free();
@@ -36,9 +40,9 @@ export const ViewerProbe = ({refs, probeVersion}) => {
     }, [probeVersion]);
 
 
-    const handleVoxelHover = ({worldCoordinates, dataCoordinates, value, screenPosition}) => {
+    const handleVoxelHover = ({open, dataCoordinates, value, screenPosition}) => {
         setTooltipData({
-            open: true,
+            open,
             dataCoordinates,
             value,
             anchorPosition: screenPosition,

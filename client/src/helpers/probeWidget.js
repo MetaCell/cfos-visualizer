@@ -39,7 +39,7 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             // handle (represent voxel)
             this._handle = new WidgetsHandle(targetMesh, controls, params);
             this.add(this._handle);
-            // this._handle.hide();
+            this._handle.hide();
 
             this._moveHandle = new WidgetsHandle(targetMesh, controls, params);
             this.add(this._moveHandle);
@@ -131,7 +131,7 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             this.updateVoxel(); // set data coordinates && value
 
             const info = {
-                worldCoordinates: this._voxel.worldCoordinates,
+                open: this._handle._raycaster.intersectObject(this.targetMesh).length > 0,
                 dataCoordinates: this._voxel.dataCoordinates,
                 value: this._voxel.value,
                 screenPosition: this._handle.screenPosition // or any other position info necessary
