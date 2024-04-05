@@ -270,7 +270,8 @@ let theme = createTheme( {
           borderRadius: '0.5rem',
           backgroundColor: tooltipBgColor,
           fontWeight: 600,
-          fontSize: '0.75rem'
+          fontSize: '0.75rem',
+          maxWidth: 'none',
         },
         tooltipPlacementRight: {
           margin: '0 0 0 0.5rem !important'
