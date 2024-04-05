@@ -2,22 +2,16 @@ import React from 'react';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import {useSelector} from 'react-redux';
-import {ABBREVIATION_NOT_FOUND_IN_LUT, INTENSITY_NOT_FOUND_IN_LUT} from "../settings";
+import {getAbbreviation, getName} from "../helpers/lutHelper";
 
 
-const CustomTooltip = ({open, anchorPosition, dataCoordinates, value}) => {
+const CustomTooltip = ({open, anchorPosition, atlasIntensity}) => {
     const lut = useSelector(state => state.model.Lut);
 
     if (!open) return null;
 
-    let abbreviation;
-    let name = ''
-    if (value in lut) {
-        abbreviation = lut[value].abbreviation || ABBREVIATION_NOT_FOUND_IN_LUT;
-        name = lut[value].full_structure_name;
-    } else {
-        abbreviation = `${INTENSITY_NOT_FOUND_IN_LUT}`;
-    }
+    let abbreviation = getAbbreviation(lut, atlasIntensity)
+    let name = getName(lut, atlasIntensity)
 
     // Define styles for the tooltip
     const tooltipStyle = {

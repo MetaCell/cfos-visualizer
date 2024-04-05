@@ -2,11 +2,12 @@
 import React, {useState, useEffect, useRef} from 'react';
 import ViewerTooltip from './ViewerTooltip';
 import {getProbeWidget} from "../helpers/probeHelper";
+import LocationPanel from "./LocationPanel";
 
 const initialTooltipData = {
     open: false,
     dataCoordinates: {},
-    value: '',
+    atlasIntensity: '',
     anchorPosition: null,
 }
 export const ViewerProbe = ({refs, probeVersion}) => {
@@ -44,17 +45,24 @@ export const ViewerProbe = ({refs, probeVersion}) => {
         setTooltipData({
             open,
             dataCoordinates,
-            value,
+            atlasIntensity: value,
             anchorPosition: screenPosition,
         });
     };
 
     return (
-        <ViewerTooltip
-            open={tooltipData.open}
-            anchorPosition={tooltipData.anchorPosition}
-            dataCoordinates={tooltipData.dataCoordinates}
-            value={tooltipData.value}
-        />
-    );
+        <>
+            <ViewerTooltip
+                open={tooltipData.open}
+                anchorPosition={tooltipData.anchorPosition}
+                atlasIntensity={tooltipData.atlasIntensity}
+            />
+            <LocationPanel
+                activityMapsIntensity={{'test': '2'}}
+                dataCoordinates={tooltipData.dataCoordinates}
+                atlasIntensity={tooltipData.atlasIntensity}
+            />
+        </>
+    )
+        ;
 };
