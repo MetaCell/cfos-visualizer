@@ -27,5 +27,6 @@ export const WIREFRAME_IDENTIFIER = 'W'
 
 export const INTENSITY_VALUE_ERROR = "Something went wrong. Can't read intensity values"
 
-export const INTENSITY_NOT_FOUND_IN_LUT = "Not found"
-export const ABBREVIATION_NOT_FOUND_IN_LUT = "Unknown"
+export const INTENSITY_NOT_FOUND_IN_LUT = "Unspecified"
+
+export const CAMERA_RANGE = 4 // the bigger it is, the closer the mesh will be
