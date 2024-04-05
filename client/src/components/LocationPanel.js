@@ -11,7 +11,7 @@ const LocationPanel = ({activityMapsIntensity, dataCoordinates, atlasIntensity})
             position: 'absolute',
             bottom: 0,
             right: 0,
-            backgroundColor: '#fff',
+            backgroundColor: '#000',
             padding: '10px',
             boxShadow: '-2px -2px 10px rgba(0,0,0,0.1)',
             display: 'flex',

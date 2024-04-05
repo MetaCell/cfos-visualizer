@@ -42,7 +42,7 @@ function deserializeFrame(frameData) {
     } else if (frameData._bitsAllocated === 16) {
         modelFrame._pixelData = ensureAlignmentAndCreateTypedArray(Int16Array, frameData._pixelData);
     } else if (frameData._bitsAllocated === 32) {
-        modelFrame._pixelData = ensureAlignmentAndCreateTypedArray(Uint32Array, frameData._pixelData);
+        modelFrame._pixelData = ensureAlignmentAndCreateTypedArray(Float32Array, frameData._pixelData);
     }
 
     return modelFrame;
