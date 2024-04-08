@@ -12,9 +12,9 @@ export const getNewSliceIndex = (stackHelper, direction, delta = 1) => {
         return null;
     }
 
-    if (direction === DIRECTIONS.UP && stackHelper.index < stackHelper.orientationMaxIndex - 1) {
+    if (direction === DIRECTIONS.UP && stackHelper.index < stackHelper.orientationMaxIndex - delta) {
         return stackHelper.index + delta;
-    } else if (direction === DIRECTIONS.DOWN && stackHelper.index > 0) {
+    } else if (direction === DIRECTIONS.DOWN && stackHelper.index > delta) {
         return stackHelper.index - delta;
     }
 

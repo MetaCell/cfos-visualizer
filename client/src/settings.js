@@ -30,3 +30,6 @@ export const INTENSITY_VALUE_ERROR = "Something went wrong. Can't read intensity
 export const INTENSITY_NOT_FOUND_IN_LUT = "Unspecified"
 
 export const CAMERA_RANGE = 4 // the bigger it is, the closer the mesh will be
+
+export const DELTA_SLICE_BUTTON = 1;
+export const DELTA_SLICE_MOUSE = 5;

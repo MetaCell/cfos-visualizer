@@ -12,7 +12,7 @@ import vars from "../theme/variables";
 import {ViewerToolbar} from "./ViewerToolbar";
 import {ViewerProbe} from "./ViewerProbe";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
-import {STACK_HELPER_BORDER_COLOR} from "../settings";
+import {DELTA_SLICE_BUTTON, DELTA_SLICE_MOUSE, STACK_HELPER_BORDER_COLOR} from "../settings";
 import {DIRECTIONS} from "../constants";
 import {
     getNewSliceIndex, updateStackHelperIndex
@@ -26,8 +26,7 @@ const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, heade
 
 const StackHelper = AMI.stackHelperFactory(THREE);
 
-const DELTA_SLICE_BUTTON = 1;
-const DELTA_SLICE_MOUSE = 5;
+
 
 
 export const Viewer = (props) => {
