@@ -91,10 +91,10 @@ export const Viewer = (props) => {
     };
 
     const subscribeEvents = () => {
-        containerRef.current.addEventListener('wheel', handleScroll);
+        window.addEventListener('wheel', handleScroll);
         window.addEventListener('resize', onWindowResize);
         resizeObserverRef.current = new ResizeObserver(entries => {
-            for (let entry of entries) {
+            for (const entry of entries) {
                 onWindowResize();
             }
         });
@@ -104,18 +104,31 @@ export const Viewer = (props) => {
     };
 
     const unSubscribeEvents = () => {
-        containerRef.current?.removeEventListener('wheel', handleScroll);
+        window.removeEventListener('wheel', handleScroll);
         window.removeEventListener('resize', onWindowResize);
         if (resizeObserverRef.current) {
             resizeObserverRef.current.disconnect();
         }
     };
 
-    const onWindowResize = (event) => {
+    const onWindowResize = () => {
         viewerHelper.resize(containerRef, rendererRef, cameraRef)
     }
 
     const handleScroll = (event) => {
+        if (!containerRef.current) return;
+
+        const bounds = containerRef.current.getBoundingClientRect();
+        if (
+            event.clientX >= bounds.left &&
+            event.clientX <= bounds.right &&
+            event.clientY >= bounds.top &&
+            event.clientY <= bounds.bottom
+        ) {
+            handleScrollAux(event);
+        }
+    };
+    const handleScrollAux = (event) => {
         const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP;
         const currentAtlas = currentAtlasStackHelperRef.current;
         handleScrollHelper(currentAtlas, direction, DELTA_SLICE_MOUSE);
