@@ -28,6 +28,8 @@ const StackHelper = AMI.stackHelperFactory(THREE);
 const DELTA_SLICE_BUTTON = 1 ;
 const DELTA_SLICE_MOUSE = 5;
 
+const filterDictByKeys = (obj, keys) => Object.fromEntries(Object.entries(obj).filter(([key]) => keys.includes(key)));
+
 
 export const Viewer = (props) => {
 
@@ -110,6 +112,24 @@ export const Viewer = (props) => {
         if (newIndex !== null) {
             setSliceIndex(newIndex);
         }
+    }
+
+    const groupByHierarchy = (activityMaps) => {
+        const grouped = {};
+        
+        Object.entries(activityMaps).forEach(([key, value]) => {
+            // Convert the hierarchy array into a string to use as a key
+            const hierarchyKey = value.hierarchy.join(', ');
+        
+            if (!grouped[hierarchyKey]) {
+            grouped[hierarchyKey] = [];
+            }
+        
+            // Add the entire entry, including the key if necessary
+            grouped[hierarchyKey].push({...value, key});
+        });
+        
+        return grouped;
     }
 
 
@@ -359,7 +379,7 @@ export const Viewer = (props) => {
 
             <Popover
                 id={popoverID}
-                sx={{maxHeight: '20rem'}}
+                sx={{ maxHeight: '20rem' }}
                 open={isOpen}
                 anchorEl={anchorEl}
                 onClose={handlePopoverClose}
@@ -371,12 +391,15 @@ export const Viewer = (props) => {
                 }}
             >
                 <Box px={2} pt={1.25}>
-                    {[activeAtlas].map((atlas, altasIndex) => {
-                        const selectedAtlasActivityMaps = atlasActivityMaps[atlas.id] || [];
-                        return (
-                            <Box key={atlas.name + altasIndex}>
-                                {altasIndex !== 0 &&
-                                    <Divider sx={{mt: 1.5, mb: 1, background: headerBorderLeftColor}}/>}
+                    {[activeAtlas].map((atlas, atlasIndex) => {
+                        const selectedAtlasActivityMaps = atlas?.id && atlasActivityMaps[atlas.id] ? atlasActivityMaps[atlas.id] : [];
+                        const filteredActivityMaps = filterDictByKeys(activityMapsMetadata, selectedAtlasActivityMaps);
+                        const groupByHierarchyActivityMaps = groupByHierarchy(filteredActivityMaps);
+                        return Object.keys(groupByHierarchyActivityMaps).map((activityMapKey, activityMapIndex) => (
+                            <Box key={activityMapKey + activityMapIndex}>
+                                {atlasIndex !== 0 && (
+                                    <Divider sx={{ mt: 1.5, mb: 1, background: headerBorderLeftColor }} />
+                                )}
                                 <Box sx={{
                                     height: '1.875rem',
                                     display: 'flex',
@@ -387,12 +410,12 @@ export const Viewer = (props) => {
                                         fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
                                     }
                                 }}>
-                                    <Typography>{atlas.id}</Typography>
+                                    <Typography>{activityMapKey.toString()}</Typography>
                                 </Box>
                                 <FormGroup>
-                                    {selectedAtlasActivityMaps.map((activityMapID, mapIndex) => (
+                                    {groupByHierarchyActivityMaps[activityMapKey].map((activityMap, mapIndex) => (
                                         <Box
-                                            key={activityMapID}
+                                            key={activityMap.key + mapIndex}
                                             sx={{
                                                 position: 'relative', paddingLeft: '0.25rem', '&:hover': {
                                                     '&:before': {
@@ -407,27 +430,30 @@ export const Viewer = (props) => {
                                                     left: 0,
                                                     top: 0,
                                                 },
-                                            }}>
+                                            }}
+                                        >
                                             <FormControlLabel
-                                                key={activityMapID}
                                                 control={
                                                     <Switch
-                                                        checked={!!activeActivityMaps[activityMapID]}
+                                                        checked={!!activeActivityMaps[activityMap.key]}
                                                         onChange={(event) => {
                                                             if (event.target.checked) {
-                                                                dispatch(fetchAndAddActivityMapToViewer(activityMapID));
-                                                                handlePopoverClose()
+                                                                dispatch(fetchAndAddActivityMapToViewer(activityMap.key));
+                                                                handlePopoverClose();
                                                             } else {
-                                                                dispatch(removeActivityMapFromViewer(activityMapID));
+                                                                dispatch(removeActivityMapFromViewer(activityMap.key));
                                                             }
                                                         }}
-                                                    />}
+                                                    />
+                                                }
                                                 labelPlacement="start"
-                                                label={activityMapsMetadata[activityMapID]?.name}
+                                                label={activityMap.name}
                                             />
-                                        </Box>))}
+                                        </Box>
+                                    ))}
                                 </FormGroup>
-                            </Box>)
+                            </Box>
+                        ));
                     })}
                 </Box>
             </Popover>

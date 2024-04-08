@@ -10,7 +10,7 @@ export const generateToolbarItems = (experimentsAtlas, currentExperiment, curren
   const toolbarItems = [];
 
   for (const [experimentID, atlasArray] of Object.entries(experimentsAtlas)) {
-    const atlasList = atlasArray.map(atlasID => {
+    const atlasList = atlasArray?.map(atlasID => {
       const atlasName = atlasesMetadata[atlasID].name;
       const atlasMetadata = atlasesMetadata[atlasID].metadata || messages.NO_METADATA
       return {
