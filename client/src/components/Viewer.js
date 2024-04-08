@@ -285,10 +285,10 @@ export const Viewer = (props) => {
             const activityMap = activeActivityMaps[amIdToAdd];
             let stackHelper = new StackHelper(activityMap.stack);
             stackHelper.name = sceneObjects.ACTIVITY_MAP
-            stackHelper = postProcessActivityMap(stackHelper, activityMap, cameraRef.current.stackOrientation,
-                currentAtlasStackHelperRef.current.index);
+            stackHelper = postProcessActivityMap(stackHelper, activityMap, cameraRef.current.stackOrientation);
 
             sceneRef.current.add(stackHelper);
+            updateStackHelperIndex(stackHelper, sliceIndex)
             // Store the stackHelper in the ref object
             activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
         });
