@@ -77,21 +77,27 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
         }
 
         onMove(evt) {
-            if (this._active) {
-                const prevPosition = this._moveHandle.worldPosition.clone();
+            try {
+                if (this._active) {
+                    const prevPosition = this._moveHandle.worldPosition.clone();
 
-                this._dragged = true;
-                this._moveHandle.onMove(evt, true);
+                    this._dragged = true;
+                    this._moveHandle.onMove(evt, true);
 
-                if (this._moving) {
-                    this._handle.worldPosition.add(this._moveHandle.worldPosition.clone().sub(prevPosition));
+                    if (this._moving) {
+                        this._handle.worldPosition.add(this._moveHandle.worldPosition.clone().sub(prevPosition));
+                    }
                 }
-            }
 
-            this._handle.onMove(evt);
+                this._handle.onMove(evt);
+            } catch (error) {
+                // FIXME: _moveHandle.onMove very rarely fails. For now we ignore those ticks until we know why
+                return;
+            }
 
             this.update();
         }
+
 
         onEnd() {
             this._handle.onEnd();
