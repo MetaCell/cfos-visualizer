@@ -29,7 +29,6 @@ const customWidgetsVoxelProbe = (three = window.THREE) => {
             this._stack = params.stack; // required
 
             this._container.style.cursor = 'pointer';
-            this._controls.enabled = false; // controls should be disabled for widgets with a single handle
             this._initialized = false; // set to true onEnd
             this._active = true;
             this._moving = true;
