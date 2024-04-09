@@ -1,10 +1,10 @@
 import * as AMI from 'ami.js';
 import * as THREE from 'three';
 import {DIRECTIONS} from "../constants";
-import {LUT_DATA, STACK_MESH_INDEX} from "../settings";
+import {STACK_HELPER_BORDER_COLOR, STACK_MESH_INDEX} from "../settings";
 import {getLUTGradients} from "./gradientHelper";
 
-
+const StackHelper = AMI.stackHelperFactory(THREE);
 const HelpersLut = AMI.lutHelperFactory(THREE);
 
 export const getNewSliceIndex = (stackHelper, direction, delta = 1) => {
@@ -57,3 +57,13 @@ export const removeBackground = (stackHelper) => {
     }
 }
 
+
+export function getAtlasStackHelper(stack, name, id, orientation) {
+    const stackHelper = new StackHelper(stack);
+    stackHelper.name = name;
+    stackHelper.bbox.visible = false;
+    stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
+    stackHelper.orientation = orientation;
+    stackHelper.atlasId = id;
+    return stackHelper;
+}

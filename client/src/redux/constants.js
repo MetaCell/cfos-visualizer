@@ -32,5 +32,6 @@ export const messages = {
 export const sceneObjects = {
     CAMERA: 'camera',
     ATLAS: 'atlas',
+    ATLAS_WIREFRAME: 'atlas_wireframe',
     ACTIVITY_MAP: 'activity_map'
 }
