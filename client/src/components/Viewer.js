@@ -90,7 +90,7 @@ export const Viewer = (props) => {
     };
 
     const subscribeEvents = () => {
-        window.addEventListener('wheel', handleScroll);
+        window.addEventListener('wheel', handleScroll, {capture: true});
         window.addEventListener('resize', onWindowResize);
         resizeObserverRef.current = new ResizeObserver(entries => {
             for (const entry of entries) {
