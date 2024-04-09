@@ -401,55 +401,65 @@ export const Viewer = (props) => {
                                     <Divider sx={{ mt: 1.5, mb: 1, background: headerBorderLeftColor }} />
                                 )}
                                 <Box sx={{
-                                    height: '1.875rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    mt: 1, // Add some top margin for spacing
+                                    ml: 1, // Start with a base left margin
                                     background: headerBorderColor,
-                                    '& .MuiTypography-root': {
-                                        fontSize: '0.75rem', fontWeight: 400, lineHeight: '150%', color: headingColor
-                                    }
                                 }}>
-                                    <Typography>{activityMapKey.toString()}</Typography>
+                                    {activityMapKey.split(',').map((level, index) => (
+                                        <Typography 
+                                            key={index}
+                                            sx={{
+                                                fontSize: '0.75rem',
+                                                fontWeight: 400,
+                                                lineHeight: '150%',
+                                                color: headingColor,
+                                                mt: `${index * 0.5}rem`, // Increment top margin for each new line
+                                                ml: `${index * 2}rem`, // Increment left margin to simulate tabbing effect
+                                            }}>
+                                            {level}
+                                        </Typography>
+                                    ))}
                                 </Box>
                                 <FormGroup>
                                     {groupByHierarchyActivityMaps[activityMapKey].map((activityMap, mapIndex) => (
                                         <Box
-                                            key={activityMap.key + mapIndex}
-                                            sx={{
-                                                position: 'relative', paddingLeft: '0.25rem', '&:hover': {
-                                                    '&:before': {
-                                                        background: primaryActiveColor,
-                                                    }
-                                                }, '&:before': {
-                                                    content: '""',
-                                                    height: '100%',
-                                                    width: '0.125rem',
-                                                    background: headerBorderColor,
-                                                    position: 'absolute',
-                                                    left: 0,
-                                                    top: 0,
-                                                },
-                                            }}
-                                        >
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={!!activeActivityMaps[activityMap.key]}
-                                                        onChange={(event) => {
-                                                            if (event.target.checked) {
-                                                                dispatch(fetchAndAddActivityMapToViewer(activityMap.key));
-                                                                handlePopoverClose();
-                                                            } else {
-                                                                dispatch(removeActivityMapFromViewer(activityMap.key));
-                                                            }
-                                                        }}
-                                                    />
-                                                }
-                                                labelPlacement="start"
-                                                label={activityMap.name}
-                                            />
-                                        </Box>
+                                        key={activityMap.key + mapIndex}
+                                        sx={{
+                                            position: 'relative', 
+                                            paddingLeft: '0.25rem', 
+                                            ml: `${activityMapKey.split(',').length * 2}rem`, // Calculate left margin based on hierarchy depth
+                                            '&:hover:before': {
+                                                background: primaryActiveColor,
+                                            }, 
+                                            '&:before': {
+                                                content: '""',
+                                                height: '100%',
+                                                width: '0.125rem',
+                                                background: headerBorderColor,
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 0,
+                                            },
+                                        }}
+                                    >
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    checked={!!activeActivityMaps[activityMap.key]}
+                                                    onChange={(event) => {
+                                                        if (event.target.checked) {
+                                                            dispatch(fetchAndAddActivityMapToViewer(activityMap.key));
+                                                            handlePopoverClose();
+                                                        } else {
+                                                            dispatch(removeActivityMapFromViewer(activityMap.key));
+                                                        }
+                                                    }}
+                                                />
+                                            }
+                                            labelPlacement="start"
+                                            label={activityMap.name}
+                                        />
+                                    </Box>
                                     ))}
                                 </FormGroup>
                             </Box>
