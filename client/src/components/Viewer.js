@@ -114,8 +114,15 @@ export const Viewer = (props) => {
         }
     }
 
-    const groupByHierarchy = (activityMaps) => {
+    const groupByHierarchy = (activityMaps, experimentId) => {
         const grouped = {};
+
+        //add the parent experimentId as level in case the flag is true
+
+        Object.entries(activityMaps).forEach(([key, value]) => {
+          if ( value.experiment && experimentId && value.hierarchy.indexOf(experimentId) == -1 )
+            value.hierarchy.unshift(experimentId);
+        });
         
         Object.entries(activityMaps).forEach(([key, value]) => {
             // Convert the hierarchy array into a string to use as a key
@@ -394,7 +401,7 @@ export const Viewer = (props) => {
                     {[activeAtlas].map((atlas, atlasIndex) => {
                         const selectedAtlasActivityMaps = atlas?.id && atlasActivityMaps[atlas.id] ? atlasActivityMaps[atlas.id] : [];
                         const filteredActivityMaps = filterDictByKeys(activityMapsMetadata, selectedAtlasActivityMaps);
-                        const groupByHierarchyActivityMaps = groupByHierarchy(filteredActivityMaps);
+                        const groupByHierarchyActivityMaps = groupByHierarchy(filteredActivityMaps, atlas?.id);
                         return Object.keys(groupByHierarchyActivityMaps).map((activityMapKey, activityMapIndex) => (
                             <Box key={activityMapKey + activityMapIndex}>
                                 {atlasIndex !== 0 && (
@@ -448,10 +455,10 @@ export const Viewer = (props) => {
                                                     checked={!!activeActivityMaps[activityMap.key]}
                                                     onChange={(event) => {
                                                         if (event.target.checked) {
-                                                            dispatch(fetchAndAddActivityMapToViewer(activityMap.key));
+                                                            dispatch(fetchAndAddActivityMapToViewer(activityMap.name));
                                                             handlePopoverClose();
                                                         } else {
-                                                            dispatch(removeActivityMapFromViewer(activityMap.key));
+                                                            dispatch(removeActivityMapFromViewer(activityMap.name));
                                                         }
                                                     }}
                                                 />
