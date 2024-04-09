@@ -56,7 +56,10 @@ export const ViewerProbe = ({refs, probeVersion}) => {
                 if (!stackHelper.visible) {
                     return acc;
                 }
-                const pixelData = CoreUtils.getPixelData(stackHelper.stack, voxelInformation.dataCoordinates);
+                const pixelDataTmp = CoreUtils.getPixelData(stackHelper.stack, voxelInformation.dataCoordinates);
+                const pixelData = CoreUtils.rescaleSlopeIntercept(pixelDataTmp, stackHelper.stack.rescaleSlope,
+                    stackHelper.stack.rescaleIntercept)
+
                 if (pixelData !== null) {
                     acc[key] = pixelData;
                 }

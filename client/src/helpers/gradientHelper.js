@@ -29,12 +29,14 @@ export function getLUTGradients(colorRange, intensityRange, stackIntensityRange)
         // Define gradients with transitions
         colorGradient = [
             [0.0, 0, 0, 0, 0], // Transparent below intensity range
+            [normalizedMinIntensity-epsilon, 0, 0, 0, 0], // Transparent below intensity range
             [normalizedMinIntensity, ...colorRange[0], 1], // Min color at start of intensity range
             [normalizedMaxIntensity, ...colorRange[1], 1], // Max color at end of intensity range
             [1.0, ...colorRange[1], 1] // Max should take everything above the max set.
         ];
         opacityGradient = [
             [0.0, 0], // Fully transparent below intensity range
+            [normalizedMinIntensity-epsilon, 0], // Fully transparent below intensity range
             [normalizedMinIntensity, 1], // Opaque within intensity range
             [normalizedMaxIntensity, 1], // Opaque within intensity range
             [1.0, 1] // Max should take everything above the max set.

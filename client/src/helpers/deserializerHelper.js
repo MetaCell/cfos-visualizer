@@ -5,60 +5,81 @@ const StackModel = AMI.StackModel;
 const FrameModel = AMI.FrameModel;
 
 export function deserializeStack(decodedData) {
+    if (!decodedData || !decodedData.stack) {
+        throw new Error('Invalid decoded data format.');
+    }
+
+    const stackData = decodedData.stack;
+    const dataType = decodedData.dataType;
     const stack = new StackModel();
 
     // Iterate over all properties of the stack
     for (let prop in stack) {
-        if (stack.hasOwnProperty(prop) && decodedData.hasOwnProperty(prop)) {
-            if (isVector3Object(decodedData[prop])) {
-                stack[prop] = new THREE.Vector3(decodedData[prop].x, decodedData[prop].y, decodedData[prop].z);
-            } else if (prop === '_frame' && Array.isArray(decodedData[prop])) {
-                stack[prop] = decodedData[prop].map(frameData => deserializeFrame(frameData))
+        if (stack.hasOwnProperty(prop) && stackData.hasOwnProperty(prop)) {
+            if (isVector3Object(stackData[prop])) {
+                stack[prop] = new THREE.Vector3(stackData[prop].x, stackData[prop].y, stackData[prop].z);
+            } else if (prop === '_frame' && Array.isArray(stackData[prop])) {
+                stack[prop] = stackData[prop].map(frameData => deserializeFrame(frameData, dataType))
             } else {
-                stack[prop] = decodedData[prop];
+                stack[prop] = stackData[prop];
             }
         }
     }
     return stack;
 }
 
-function deserializeFrame(frameData) {
+function deserializeFrame(frameData, dataType) {
     const modelFrame = new FrameModel();
 
-    // Iterate over properties from the frameData to populate the new ModelFrame object
+    const typedArrayConstructor = getTypedArrayConstructor(dataType);
+
+    if (!typedArrayConstructor) {
+        throw new Error(`Unsupported dataType: ${dataType}`);
+    }
+
     for (let frameProp in frameData) {
         if (frameData.hasOwnProperty(frameProp)) {
-            // Directly assign all properties except for _pixelData
-            if (frameProp !== '_pixelData') {
+            if (frameProp === '_pixelData' && typedArrayConstructor) {
+                // Handle _pixelData with dynamic typed array based on dataType
+                modelFrame[frameProp] = ensureAlignmentAndCreateTypedArray(typedArrayConstructor, frameData._pixelData);
+            } else {
                 modelFrame[frameProp] = frameData[frameProp];
             }
         }
-    }
-    // FIXME: _pixelRepresentation in AMI.js seems to always be set to 0 so we can't know if it's unsigned or signed
-    // Handle _pixelData based on _bitsAllocated
-    // Assume frameData._pixelData is initially a Uint8Array from serialization
-    if (frameData._bitsAllocated === 8) {
-        modelFrame._pixelData = new Int8Array(frameData._pixelData.buffer, frameData._pixelData.byteOffset, frameData._pixelData.length);
-    } else if (frameData._bitsAllocated === 16) {
-        modelFrame._pixelData = ensureAlignmentAndCreateTypedArray(Int16Array, frameData._pixelData);
-    } else if (frameData._bitsAllocated === 32) {
-        modelFrame._pixelData = ensureAlignmentAndCreateTypedArray(Float32Array, frameData._pixelData);
     }
 
     return modelFrame;
 }
 
 function ensureAlignmentAndCreateTypedArray(arrayType, pixelData) {
+    // Ensure the byte offset is aligned with the typed array's element size
     if (pixelData.byteOffset % arrayType.BYTES_PER_ELEMENT === 0) {
         return new arrayType(pixelData.buffer, pixelData.byteOffset, pixelData.length / arrayType.BYTES_PER_ELEMENT);
     } else {
-        // If byteOffset is not aligned, copy into a new buffer that is aligned
+        // If the byteOffset is not aligned, copy into a new buffer
         const alignedBuffer = new ArrayBuffer(pixelData.length);
         const uint8View = new Uint8Array(alignedBuffer);
-        uint8View.set(pixelData); // Copy data into aligned buffer
+        uint8View.set(new Uint8Array(pixelData.buffer, pixelData.byteOffset, pixelData.length));
         return new arrayType(alignedBuffer);
     }
 }
+
+function getTypedArrayConstructor(dataType) {
+    // Mapping of data type strings to typed array constructors
+    const typedArrayMap = {
+        'Int8Array': Int8Array,
+        'Uint8Array': Uint8Array,
+        'Int16Array': Int16Array,
+        'Uint16Array': Uint16Array,
+        'Int32Array': Int32Array,
+        'Uint32Array': Uint32Array,
+        'Float32Array': Float32Array,
+        'Float64Array': Float64Array
+    };
+
+    return typedArrayMap[dataType] || null;
+}
+
 
 function isVector3Object(obj) {
     return obj && typeof obj === 'object' && 'x' in obj && 'y' in obj && 'z' in obj;

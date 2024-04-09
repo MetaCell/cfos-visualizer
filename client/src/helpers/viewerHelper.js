@@ -10,7 +10,7 @@ const OrthographicCamera = AMI.orthographicCameraFactory(THREE);
 export const initRenderer = (viewerContainerRef) => {
     const container = viewerContainerRef.current;
     const renderer = new THREE.WebGLRenderer({
-        antialias: true,
+        antialias: false,
     });
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
