@@ -1,4 +1,5 @@
 import { ViewerDashboard } from '../components/ViewerDashboard';
+import { MetadataViewer } from '../components/MetadataViewer';
 import {widgetIds} from "./widgets";
 
 /**
@@ -8,6 +9,7 @@ import {widgetIds} from "./widgets";
  */
 const componentMap = {
     [widgetIds.viewerDashboard]: ViewerDashboard,
+    [widgetIds.metadataViewer]: MetadataViewer,
 };
 
 export default componentMap
