@@ -7,6 +7,7 @@ export function postProcessActivityMap(stackHelper, activityMap, orientation) {
     stackHelper.bbox.visible = false;
     stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
     stackHelper.orientation = orientation
+    stackHelper.slice.interpolation = 0 // no interpolation
 
     makeSliceTransparent(stackHelper);
     updateLUT(activityMap.colorRange, activityMap.intensityRange, stackHelper);

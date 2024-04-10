@@ -25,6 +25,7 @@ export const getNewSliceIndex = (stackHelper, direction, delta = 1) => {
 export const updateStackHelperIndex = (stackHelper, newIndex) => {
     if (stackHelper) {
         stackHelper.index = newIndex;
+        stackHelper.slice.interpolation = 0  // no interpolation
     }
 };
 
@@ -65,5 +66,6 @@ export function getAtlasStackHelper(stack, name, id, orientation) {
     stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
     stackHelper.orientation = orientation;
     stackHelper.atlasId = id;
+    stackHelper.slice.interpolation = 0 // no interpolation
     return stackHelper;
 }
