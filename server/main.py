@@ -16,17 +16,25 @@ static_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "s
 
 # Dictionary mapping identifiers to their mock file names
 mock_files = {
-    "Atlas": "gubra_ano_combined_25um.msgpack",
-    "ActivityMap": "Ketamine-data__uncorr_1-p__nalKet_greater_than_ket.msgpack",
+    "Atlas": "atlas_labels.msgpack",
+    "AtlasWireframe": "atlas_wireframe.msgpack",
+    "ActivityMap": "atlas_wireframe.msgpack",
 }
 
 
 def mock_download_as_stream(folder_name, object_name):
     """
     Serve the mock file for a given identifier from the static folder.
+
+    If the folder_name is 'Atlas' and the object_name ends with 'W.msgpack',
+    serve the AtlasWireframe file instead.
     """
-    # Determine the file name from the mock_files dictionary
-    file_name = mock_files.get(folder_name)
+    # Check for Atlas wireframe condition
+    if folder_name == "Atlas" and object_name.endswith("W.msgpack"):
+        file_name = mock_files.get("AtlasWireframe")
+    else:
+        file_name = mock_files.get(folder_name)
+
     if file_name:
         file_path = os.path.join(static_folder_path, file_name)
         if os.path.exists(file_path):
@@ -87,11 +95,11 @@ def init_webapp_routes(app):
 
     @app.route('/cfos-visualizer-stanford/Atlas/<id>')
     def download_atlas(id):
-        return download_as_stream("Atlas", id)
+        return mock_download_as_stream("Atlas", id)
 
     @app.route('/cfos-visualizer-stanford/ActivityMap/<id>')
     def activity_map(id):
-        return download_as_stream("ActivityMap", id)
+        return mock_download_as_stream("ActivityMap", id)
 
     @app.route('/cfos-visualizer-stanford/Experiment/<id>')
     def experiment(id):
