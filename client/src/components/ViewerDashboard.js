@@ -26,7 +26,7 @@ export const ViewerDashboard = () =>
     }, [error, dispatch]);
     return (
         <>
-            <Box id='darioVisual'
+            <Box id='experienceVisual'
                 sx={ { display: 'flex', flexDirection: 'column', height: '100%', width: '100%' } }
             >
 
