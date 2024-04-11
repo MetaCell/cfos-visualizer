@@ -161,7 +161,7 @@ export const Viewer = (props) => {
 
     const handleNextSlice = () => {
         const currentAtlas = currentAtlasStackHelperRef.current;
-        if (currentAtlas, sliceIndex && sliceIndex < currentAtlas.orientationMaxIndex - 1) {
+        if (currentAtlas && sliceIndex && sliceIndex < currentAtlas.orientationMaxIndex - 1) {
             updateSliceIndex(currentAtlas, DIRECTIONS.UP, DELTA_SLICE_BUTTON);
         }
     };
