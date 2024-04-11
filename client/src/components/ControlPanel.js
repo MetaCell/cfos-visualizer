@@ -6,7 +6,7 @@ import Table from "./Table";
 import {useSelector, useDispatch} from "react-redux";
 import {messages} from "../redux/constants";
 import CustomSlider from "./Slider";
-import {changeAllActivityMapsIntensityRange} from "../redux/actions";
+import {changeAllActivityMapsIntensityRange, changeViewerOrder} from "../redux/actions";
 
 
 const {headerBorderLeftColor, headingColor, accordianTextColor} = vars;
@@ -57,6 +57,11 @@ const styles = {
     },
 };
 
+const move = (arr, fromIndex, toIndex) => {
+    var element = arr[fromIndex];
+    arr.splice(fromIndex, 1);
+    arr.splice(toIndex, 0, element);
+}
 
 const ControlPanel = () => {
     const dispatch = useDispatch();
@@ -64,6 +69,7 @@ const ControlPanel = () => {
     const [open, setOpen] = useState(true);
     const activeAtlas = useSelector(state => state.viewer.atlas);
     const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
+    const activityMapOrder = useSelector(state => state.viewer.order);
     const intensityRange = useSelector(state => state.viewer.activityMapsIntensityRange);
 
     const atlasesMetadata = useSelector(state => state.model.Atlases);
@@ -89,6 +95,9 @@ const ControlPanel = () => {
                 });
             }
 
+            // Rorder depending on the "order" from the store
+            viewerObjects.sort((a, b) => activityMapOrder.indexOf(a.id) - activityMapOrder.indexOf(b.id))
+
             // Atlas should be the last entry in the array
             const atlasId = activeAtlas.id;
             const atlasMetadata = atlasesMetadata[atlasId];
@@ -105,7 +114,6 @@ const ControlPanel = () => {
         }
         return viewerObjects
     }
-
 
     const computeGlobalIntensityRange = () => {
         let globalMin = Infinity;
@@ -127,12 +135,17 @@ const ControlPanel = () => {
         computeGlobalIntensityRange();
     }, [activeActivityMaps]);
 
-
     const onIntensityChange = (newValue) => {
         dispatch(changeAllActivityMapsIntensityRange(newValue));
     }
 
     const viewerObjects = getViewerObjectsData()
+
+    const onReorder = (source, target) => {
+        const suborder = activityMapOrder.slice(1, activityMapOrder.length)
+        move(suborder, source.index, target.index)
+        dispatch(changeViewerOrder([activityMapOrder[0], ...suborder]))
+    }
 
     return (
         <>
@@ -182,6 +195,7 @@ const ControlPanel = () => {
                     <Table
                         tableHeader={['Actions', 'Name', 'Configure intensity']}
                         tableContent={viewerObjects}
+                        onReorder={onReorder}
                     />
                 </Box>
             </Box>

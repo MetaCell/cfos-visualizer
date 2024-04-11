@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {Box, Divider, IconButton, Tooltip, Typography} from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -29,7 +29,7 @@ const {
 } = vars;
 
 
-const TableRow = ({data, isAtlas}) => {
+const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index }) => {
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const {id, name, intensityRange, stackIntensityRange, colorRange, isVisible, description} = data;
@@ -54,7 +54,11 @@ const TableRow = ({data, isAtlas}) => {
 
     return (
         <>
-            <Box sx={tableStyles.root}>
+            <Box sx={tableStyles.root}
+                 draggable={!isAtlas}
+                 onDragStart={e => onDragStart(id, index, e)}
+                 onDragEnter={e => onDragEnter(id, index, e)}
+                 onDragEnd={onDragEnd}>
                 <Box sx={{gap: '0.25rem !important'}}>
                     {/*TODO: Update title when feature gets implemented*/}
                     <Tooltip placement='right' title="Move up/down (Coming Soon)">
