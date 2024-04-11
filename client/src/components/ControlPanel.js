@@ -96,7 +96,7 @@ const ControlPanel = () => {
             }
 
             // Rorder depending on the "order" from the store
-            viewerObjects.sort((a, b) => activityMapOrder.indexOf(a.id) - activityMapOrder.indexOf(b.id))
+            viewerObjects.sort((a, b) => activityMapOrder.indexOf(b.id) - activityMapOrder.indexOf(a.id))
 
             // Atlas should be the last entry in the array
             const atlasId = activeAtlas.id;
