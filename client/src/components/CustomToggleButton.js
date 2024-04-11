@@ -3,6 +3,8 @@ import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { AbsoluteIcon, PercentageIcon } from "../icons";
+import variables from "../theme/variables";
+const { gray600, gray700, primaryActiveColor} = variables
 
 export const CustomToggleButton = ({ typeOfValue, setTypeOfValue }) => {
     const handleChange = (event, value) => {
@@ -17,7 +19,7 @@ export const CustomToggleButton = ({ typeOfValue, setTypeOfValue }) => {
                 elevation={0}
                 sx={{
                     display: 'flex',
-                    border: '1px solid #1E1E1F',
+                    border: `1px solid ${gray700}`,
                     flexWrap: 'wrap',
                     backgroundColor: 'transparent',
                     padding: '0.125rem',
@@ -37,13 +39,13 @@ export const CustomToggleButton = ({ typeOfValue, setTypeOfValue }) => {
                                 padding: '.25rem',
                             },
                             '&.Mui-selected': {
-                                backgroundColor: '#302F31',
+                                backgroundColor: gray600,
                                 '&:hover': {
-                                    backgroundColor: '#302F31',
+                                    backgroundColor: gray600,
                                 },
                                 '& svg': {
                                     '& path': {
-                                        fill:'#5A48E6'
+                                        fill:primaryActiveColor
                                     }
                                 }
                             }

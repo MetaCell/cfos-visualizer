@@ -38,7 +38,7 @@ export const ViewerDashboard = () =>
     }, [error, dispatch]);
     return (
         <>
-            <Box id='darioVisual'
+            <Box id='viewer'
                 sx={ { display: 'flex', flexDirection: 'column', height: '100%', width: '100%' } }
             >
 
