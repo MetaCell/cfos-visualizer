@@ -79,7 +79,7 @@ describe('Viewer Test', () => {
         await viewer_test_page.waitForTimeout(3000)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
-            customSnapshotIdentifier: 'MDMA Map'
+            customSnapshotIdentifier: 'Atlas Map'
         });
         console.log('Page Loaded')
 
@@ -98,7 +98,7 @@ describe('Viewer Test', () => {
         await viewer_test_page.waitForTimeout(3000)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
-            customSnapshotIdentifier: 'MDMA: Previous Slices'
+            customSnapshotIdentifier: 'Atlas Map: Previous Slices'
         });
         console.log('Moved to Previous Slices ')
 
@@ -114,7 +114,7 @@ describe('Viewer Test', () => {
         await viewer_test_page.waitForTimeout(3000)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
-            customSnapshotIdentifier: 'MDMA Map Centered'
+            customSnapshotIdentifier: 'Atlas Map Map Centered'
         });
         console.log('Centered Stack')
     })
@@ -131,7 +131,7 @@ describe('Viewer Test', () => {
         await viewer_test_page.waitForTimeout(300)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
-            customSnapshotIdentifier: 'MDMA: Next Slices'
+            customSnapshotIdentifier: 'Atlas Map: Next Slices'
         });
         console.log('Moved to Next Slices')
     })
@@ -156,7 +156,7 @@ describe('Viewer Test', () => {
         await viewer_test_page.waitForTimeout(300)
         expect(screenshot).toMatchImageSnapshot({
             ...SNAPSHOT_OPTIONS,
-            customSnapshotIdentifier: 'MDMA: Wireframe'
+            customSnapshotIdentifier: 'Atlas Map: Wireframe'
         });
         console.log('Toggled Wireframe')
     })

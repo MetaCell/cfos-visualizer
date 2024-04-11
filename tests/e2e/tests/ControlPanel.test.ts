@@ -78,7 +78,7 @@ describe('Control Panel Test', () => {
 
         await cp_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false });
         const textContent = await cp_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
-        expect(textContent).toBe('MDMA (social context) maps');
+        expect(textContent).toBe('Atlas images');
 
         // const element = await cp_test_page.$('canvas');
         const screenshot = await cp_test_page.screenshot();
