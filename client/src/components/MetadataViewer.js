@@ -2,9 +2,9 @@ import React from 'react';
 import { Box, Stack } from "@mui/material";
 import {CustomAlert} from "./MetaDataViewerComponents/CustomAlert";
 import DetailsTabs from "./MetaDataViewerComponents/DetailsTabs";
-
+import CustomTabPanel from "./MetaDataViewerComponents/CustomTabPanel";
 export const MetadataViewer = () => {
-  const [tabValue, setTabValue] = React.useState(0);
+  let [tabValue, setTabValue] = React.useState(0);
   
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);
@@ -27,6 +27,15 @@ export const MetadataViewer = () => {
         <CustomAlert viewOtherExperiences={viewOtherExperiences} />
       </Box>
       <DetailsTabs value={tabValue} handleChange={handleChangeTab} />
+      <CustomTabPanel value={tabValue} index={0}>
+        Details
+      </CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={1}>
+        Images
+      </CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={2}>
+        Experiments sharing the same atlas
+      </CustomTabPanel>
     </Stack>
   )
 };
