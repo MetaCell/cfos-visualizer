@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: sckanner
-          image: "gcr.io/metacellllc/cfos:{{CF_SHORT_REVISION}}"
+          image: "gcr.io/metacellllc/cfos_viz:{{CF_SHORT_REVISION}}"
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 80
