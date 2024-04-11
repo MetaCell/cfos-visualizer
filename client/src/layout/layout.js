@@ -10,33 +10,20 @@ export default {
   layout: {
     type: "row",
     id: "root",
-    children: [
-        {
-          type: "row",
-          weight: 100,
-          children: [
-              {
-                  type: "tabset",
-                  id: "leftPanel",
-                  weight: 100,
-                  enableDeleteWhenEmpty: false,
-                  children: []
-              }
-          ]
-        },
-        {
-          type: "row",
-          weight: 0,
-          children: [
-              {
-                  type: "tabset",
-                  weight: 0,
-                  id: "rightPanel",
-                  enableDeleteWhenEmpty: false,
-                  children: []
-              }
-          ]
-        }
-    ]
+    weight: 100,
+    children: [{
+      type: "tabset",
+      id: "leftPanel",
+      weight: 60,
+      enableDeleteWhenEmpty: false,
+      tabSetEnableMaximize: true,
+    },
+    {
+      type: "tabset",
+      id: "rightPanel",
+      weight: 40,
+      enableDeleteWhenEmpty: false,
+      tabSetEnableMaximize: true,
+    }]
   }
 };
