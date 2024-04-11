@@ -37,8 +37,8 @@ output_directory = os.path.join(web_directory, output_folder)  # Full path to th
 os.makedirs(output_directory, exist_ok=True)
 os.makedirs(download_dir, exist_ok=True)
 
-sub_folders = ["Atlas", "ActivityMap"]
-sub_folders_process_wireframe = ["Atlas"]
+sub_folders = ["Atlas"]
+sub_folders_process_wireframe = ["Atlas", "ActivityMaps"]
 
 def wait_for_file(filename, directory_path, timeout_seconds=300):
     """

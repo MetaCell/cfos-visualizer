@@ -93,19 +93,19 @@ def download_as_json(object_name):
 def init_webapp_routes(app):
     www_path = os.path.dirname(os.path.abspath(__file__)) + "/www"
 
-    @app.route('/cfos-visualizer-stanford/Atlas/<id>')
+    @app.route('/cfos-visualizer-stanford-dev/Atlas/<id>')
     def download_atlas(id):
         return mock_download_as_stream("Atlas", id)
 
-    @app.route('/cfos-visualizer-stanford/ActivityMap/<id>')
+    @app.route('/cfos-visualizer-stanford-dev/ActivityMap/<id>')
     def activity_map(id):
         return mock_download_as_stream("ActivityMap", id)
 
-    @app.route('/cfos-visualizer-stanford/Experiment/<id>')
+    @app.route('/cfos-visualizer-stanford-dev/Experiment/<id>')
     def experiment(id):
         return download_as_stream("Experiment", id)
 
-    @app.route('/cfos-visualizer-stanford/index.json')
+    @app.route('/cfos-visualizer-stanford-dev/index.json')
     def index():
         return download_as_json("index.json")
 

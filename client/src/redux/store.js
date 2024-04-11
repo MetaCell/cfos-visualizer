@@ -40,11 +40,14 @@ const reducers = {
  *
  * You can build upon geppetto-meta's configuration by passing your own reducers, initial state and middlewares.
  */
+
+const isMinimizeEnabled = false;
+
 const store = createStore(
   reducers,
   INIT_STATE,
   [middleware],
-  { baseLayout, componentMap }
+  { undefined, baseLayout, componentMap, isMinimizeEnabled }
 )
 
 export default store;
