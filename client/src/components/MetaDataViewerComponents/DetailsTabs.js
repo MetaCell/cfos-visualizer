@@ -40,12 +40,7 @@ function a11yProps(index) {
   };
 }
 
-const DetailsTabs = () => {
-  const [value, setValue] = React.useState(0);
-  
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+const DetailsTabs = ({ handleChange, value }) => {
   
   return (
     <Box sx={{ width: '100%' }}>

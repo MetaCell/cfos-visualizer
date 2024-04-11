@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import variables from "../../theme/variables";
 
 const {gray100, gray300, gray700, gray800, gray400} = variables
-export const CustomAlert = () =>
+export const CustomAlert = ({viewOtherExperiences}) =>
 {
   const [open, setOpen] = React.useState(true);
   
@@ -37,7 +37,7 @@ export const CustomAlert = () =>
       >
         <Stack spacing={'.75rem'}>
           <Typography variant='h4' fontWeight={400} color={gray300}>The selected atlas is associated with this experiment.</Typography>
-          <Button variant='text' fullWidth={false} sx={{
+          <Button onClick={viewOtherExperiences} variant='text' fullWidth={false} sx={{
             '&.MuiButton-text': {
               padding: '0',
               width: 'fit-content',
