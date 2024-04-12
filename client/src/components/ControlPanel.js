@@ -58,9 +58,10 @@ const styles = {
 };
 
 const move = (arr, fromIndex, toIndex) => {
-    var element = arr[fromIndex];
-    arr.splice(fromIndex, 1);
-    arr.splice(toIndex, 0, element);
+    var element = arr[fromIndex]
+    arr.splice(fromIndex, 1)
+    arr.splice(toIndex, 0, element)
+    return arr
 }
 
 const ControlPanel = () => {
@@ -142,9 +143,13 @@ const ControlPanel = () => {
     const viewerObjects = getViewerObjectsData()
 
     const onReorder = (source, target) => {
-        const suborder = activityMapOrder.slice(1, activityMapOrder.length)
+        const suborder = activityMapOrder.slice(1, activityMapOrder.length).reverse()
         move(suborder, source.index, target.index)
-        dispatch(changeViewerOrder([activityMapOrder[0], ...suborder]))
+        dispatch(changeViewerOrder([...suborder, activityMapOrder[0]].reverse()))
+
+        // const suborder = activityMapOrder.slice(1, activityMapOrder.length)
+        // move(suborder, target.index, source.index)
+        // dispatch(changeViewerOrder([activityMapOrder[0], ...suborder]))
     }
 
     return (
