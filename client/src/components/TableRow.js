@@ -61,7 +61,7 @@ const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index })
                  onDragEnd={onDragEnd}>
                 <Box sx={{gap: '0.25rem !important'}}>
                     {/*TODO: Update title when feature gets implemented*/}
-                    <Tooltip placement='right' title="Move up/down (Coming Soon)">
+                    <Tooltip placement='right' title="Move up/down">
                         <IconButton disabled>
                             <DragIndicatorIcon/>
                         </IconButton>
