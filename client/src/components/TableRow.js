@@ -60,7 +60,7 @@ const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index })
                  onDragEnter={e => onDragEnter(id, index, e)}
                  onDragEnd={onDragEnd}>
                 <Box sx={{gap: '0.25rem !important'}}>
-                    <Tooltip placement='right' title="Move up/down">
+                    <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Move up/down"}>
                         <IconButton disabled={isAtlas}>
                             <DragIndicatorIcon/>
                         </IconButton>
