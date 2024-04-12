@@ -55,14 +55,13 @@ const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index })
     return (
         <>
             <Box sx={tableStyles.root}
-                 draggable={!isAtlas}
+                 draggable
                  onDragStart={e => onDragStart(id, index, e)}
                  onDragEnter={e => onDragEnter(id, index, e)}
                  onDragEnd={onDragEnd}>
                 <Box sx={{gap: '0.25rem !important'}}>
-                    {/*TODO: Update title when feature gets implemented*/}
                     <Tooltip placement='right' title="Move up/down">
-                        <IconButton disabled>
+                        <IconButton disabled={isAtlas}>
                             <DragIndicatorIcon/>
                         </IconButton>
                     </Tooltip>
