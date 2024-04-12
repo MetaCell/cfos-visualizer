@@ -143,13 +143,16 @@ const ControlPanel = () => {
     const viewerObjects = getViewerObjectsData()
 
     const onReorder = (source, target) => {
+        // The activityMapOrder in the store is stored in a [lower priority, ..., higher priority] fashion
+        // but it's rendered in the table as [higer priority, ..., lower priority], so the layer the most visible
+        // is set as first element of the table.
+        // Consequently, when moving elements around, we need to first reverse the activityMapOrder to match
+        // the order of the table
+        // then, rebuilding the view order, we place the reordered map, then the first atlas, and finally, we reverse
+        // again to match the [lower priority, ..., higher priority] of the redux store for the viewer order
         const suborder = activityMapOrder.slice(1, activityMapOrder.length).reverse()
         move(suborder, source.index, target.index)
         dispatch(changeViewerOrder([...suborder, activityMapOrder[0]].reverse()))
-
-        // const suborder = activityMapOrder.slice(1, activityMapOrder.length)
-        // move(suborder, target.index, source.index)
-        // dispatch(changeViewerOrder([activityMapOrder[0], ...suborder]))
     }
 
     return (
