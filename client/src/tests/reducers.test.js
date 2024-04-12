@@ -224,7 +224,7 @@ describe('modelReducer', () => {
         experimentsAtlas: {},
         atlasActivityMap: {},
         experimentsActivityMap: {},
-        luts: {}
+        lut: {}
     };
 
     it('should handle FETCH_MODEL_DATA_SUCCESS', async () => {

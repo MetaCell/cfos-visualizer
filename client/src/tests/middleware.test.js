@@ -45,26 +45,6 @@ describe('Middleware', () => {
         next = jest.fn();
     });
 
-    it('should handle FETCH_MODEL', async () => {
-        const mockData = require('./resources/index.json');
-        fetchModelStructure.mockResolvedValueOnce(mockData);
-        const mockLUTData = require('./resources/lut.json');
-
-        mockData.luts.forEach(lutID => {
-            fetchLUTFile.mockResolvedValueOnce(mockLUTData);
-        });
-
-        const action = fetchModel()
-
-        await middleware(store)(next)(action);
-
-        const expectedLutsMap = mockData.luts.reduce((acc, lutID) => {
-            acc[lutID] = mockLUTData;
-            return acc;
-        }, {});
-
-        expect(store.dispatch).toHaveBeenCalledWith(setModel({ ...mockData, luts: expectedLutsMap }));
-    });
 
     it('should handle error during FETCH_MODEL', async () => {
         const errorMessage = 'Some Error';

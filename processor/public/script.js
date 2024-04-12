@@ -17,8 +17,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     var stackHelper = new HelpersStack(stack);
     
     if (stackHelper) {
-        // Serialize the stack
-        const serializedStack = window.MessagePack.encode(stackHelper.stack);
+        const pixelDataType = stackHelper.stack._frame[0].pixelData ?
+            stackHelper.stack._frame[0].pixelData.constructor.name : null;
+
+        const serializationObj = {
+            stack: stackHelper.stack,
+            dataType: pixelDataType
+        };
+
+        const serializedStack = window.MessagePack.encode(serializationObj);
         // Generate a Blob and serialize
         const blob = new Blob([serializedStack], { type: 'application/octet-stream' });
 

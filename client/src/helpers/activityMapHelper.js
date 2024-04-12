@@ -1,13 +1,13 @@
 import {getLUTHelper, makeSliceTransparent, removeBackground} from "./stackHelper";
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
 
-export function postProcessActivityMap(stackHelper, activityMap, orientation, index) {
+export function postProcessActivityMap(stackHelper, activityMap, orientation) {
     removeBackground(stackHelper);
 
     stackHelper.bbox.visible = false;
     stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-    stackHelper.index = index;
     stackHelper.orientation = orientation
+    stackHelper.slice.interpolation = 0 // no interpolation
 
     makeSliceTransparent(stackHelper);
     updateLUT(activityMap.colorRange, activityMap.intensityRange, stackHelper);
@@ -18,7 +18,6 @@ export function postProcessActivityMap(stackHelper, activityMap, orientation, in
 export function updateLUT(colorRange, intensityRange, stackHelper) {
     const helperLut = getLUTHelper(colorRange, intensityRange, [...stackHelper.stack.minMax]);
     stackHelper.slice.lut = helperLut.lut
-    stackHelper.slice.lutO = helperLut.lutO
     stackHelper.slice.lutTexture = helperLut.texture;
     stackHelper.colorRange = JSON.stringify(colorRange)
     stackHelper.intensityRange = JSON.stringify(intensityRange)

@@ -1,26 +1,27 @@
 import {Box, Tooltip, Typography} from "@mui/material";
 import variables from "../theme/variables";
-const {gray200, gray25} = variables
+const {gray200} = variables
 
-export const CustomTooltip = ({title, text}) => <Tooltip open={true} title={
-  <Box>
-    <Typography
-      whiteSpace='nowrap'
-      variant='h5'
-      color={gray200}
-    >
-      {title}
-    </Typography>
-    <Typography
-      whiteSpace='nowrap'
-      variant='h4'
-      color={gray25}
-    >
-      {text}
-    </Typography>
-  </Box>
-  
-}
->
-  <Typography> Statistical maps</Typography>
-</Tooltip>
+export const CustomTooltip = ({open, text, anchorPosition}) => {
+    return (
+        <Tooltip
+            key={`${anchorPosition.x}-${anchorPosition.y}`}
+            sx={{position: 'absolute', left: anchorPosition.x, top: anchorPosition.y, zIndex: 9999999}}
+            open={open}
+            title={
+                <Box>
+                    <Typography
+                        whiteSpace='nowrap'
+                        variant='h5'
+                        color={gray200}
+                    >
+                        {text}
+                    </Typography>
+                </Box>
+            }
+        >
+            <Typography/>
+        </Tooltip>
+    );
+};
+

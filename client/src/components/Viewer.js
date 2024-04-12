@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import * as AMI from 'ami.js';
 
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     Badge, Box, Button, Chip, Divider, FormControlLabel, FormGroup, Popover, Switch, Typography
 } from "@mui/material";
@@ -10,10 +10,12 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import * as viewerHelper from '../helpers/viewerHelper';
 import vars from "../theme/variables";
 import {ViewerToolbar} from "./ViewerToolbar";
+import {ViewerProbe} from "./ViewerProbe";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../redux/actions";
-import {STACK_HELPER_BORDER_COLOR} from "../settings";
+import {DELTA_SLICE_BUTTON, DELTA_SLICE_MOUSE, STACK_HELPER_BORDER_COLOR} from "../settings";
 import {DIRECTIONS} from "../constants";
 import {
+    getAtlasStackHelper,
     getNewSliceIndex, updateStackHelperIndex
 } from "../helpers/stackHelper";
 import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
@@ -24,9 +26,6 @@ import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} fr
 const {primaryActiveColor, headerBorderColor, headerBg, headerButtonColor, headerBorderLeftColor, headingColor} = vars;
 
 const StackHelper = AMI.stackHelperFactory(THREE);
-
-const DELTA_SLICE_BUTTON = 1 ;
-const DELTA_SLICE_MOUSE = 5;
 
 
 export const Viewer = (props) => {
@@ -39,9 +38,11 @@ export const Viewer = (props) => {
     const currentExperiment = useSelector(state => state.currentExperiment);
     const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [wireframeMode, setWireframeMode] = React.useState(false);
-    const [sliceIndex, setSliceIndex] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [wireframeMode, setWireframeMode] = useState(false);
+    const [sliceIndex, setSliceIndex] = useState(null);
+
+    const [probeVersion, setProbeVersion] = useState(0);
 
 
     const containerRef = useRef(null);
@@ -51,10 +52,14 @@ export const Viewer = (props) => {
     const controlsRef = useRef(null);
 
     const currentAtlasStackHelperRef = useRef(null);
+    const currentAtlasWireframeStackHelperRef = useRef(null);
     const activityMapsStackHelpersRef = useRef({});
 
     const previousAtlasIdRef = useRef(null);
     const activityMapsRef = useRef(activeActivityMaps);
+
+    const resizeObserverRef = useRef(null);
+
 
     // On Mount
     useEffect(() => {
@@ -85,26 +90,50 @@ export const Viewer = (props) => {
     };
 
     const subscribeEvents = () => {
-        containerRef.current.addEventListener('wheel', handleScroll);
+        window.addEventListener('wheel', handleScroll, {capture: true});
         window.addEventListener('resize', onWindowResize);
+        resizeObserverRef.current = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                onWindowResize();
+            }
+        });
+        if (containerRef.current) {
+            resizeObserverRef.current.observe(containerRef.current);
+        }
     };
 
     const unSubscribeEvents = () => {
-        containerRef.current?.removeEventListener('wheel', handleScroll);
+        window.removeEventListener('wheel', handleScroll);
         window.removeEventListener('resize', onWindowResize);
+        if (resizeObserverRef.current) {
+            resizeObserverRef.current.disconnect();
+        }
     };
 
-    const onWindowResize = (event) => {
+    const onWindowResize = () => {
         viewerHelper.resize(containerRef, rendererRef, cameraRef)
     }
 
     const handleScroll = (event) => {
+        if (!containerRef.current) return;
+
+        const bounds = containerRef.current.getBoundingClientRect();
+        if (
+            event.clientX >= bounds.left &&
+            event.clientX <= bounds.right &&
+            event.clientY >= bounds.top &&
+            event.clientY <= bounds.bottom
+        ) {
+            handleScrollAux(event);
+        }
+    };
+    const handleScrollAux = (event) => {
         const direction = event.deltaY < 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP;
         const currentAtlas = currentAtlasStackHelperRef.current;
-        handleScrollHelper(currentAtlas, direction, DELTA_SLICE_MOUSE);
+        updateSliceIndex(currentAtlas, direction, DELTA_SLICE_MOUSE);
     };
 
-    const handleScrollHelper = (atlas, direction, delta) => {
+    const updateSliceIndex = (atlas, direction, delta) => {
         const newIndex = getNewSliceIndex(atlas, direction, delta);
         if (newIndex !== null) {
             setSliceIndex(newIndex);
@@ -115,6 +144,7 @@ export const Viewer = (props) => {
     const updateAllStackHelpersIndex = (newIndex) => {
         // Update the atlas
         updateStackHelperIndex(currentAtlasStackHelperRef.current, newIndex);
+        updateStackHelperIndex(currentAtlasWireframeStackHelperRef.current, newIndex);
 
         // Update the activity maps to match the atlas index
         Object.values(activityMapsStackHelpersRef.current).forEach(stackHelper => {
@@ -123,15 +153,16 @@ export const Viewer = (props) => {
     };
 
     const handlePreviousSlice = () => {
-        if (sliceIndex && sliceIndex > 0) {
-            handleScrollHelper(currentAtlasStackHelperRef.current, DIRECTIONS.DOWN, DELTA_SLICE_BUTTON);
+        const currentAtlas = currentAtlasStackHelperRef.current;
+        if (currentAtlas && sliceIndex && sliceIndex > 0) {
+            updateSliceIndex(currentAtlas, DIRECTIONS.DOWN, DELTA_SLICE_BUTTON);
         }
     };
 
     const handleNextSlice = () => {
         const currentAtlas = currentAtlasStackHelperRef.current;
-        if (sliceIndex && currentAtlas && sliceIndex < currentAtlas.orientationMaxIndex - 1) {
-            handleScrollHelper(currentAtlasStackHelperRef.current, DIRECTIONS.UP, DELTA_SLICE_BUTTON);
+        if (currentAtlas && sliceIndex && sliceIndex < currentAtlas.orientationMaxIndex - 1) {
+            updateSliceIndex(currentAtlas, DIRECTIONS.UP, DELTA_SLICE_BUTTON);
         }
     };
 
@@ -162,42 +193,34 @@ export const Viewer = (props) => {
         if (activeAtlas) {
             const hasAtlasChanged = previousAtlasIdRef.current !== activeAtlas.id;
 
-            if(hasAtlasChanged){
+            if (hasAtlasChanged) {
                 viewerHelper.updateCamera(containerRef.current, cameraRef.current, activeAtlas.stack);
-                previousAtlasIdRef.current =activeAtlas.id;
-            }
+                previousAtlasIdRef.current = activeAtlas.id;
 
-            const targetStack = wireframeMode ? activeAtlas.wireframeStack : activeAtlas.stack;
+                const stackHelper = getAtlasStackHelper(activeAtlas.stack, sceneObjects.ATLAS, activeAtlas.id,
+                    cameraRef.current.stackOrientation);
+                const stackHelperWireframe = getAtlasStackHelper(activeAtlas.wireframeStack, sceneObjects.ATLAS_WIREFRAME,
+                    activeAtlas.id, cameraRef.current.stackOrientation
+                );
 
-            // Check if the current atlas is different from the active atlas or if wireframe mode has changed.
-            const currentAtlasHasChanged = !currentAtlasStackHelperRef.current || currentAtlasStackHelperRef.current.atlasId !== activeAtlas.id;
-            const wireframeModeHasChanged = currentAtlasStackHelperRef.current && currentAtlasStackHelperRef.current.isWireframe !== wireframeMode;
+                // If the atlas has changed, center the index
+                const centerIndex = Math.floor(stackHelper.stack._frame.length / 2);
+                setSliceIndex(centerIndex);
 
-            if (currentAtlasHasChanged || wireframeModeHasChanged) {
-                const stackHelper = new StackHelper(targetStack);
-                stackHelper.name = sceneObjects.ATLAS;
-                stackHelper.isWireframe = wireframeMode;
-                stackHelper.bbox.visible = false;
-                stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-                stackHelper.orientation = cameraRef.current.stackOrientation;
-
-                if (currentAtlasHasChanged) {
-                    // If the atlas has changed, center the index
-                    const centerIndex = Math.floor(stackHelper.stack._frame.length / 2);
-                    setSliceIndex(centerIndex);
-                } else if (wireframeModeHasChanged && sliceIndex !== null) {
-                    // If only the wireframe mode has changed, use the stored slice index
-                    updateStackHelperIndex(stackHelper, sliceIndex);
-                }
-
-                stackHelper.visible = activeAtlas.visibility;
-                stackHelper.atlasId = activeAtlas.id;
+                stackHelper.visible = activeAtlas.visibility && !wireframeMode;
+                stackHelperWireframe.visible = activeAtlas.visibility && wireframeMode
 
                 if (currentAtlasStackHelperRef.current) {
                     sceneRef.current.remove(currentAtlasStackHelperRef.current);
                 }
+                if (currentAtlasWireframeStackHelperRef.current) {
+                    sceneRef.current.remove(currentAtlasWireframeStackHelperRef.current);
+                }
                 sceneRef.current.add(stackHelper);
+                sceneRef.current.add(stackHelperWireframe);
+
                 currentAtlasStackHelperRef.current = stackHelper;
+                currentAtlasWireframeStackHelperRef.current = stackHelperWireframe;
 
                 // FIXME: Workaround to get the atlas always on the bottom
 
@@ -212,10 +235,21 @@ export const Viewer = (props) => {
                     sceneRef.current.add(activityMapStackHelper);
                 });
             } else {
-                currentAtlasStackHelperRef.current.visible = activeAtlas.visibility;
+                currentAtlasStackHelperRef.current.visible = activeAtlas.visibility && !wireframeMode;
+                currentAtlasWireframeStackHelperRef.current.visible = activeAtlas.visibility && wireframeMode;
             }
         }
-    }, [activeAtlas, wireframeMode]);
+    }, [activeAtlas]);
+
+
+    useEffect(() => {
+        if (currentAtlasStackHelperRef.current) {
+            currentAtlasStackHelperRef.current.visible = activeAtlas.visibility && !wireframeMode;
+        }
+        if (currentAtlasWireframeStackHelperRef.current) {
+            currentAtlasWireframeStackHelperRef.current.visible = activeAtlas.visibility && wireframeMode;
+        }
+    }, [wireframeMode])
 
 
     // Handle activityMap changes
@@ -256,16 +290,24 @@ export const Viewer = (props) => {
             const activityMap = activeActivityMaps[amIdToAdd];
             let stackHelper = new StackHelper(activityMap.stack);
             stackHelper.name = sceneObjects.ACTIVITY_MAP
-            stackHelper = postProcessActivityMap(stackHelper, activityMap, cameraRef.current.stackOrientation,
-                currentAtlasStackHelperRef.current.index);
+            stackHelper = postProcessActivityMap(stackHelper, activityMap, cameraRef.current.stackOrientation);
 
             sceneRef.current.add(stackHelper);
+            updateStackHelperIndex(stackHelper, sliceIndex)
             // Store the stackHelper in the ref object
             activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
         });
 
 
     }, [activeActivityMaps]);
+
+    useEffect(() => {
+        if (currentAtlasStackHelperRef.current) {
+            // FIXME: Workaround to fix initial handle misposition
+            onWindowResize()
+            setProbeVersion(prev => prev + 1)
+        }
+    }, [activeActivityMaps, activeAtlas, sliceIndex]);
 
 
     const handlePopoverOpen = (event) => {
@@ -434,6 +476,14 @@ export const Viewer = (props) => {
                     })}
                 </Box>
             </Popover>
+            {activeAtlas?.visibility && <ViewerProbe
+                refs={{
+                    stackHelperRef: currentAtlasStackHelperRef,
+                    controlsRef: controlsRef,
+                    activityMapsStackHelpersRef: activityMapsStackHelpersRef
+                }}
+                probeVersion={probeVersion}
+            />}
             <Box sx={{position: "absolute", top: 0, left: 0, height: "100%", width: "100%",}}
                  ref={containerRef}>
             </Box>
