@@ -30,7 +30,11 @@ export const CustomAlert = ({viewOtherExperiences, open, setOpen}) =>
           borderRadius: '0.75rem',
           border: `1px solid ${gray700}`,
           background: gray800,
-          padding: '1rem'
+          padding: '1rem',
+          
+          '&.MuiPaper-root': {
+            backgroundColor: 'transparent',
+          }
         }}
       >
         <Stack spacing={'.75rem'}>
