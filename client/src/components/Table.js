@@ -1,7 +1,8 @@
 import {Box, Typography} from "@mui/material";
-import React from "react";
+import React, { useRef } from "react";
 import vars from "../theme/variables";
 import TableRow from "./TableRow";
+
 
 const {
     headerBorderLeftColor,
@@ -121,8 +122,23 @@ export const tableStyles = {
     }
 };
 
-const Table = ({tableHeader, tableContent}) => {
+const Table = ({tableHeader, tableContent, onReorder}) => {
     const hasNoActivityMaps = tableContent.length < 2
+    const targetRow = useRef()
+    const sourceRow = useRef()
+
+    const dragStart = (id, index) => {
+        sourceRow.current = {id, index}
+    }
+
+    const dragEnter = (id, index) => {
+        targetRow.current = {id, index}
+    }
+
+    const dragEnd = () => {
+        onReorder(sourceRow.current, targetRow.current)
+    }
+
     return (
         <Box pb={1.5}>
             <Box sx={tableStyles.head}>
@@ -135,7 +151,8 @@ const Table = ({tableHeader, tableContent}) => {
 
             <Box sx={tableStyles.body}>
                 {tableContent?.map((row, index) =>
-                    <TableRow key={row.id} data={row} index={index} isAtlas={index === tableContent?.length - 1}/>)
+                    <TableRow key={row.id} data={row} index={index} isAtlas={index === tableContent?.length - 1}
+                              onDragStart={dragStart} onDragEnter={dragEnter} onDragEnd={dragEnd}/>)
                 }
                 {
                     hasNoActivityMaps &&

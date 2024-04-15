@@ -34,6 +34,7 @@ export const Viewer = (props) => {
 
     const activeAtlas = useSelector(state => state.viewer.atlas);
     const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
+    const activityMapsOrder = useSelector(state => state.viewer.order);
     const experimentsActivityMaps = useSelector(state => state.model.ExperimentsActivityMap);
     const currentExperiment = useSelector(state => state.currentExperiment);
     const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
@@ -271,7 +272,8 @@ export const Viewer = (props) => {
         Object.keys(activityMapsStackHelpersRef.current).forEach(amID => {
             const activityMap = activeActivityMaps[amID];
             if (activityMap) {
-                const activityMapStackHelper = activityMapsStackHelpersRef.current[amID]
+                const activityMapStackHelper = activityMapsStackHelpersRef.current[amID];
+                activityMapStackHelper.renderOrder = activityMapsOrder.indexOf(amID);
                 // change visibility
                 if (activityMapStackHelper.visible !== activityMap.visibility) {
                     activityMapStackHelper.visible = activityMap.visibility
@@ -289,7 +291,9 @@ export const Viewer = (props) => {
         activityMapsToAdd.forEach(amIdToAdd => {
             const activityMap = activeActivityMaps[amIdToAdd];
             let stackHelper = new StackHelper(activityMap.stack);
-            stackHelper.name = sceneObjects.ACTIVITY_MAP
+            stackHelper.userData['id'] = amIdToAdd;
+            stackHelper.name = sceneObjects.ACTIVITY_MAP;
+            stackHelper.renderOrder = activityMapsOrder.indexOf(amIdToAdd);
             stackHelper = postProcessActivityMap(stackHelper, activityMap, cameraRef.current.stackOrientation);
 
             sceneRef.current.add(stackHelper);
@@ -298,8 +302,11 @@ export const Viewer = (props) => {
             activityMapsStackHelpersRef.current[amIdToAdd] = stackHelper;
         });
 
+        // Reorder the scene manually regarding the renderOrder
+        // for some reasons it doesn't work automatically, even with the renderer initialized with "sortObject = true"
+        sceneRef.current.children.sort((a, b) => a.renderOrder - b.renderOrder)
 
-    }, [activeActivityMaps]);
+    }, [activeActivityMaps, activityMapsOrder]);
 
     useEffect(() => {
         if (currentAtlasStackHelperRef.current) {
