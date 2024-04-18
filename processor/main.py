@@ -37,8 +37,8 @@ output_directory = os.path.join(web_directory, output_folder)  # Full path to th
 os.makedirs(output_directory, exist_ok=True)
 os.makedirs(download_dir, exist_ok=True)
 
-sub_folders = ["Atlas"]
-sub_folders_process_wireframe = ["Atlas", "ActivityMaps"]
+sub_folders = ["Atlas", "ActivityMap"]
+sub_folders_process_wireframe = ["Atlas"]
 
 def wait_for_file(filename, directory_path, timeout_seconds=300):
     """
@@ -138,7 +138,8 @@ if __name__ == "__main__":
         # Filter out only the files (excluding directories)
         files = [file for file in files if os.path.isfile(os.path.join(source_sub_dir, file))]
 
-        should_sub_folders_process_wireframe = sub_folder in sub_folders_process_wireframe
+        # should_sub_folders_process_wireframe = sub_folder in sub_folders_process_wireframe
+        should_sub_folders_process_wireframe = False
 
         # Print the list of files
         for file in files:
