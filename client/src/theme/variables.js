@@ -25,6 +25,7 @@ const vars = {
   gray700: '#1E1E1F',
   gray800: '#0F0F10',
   gray600: '#302F31',
+  gray50: '#EFEFF0'
 };
 
 export default vars;
