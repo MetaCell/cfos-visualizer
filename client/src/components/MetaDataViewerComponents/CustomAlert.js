@@ -4,10 +4,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import variables from "../../theme/variables";
 
 const {gray100, gray300, gray700, gray800, gray400} = variables
-export const CustomAlert = ({viewOtherExperiences}) =>
+export const CustomAlert = ({viewOtherExperiences, open, setOpen}) =>
 {
-  const [open, setOpen] = React.useState(true);
-  
   return (
     <Collapse in={open}>
       <Alert
@@ -32,7 +30,11 @@ export const CustomAlert = ({viewOtherExperiences}) =>
           borderRadius: '0.75rem',
           border: `1px solid ${gray700}`,
           background: gray800,
-          padding: '1rem'
+          padding: '1rem',
+          
+          '&.MuiPaper-root': {
+            backgroundColor: 'transparent',
+          }
         }}
       >
         <Stack spacing={'.75rem'}>

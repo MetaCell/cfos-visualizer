@@ -278,6 +278,14 @@ let theme = createTheme( {
           margin: '0 0 0 0.5rem !important'
         }
       }
+    },
+    
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: gray700
+        }
+      }
     }
   }
 } );
