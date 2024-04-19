@@ -5,7 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 const CustomTextField = ({ defaultValue, disabled, typeOfValue, showPercentageAbsolute }) => {
     return (
         <TextField
-            defaultValue={defaultValue}
+            value={defaultValue}
             InputProps={{
                 endAdornment:  typeOfValue === 'percentage' && showPercentageAbsolute && (
                     <InputAdornment position="start">%</InputAdornment>

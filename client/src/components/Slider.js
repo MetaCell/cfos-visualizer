@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import vars from "../theme/variables";
-import {Box, Button, Slider, Typography} from "@mui/material";
-import {CustomToggleButton} from "./CustomToggleButton";
+import { Box, Button, Slider, Typography } from "@mui/material";
+import { CustomToggleButton } from "./CustomToggleButton";
 import CustomTextField from "./CustomTextField";
 
-const {resetButtonColor, labelColor, resetButtonActiveColor, tooltipBgColor, whiteColor} = vars;
+const { resetButtonColor, labelColor, resetButtonActiveColor, tooltipBgColor, whiteColor } = vars;
 
 const styles = {
     heading: {
@@ -24,45 +24,48 @@ const styles = {
     }
 };
 
-const formatValueLabel = (value) => {
-    return `${Number(value).toFixed(2)}`;
-};
+const formatValueLabel = (value) => `${Number(value).toFixed(2)}`;
 
 const CustomSlider = ({
-      heading,
-      width = 1,
-      onChange,
-      value,
-      min = 0,
-      max = 100,
-      minColor = tooltipBgColor,
-      maxColor = whiteColor,
-      numberOfSteps = 100,
-      disabled = false,
-      showPercentageAbsolute = false
-  }) => {
+    heading,
+    width = 1,
+    onChange,
+    value,
+    min = 0,
+    max = 100,
+    minColor = tooltipBgColor,
+    maxColor = whiteColor,
+    numberOfSteps = 100,
+    disabled = false,
+    showPercentageAbsolute = false
+}) => {
+    const [sliderValue, setSliderValue] = useState(value);  
     const [typeOfValue, setTypeOfValue] = React.useState('percentage');
-
     const step = (max - min) / numberOfSteps;
+
+    const handleSliderChange = (event, newValue) => {
+        setSliderValue(newValue);  
+        onChange(newValue);  
+    };
+
     return (
-        <Box
-            width={width}
-            display='flex'
-            alignItems='center'
-            gap={1.5}
-        >
-            <Typography
-                whiteSpace='nowrap'
-                variant='body2'
-                sx={styles.heading}
-            >
+        <Box width={width} display='flex' alignItems='center' gap={1.5}>
+            <Typography whiteSpace='nowrap' variant='body2' sx={styles.heading}>
                 {heading}
             </Typography>
-            {
-                showPercentageAbsolute &&  <CustomToggleButton typeOfValue={typeOfValue} setTypeOfValue={setTypeOfValue} />
-            }
-            <CustomTextField defaultValue={min} disabled={disabled} typeOfValue={typeOfValue} showPercentageAbsolute={showPercentageAbsolute} />
-
+            {showPercentageAbsolute && (
+                <CustomToggleButton
+                    typeOfValue={typeOfValue}
+                    setTypeOfValue={setTypeOfValue}
+                />
+            )}
+            <CustomTextField
+                defaultValue={sliderValue[0]} // Use state for value
+                onChange={(e) => setSliderValue([Number(e.target.value), sliderValue[1]])} // Update state when field changes
+                disabled={disabled}
+                typeOfValue={typeOfValue}
+                showPercentageAbsolute={showPercentageAbsolute}
+            />
             <Slider
                 sx={{
                     ...(disabled ? {
@@ -78,20 +81,25 @@ const CustomSlider = ({
                     }),
                 }}
                 step={step}
-                value={value}
-                onChange={(event, newValue) => onChange(newValue)}
+                value={sliderValue}
+                onChange={handleSliderChange}
                 min={min}
                 max={max}
                 valueLabelDisplay="auto"
                 valueLabelFormat={formatValueLabel}
                 disabled={disabled}
             />
-            <CustomTextField defaultValue={max} disabled={disabled} typeOfValue={typeOfValue} showPercentageAbsolute={showPercentageAbsolute} />
-
+            <CustomTextField
+                defaultValue={sliderValue[1]} // Use state for value
+                onChange={(e) => setSliderValue([sliderValue[0], Number(e.target.value)])} // Update state when field changes
+                disabled={disabled}
+                typeOfValue={typeOfValue}
+                showPercentageAbsolute={showPercentageAbsolute}
+            />
             <Button
                 disableRipple
                 disabled={disabled}
-                onClick={() => onChange([min, max])}
+                onClick={() => setSliderValue([min, max])}
                 sx={{
                     ...styles.button,
                     color: `${disabled ? resetButtonColor : resetButtonActiveColor} !important`,
@@ -100,7 +108,7 @@ const CustomSlider = ({
                 Reset
             </Button>
         </Box>
-    )
+    );
 };
 
 export default CustomSlider;
