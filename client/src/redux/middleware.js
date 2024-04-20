@@ -2,7 +2,7 @@ import {
     fetchActivityMapStack,
     fetchAtlasStack,
     fetchAtlasWireframeStack,
-    fetchExperimentMetadata,
+    fetchExperimentMetadata, fetchLUTFile,
     fetchModelStructure
 } from "../services/fetchService";
 import {
@@ -25,6 +25,7 @@ export const middleware = store => next => async action => {
     switch (action.type) {
         case actions.FETCH_MODEL:
             let model = null
+            let lut = {}
 
             try {
                 store.dispatch(startLoading('Fetching model...'))
@@ -36,7 +37,16 @@ export const middleware = store => next => async action => {
                 return
             }
 
-            store.dispatch(setModel({...model, Luts: {}}));
+            try {
+                store.dispatch(startLoading('Fetching look up table...'))
+                lut = await fetchLUTFile();
+            } catch (error) {
+                store.dispatch(setError(error.message));
+                store.dispatch(stopLoading());
+                return
+            }
+
+            store.dispatch(setModel({...model, Lut: lut}));
 
             // Extract default experimentID and atlasID
             const experimentAtlasEntries = Object.entries(model.ExperimentsAtlas);

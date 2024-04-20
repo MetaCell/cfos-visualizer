@@ -6,7 +6,7 @@ import Table from "./Table";
 import {useSelector, useDispatch} from "react-redux";
 import {messages} from "../redux/constants";
 import CustomSlider from "./Slider";
-import {changeAllActivityMapsIntensityRange} from "../redux/actions";
+import {changeAllActivityMapsIntensityRange, changeViewerOrder} from "../redux/actions";
 
 
 const {headerBorderLeftColor, headingColor, accordianTextColor} = vars;
@@ -57,6 +57,12 @@ const styles = {
     },
 };
 
+const move = (arr, fromIndex, toIndex) => {
+    var element = arr[fromIndex]
+    arr.splice(fromIndex, 1)
+    arr.splice(toIndex, 0, element)
+    return arr
+}
 
 const ControlPanel = () => {
     const dispatch = useDispatch();
@@ -64,6 +70,7 @@ const ControlPanel = () => {
     const [open, setOpen] = useState(true);
     const activeAtlas = useSelector(state => state.viewer.atlas);
     const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
+    const activityMapOrder = useSelector(state => state.viewer.order);
     const intensityRange = useSelector(state => state.viewer.activityMapsIntensityRange);
 
     const atlasesMetadata = useSelector(state => state.model.Atlases);
@@ -89,6 +96,9 @@ const ControlPanel = () => {
                 });
             }
 
+            // Rorder depending on the "order" from the store
+            viewerObjects.sort((a, b) => activityMapOrder.indexOf(b.id) - activityMapOrder.indexOf(a.id))
+
             // Atlas should be the last entry in the array
             const atlasId = activeAtlas.id;
             const atlasMetadata = atlasesMetadata[atlasId];
@@ -105,7 +115,6 @@ const ControlPanel = () => {
         }
         return viewerObjects
     }
-
 
     const computeGlobalIntensityRange = () => {
         let globalMin = Infinity;
@@ -127,12 +136,24 @@ const ControlPanel = () => {
         computeGlobalIntensityRange();
     }, [activeActivityMaps]);
 
-
     const onIntensityChange = (newValue) => {
         dispatch(changeAllActivityMapsIntensityRange(newValue));
     }
 
     const viewerObjects = getViewerObjectsData()
+
+    const onReorder = (source, target) => {
+        // The activityMapOrder in the store is stored in a [lower priority, ..., higher priority] fashion
+        // but it's rendered in the table as [higer priority, ..., lower priority], so the layer the most visible
+        // is set as first element of the table.
+        // Consequently, when moving elements around, we need to first reverse the activityMapOrder to match
+        // the order of the table
+        // then, rebuilding the view order, we place the reordered map, then the first atlas, and finally, we reverse
+        // again to match the [lower priority, ..., higher priority] of the redux store for the viewer order
+        const suborder = activityMapOrder.slice(1, activityMapOrder.length).reverse()
+        move(suborder, source.index, target.index)
+        dispatch(changeViewerOrder([...suborder, activityMapOrder[0]].reverse()))
+    }
 
     return (
         <>
@@ -182,6 +203,7 @@ const ControlPanel = () => {
                     <Table
                         tableHeader={['Actions', 'Name', 'Configure intensity']}
                         tableContent={viewerObjects}
+                        onReorder={onReorder}
                     />
                 </Box>
             </Box>

@@ -1,41 +1,20 @@
 import * as AMI from 'ami.js';
 import * as THREE from 'three';
 import {DIRECTIONS} from "../constants";
-import {LUT_DATA, STACK_MESH_INDEX} from "../settings";
+import {STACK_HELPER_BORDER_COLOR, STACK_MESH_INDEX} from "../settings";
 import {getLUTGradients} from "./gradientHelper";
 
-const StackModel = AMI.StackModel;
+const StackHelper = AMI.stackHelperFactory(THREE);
 const HelpersLut = AMI.lutHelperFactory(THREE);
-
-export function deserializeStack(decodedData) {
-    const stack = new StackModel();
-
-    // Iterate over all properties of the stack
-    for (let prop in stack) {
-        if (stack.hasOwnProperty(prop) && decodedData.hasOwnProperty(prop)) {
-            if (isVector3Object(decodedData[prop])) {
-                stack[prop] = new THREE.Vector3(decodedData[prop].x, decodedData[prop].y, decodedData[prop].z);
-            } else {
-                stack[prop] = decodedData[prop];
-            }
-        }
-    }
-
-    return stack;
-}
-
-function isVector3Object(obj) {
-    return obj && typeof obj === 'object' && 'x' in obj && 'y' in obj && 'z' in obj;
-}
 
 export const getNewSliceIndex = (stackHelper, direction, delta = 1) => {
     if (!stackHelper) {
         return null;
     }
 
-    if (direction === DIRECTIONS.UP && stackHelper.index < stackHelper.orientationMaxIndex - 1) {
+    if (direction === DIRECTIONS.UP && stackHelper.index < stackHelper.orientationMaxIndex - delta) {
         return stackHelper.index + delta;
-    } else if (direction === DIRECTIONS.DOWN && stackHelper.index > 0) {
+    } else if (direction === DIRECTIONS.DOWN && stackHelper.index > delta) {
         return stackHelper.index - delta;
     }
 
@@ -46,6 +25,7 @@ export const getNewSliceIndex = (stackHelper, direction, delta = 1) => {
 export const updateStackHelperIndex = (stackHelper, newIndex) => {
     if (stackHelper) {
         stackHelper.index = newIndex;
+        stackHelper.slice.interpolation = 0  // no interpolation
     }
 };
 
@@ -78,3 +58,14 @@ export const removeBackground = (stackHelper) => {
     }
 }
 
+
+export function getAtlasStackHelper(stack, name, id, orientation) {
+    const stackHelper = new StackHelper(stack);
+    stackHelper.name = name;
+    stackHelper.bbox.visible = false;
+    stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
+    stackHelper.orientation = orientation;
+    stackHelper.atlasId = id;
+    stackHelper.slice.interpolation = 0 // no interpolation
+    return stackHelper;
+}

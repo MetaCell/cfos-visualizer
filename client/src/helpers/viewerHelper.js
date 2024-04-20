@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import * as AMI from 'ami.js';
 
-import {ORIENTATION} from "../settings";
+import {CAMERA_RANGE, ORIENTATION} from "../settings";
 import {sceneObjects} from "../redux/constants";
 
 const TrackballOrthoControl = AMI.trackballOrthoControlFactory(THREE);
@@ -10,7 +10,7 @@ const OrthographicCamera = AMI.orthographicCameraFactory(THREE);
 export const initRenderer = (viewerContainerRef) => {
     const container = viewerContainerRef.current;
     const renderer = new THREE.WebGLRenderer({
-        antialias: true,
+        antialias: false,
     });
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -23,10 +23,10 @@ export const initScene = () => new THREE.Scene();
 
 export const getOrthographicCamera = (container) => {
     const camera = new OrthographicCamera(
-        container.clientWidth / -2,
-        container.clientWidth / 2,
-        container.clientHeight / 2,
-        container.clientHeight / -2,
+        container.clientWidth / -CAMERA_RANGE,
+        container.clientWidth / CAMERA_RANGE,
+        container.clientHeight / CAMERA_RANGE,
+        container.clientHeight / -CAMERA_RANGE,
         1,
         1000
     );
@@ -83,10 +83,10 @@ export const resize = (containerRef, rendererRef, cameraRef) => {
             const height = containerRef.current.clientHeight;
 
 
-            cameraRef.current.left = width / -2;
-            cameraRef.current.right = width / 2;
-            cameraRef.current.top = height / 2;
-            cameraRef.current.bottom = height / -2;
+            cameraRef.current.left = width / -CAMERA_RANGE;
+            cameraRef.current.right = width / CAMERA_RANGE;
+            cameraRef.current.top = height / CAMERA_RANGE;
+            cameraRef.current.bottom = height / -CAMERA_RANGE;
             cameraRef.current.updateProjectionMatrix();
 
             rendererRef.current.setSize(width, height);

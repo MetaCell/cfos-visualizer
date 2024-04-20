@@ -1,6 +1,8 @@
 import React from 'react';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import variables from "../theme/variables";
+const {gray200, gray700, gray400, gray600} = variables
 
 const CustomTextField = ({ defaultValue, disabled, typeOfValue, showPercentageAbsolute }) => {
     return (
@@ -13,20 +15,20 @@ const CustomTextField = ({ defaultValue, disabled, typeOfValue, showPercentageAb
             }}
             sx={{
                 '& .MuiInputBase-root': {
-                    backgroundColor: '#1E1E1F',
+                    backgroundColor: gray700,
                     padding: '0.5rem 0.75rem',
                     borderRadius: '0.5rem',
                     '& .MuiTypography-root': {
-                        color: '#B1B1B4',
+                        color: gray200,
                         fontSize: '0.875rem'
                     },
                     '&.Mui-disabled': {
                         backgroundColor: 'transparent',
                         '& .MuiTypography-root': {
-                            color: '#737378',
+                            color: gray400,
                         },
                         '& .MuiInputBase-input': {
-                            '-webkit-text-fill-color': '#737378',
+                            '-webkit-text-fill-color': gray400,
                         },
                         '& fieldset': {
                             borderColor: 'transparent'
@@ -45,15 +47,15 @@ const CustomTextField = ({ defaultValue, disabled, typeOfValue, showPercentageAb
                     },
                     '& .MuiInputBase-input': {
                         padding: '0',
-                        color: '#B1B1B4',
+                        color: gray200,
                         fontSize: '0.875rem',
                     },
                     '& fieldset': {
-                        borderColor: '#1E1E1F'
+                        borderColor: gray700
                     },
                     '&:hover, &.Mui-focused': {
                         '& fieldset': {
-                            border: '1px solid #302F31',
+                            border: `1px solid ${gray600}`,
                         }
                     },
                 }

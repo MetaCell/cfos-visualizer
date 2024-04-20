@@ -75,7 +75,7 @@ describe('Social Context Map Test', () => {
 
         await scm_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false});
         const textContent = await scm_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
-        expect(textContent).toBe('MDMA (social context) maps');
+        expect(textContent).toBe('Atlas images');
 
         // const element = await scm_test_page.$('canvas'); 
         const screenshot = await scm_test_page.screenshot();
