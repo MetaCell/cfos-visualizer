@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Box, Divider, IconButton, Tooltip, Typography} from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -19,7 +19,7 @@ import {
 } from "../redux/actions";
 import {useDispatch} from "react-redux";
 import {normalizedRgbToHex} from "../helpers/gradientHelper";
-import {AtlasIcon, LockIcon} from "../icons";
+import {AtlasIcon, LockIcon, UnlockIcon} from "../icons";
 
 const {
     headerBorderLeftColor,
@@ -31,12 +31,15 @@ const {
 
 const TableRow = ({data, isAtlas}) => {
     const dispatch = useDispatch();
+    const [isLocked, setIsLocked] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const {id, name, intensityRange, stackIntensityRange, colorRange, isVisible, description} = data;
     const minColorHex = colorRange ? normalizedRgbToHex(colorRange[0]) : tooltipBgColor
     const maxColorHex = colorRange ? normalizedRgbToHex(colorRange[1]) : whiteColor
     const min = stackIntensityRange ? stackIntensityRange[0] : 0
     const max = stackIntensityRange ? stackIntensityRange[1] : 100
+
+    const disabledHex = "#000000";
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -49,6 +52,10 @@ const TableRow = ({data, isAtlas}) => {
     const onIntensityChange = (id, newValue) => {
         dispatch(changeActivityMapIntensityRange(id, newValue));
     }
+
+    const toggleLock = () => {
+        setIsLocked(!isLocked); 
+    };
 
     const open = Boolean(anchorEl);
 
@@ -70,18 +77,18 @@ const TableRow = ({data, isAtlas}) => {
 
                     <Divider sx={{background: headerBorderLeftColor, width: '0.0625rem', height: '100%'}}/>
                     <Tooltip placement='right' title={"Lock"}>
-                        <IconButton>
-                            <LockIcon />
+                        <IconButton onClick={toggleLock}>
+                            { isLocked ? <UnlockIcon /> : <LockIcon /> }
                         </IconButton>
                     </Tooltip>
-                    <Tooltip placement='right' title={isVisible ? "Hide" : "Show"}>
+                    <Tooltip placement='right' title={(isVisible || isLocked) ? "Hide" : "Show"} disabled={isLocked}>
                         <IconButton onClick={() => dispatch(toggleViewerObjectVisibility(id))}>
-                            {isVisible ? <VisibilityOutlinedIcon/> : <VisibilityOffOutlinedIcon/>}
+                            {isVisible ? <VisibilityOutlinedIcon sx={{color: `${isLocked && disabledHex} !important`}} /> : <VisibilityOffOutlinedIcon/>}
                         </IconButton>
                     </Tooltip>
                     <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Configure color"}>
-                        <IconButton onClick={handleClick} disabled={isAtlas}>
-                            <ColorLensOutlinedIcon sx={{color: `${minColorHex} !important`}}/>
+                        <IconButton onClick={handleClick} disabled={isAtlas || isLocked}>
+                            <ColorLensOutlinedIcon sx={{color: `${isLocked ? disabledHex : minColorHex} !important`}} disabled={isLocked} />
                         </IconButton>
                     </Tooltip>
                     <Tooltip placement='right' title="Download">
@@ -106,12 +113,12 @@ const TableRow = ({data, isAtlas}) => {
                 <Box sx={{gap: '0.75rem !important'}}>
                     <CustomSlider min={min}
                                   max={max}
+                                  disabled={isLocked || isAtlas}
                                   value={intensityRange}
                                   heading="Intensity"
                                   onChange={(newValue) => onIntensityChange(id, newValue)}
                                   minColor={minColorHex}
                                   maxColor={maxColorHex}
-                                  disabled={isAtlas}
                     />
                 </Box>
             </Box>

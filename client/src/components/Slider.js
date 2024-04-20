@@ -44,6 +44,10 @@ const CustomSlider = ({
     const step = (max - min) / numberOfSteps;
 
     const handleSliderChange = (event, newValue) => {
+        if (disabled)
+            return;
+        if (newValue[0] >= newValue[1])
+          return;
         setSliderValue(newValue);  
         onChange(newValue);  
     };
