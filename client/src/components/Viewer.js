@@ -16,7 +16,7 @@ import {DELTA_SLICE_BUTTON, DELTA_SLICE_MOUSE, STACK_HELPER_BORDER_COLOR} from "
 import {DIRECTIONS} from "../constants";
 import {
     getAtlasStackHelper,
-    getNewSliceIndex, updateStackHelperIndex
+    getNewSliceIndex, makeSliceTransparent, removeBackground, updateStackHelperIndex
 } from "../helpers/stackHelper";
 import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
@@ -220,21 +220,18 @@ export const Viewer = (props) => {
                 sceneRef.current.add(stackHelper);
                 sceneRef.current.add(stackHelperWireframe);
 
+                // Set the id for the stackHelpers
+                stackHelper.userData['id'] = activeAtlas.id
+                stackHelperWireframe.userData['id'] = activeAtlas.id
+
+                removeBackground(stackHelper)
+                makeSliceTransparent(stackHelper)
+
+                removeBackground(stackHelperWireframe)
+                makeSliceTransparent(stackHelperWireframe)
+
                 currentAtlasStackHelperRef.current = stackHelper;
                 currentAtlasWireframeStackHelperRef.current = stackHelperWireframe;
-
-                // FIXME: Workaround to get the atlas always on the bottom
-
-                // Store all activity maps temporarily and remove them from the scene
-                const tempActivityMaps = [];
-                Object.keys(activityMapsStackHelpersRef.current).forEach(activityMapID => {
-                    tempActivityMaps.push(activityMapsStackHelpersRef.current[activityMapID]);
-                    sceneRef.current.remove(activityMapsStackHelpersRef.current[activityMapID]);
-                });
-                //  Add back the activity maps
-                tempActivityMaps.forEach(activityMapStackHelper => {
-                    sceneRef.current.add(activityMapStackHelper);
-                });
             } else {
                 currentAtlasStackHelperRef.current.visible = activeAtlas.visibility && !wireframeMode;
                 currentAtlasWireframeStackHelperRef.current.visible = activeAtlas.visibility && wireframeMode;
@@ -285,6 +282,20 @@ export const Viewer = (props) => {
                 }
             }
         })
+
+        // Update order for atlas
+        const atlasStackHelper = currentAtlasStackHelperRef.current
+        const atlasWireframeStackHelper = currentAtlasWireframeStackHelperRef.current;
+        if (atlasStackHelper) {
+            const atlasId = atlasStackHelper.userData['id'];
+            atlasStackHelper.renderOrder = activityMapsOrder.indexOf(atlasId);
+            // makeSliceTransparent(atlasStackHelper)
+        }
+        if (atlasWireframeStackHelper) {
+            const atlasId = atlasWireframeStackHelper.userData['id'];
+            atlasWireframeStackHelper.renderOrder = activityMapsOrder.indexOf(atlasId);
+            // makeSliceTransparent(atlasWireframeStackHelper)
+        }
 
 
         // Process additions

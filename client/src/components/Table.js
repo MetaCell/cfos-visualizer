@@ -151,7 +151,7 @@ const Table = ({tableHeader, tableContent, onReorder}) => {
 
             <Box sx={tableStyles.body}>
                 {tableContent?.map((row, index) =>
-                    <TableRow key={row.id} data={row} index={index} isAtlas={index === tableContent?.length - 1}
+                    <TableRow key={row.id} data={row} index={index} isAtlas={!row.colorRange}
                               onDragStart={dragStart} onDragEnter={dragEnter} onDragEnd={dragEnd}/>)
                 }
                 {

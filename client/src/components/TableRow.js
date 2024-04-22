@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useState } from 'react';
 import {Box, Divider, IconButton, Tooltip, Typography} from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -31,7 +31,7 @@ const {
 
 const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index }) => {
     const dispatch = useDispatch();
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
     const {id, name, intensityRange, stackIntensityRange, colorRange, isVisible, description} = data;
     const minColorHex = colorRange ? normalizedRgbToHex(colorRange[0]) : tooltipBgColor
     const maxColorHex = colorRange ? normalizedRgbToHex(colorRange[1]) : whiteColor
@@ -60,8 +60,8 @@ const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index })
                  onDragEnter={e => onDragEnter(id, index, e)}
                  onDragEnd={onDragEnd}>
                 <Box sx={{gap: '0.25rem !important'}}>
-                    <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Move up/down"}>
-                        <IconButton disabled={isAtlas}>
+                    <Tooltip placement='right' title={"Move up/down"}>
+                        <IconButton>
                             <DragIndicatorIcon/>
                         </IconButton>
                     </Tooltip>
