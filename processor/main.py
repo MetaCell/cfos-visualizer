@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     port = 8888
     # Create a thread for the HTTP server
-    http_server_thread = threading.Thread(target=start_http_server, args=(web_directory, port))
+    http_server_thread = threading.Thread(target=start_http_server, args=(web_directory, port), daemon=True)
     http_server_thread.start()
   
     #wait for the server to start
