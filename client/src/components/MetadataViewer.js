@@ -3,9 +3,8 @@ import { Box, Stack } from "@mui/material";
 import {CustomAlert} from "./MetaDataViewerComponents/CustomAlert";
 import DetailsTabs from "./MetaDataViewerComponents/DetailsTabs";
 import CustomTabPanel from "./MetaDataViewerComponents/CustomTabPanel";
-import Detail from "./MetaDataViewerComponents/Detail";
-import {Publications} from "./MetaDataViewerComponents/Publications";
-import details from '../data/details.json'
+import {Details} from "./MetaDataViewerComponents/Details";
+import Experiments from "./MetaDataViewerComponents/Experiments";
 
 export const MetadataViewer = () => {
   let [tabValue, setTabValue] = React.useState(0);
@@ -18,24 +17,7 @@ export const MetadataViewer = () => {
     setTabValue(2)
   }
   
-  const renderComponent = (key, value) => {
-   
-    if (typeof value === 'string') {
-      return <Detail title={key} text={value} />;
-    } else if (typeof value === 'object') {
-      return <Publications title={key} value={value} /> ;
-    } else {
-      return null;
-    }
-  };
-  
-  const renderDetails = () => {
-    return Object.entries(details).map(([key, value]) => (
-      <React.Fragment key={key}>
-        {renderComponent(key, value)}
-      </React.Fragment>
-    ));
-  };
+ 
   return (
     <Stack
       id='details'
@@ -53,15 +35,13 @@ export const MetadataViewer = () => {
       }
       <DetailsTabs value={tabValue} handleChange={handleChangeTab} />
       <CustomTabPanel value={tabValue} index={0}>
-        <Stack spacing='1.5rem'>
-          {renderDetails()}
-        </Stack>
+        <Details />
       </CustomTabPanel>
       <CustomTabPanel value={tabValue} index={1}>
         Images
       </CustomTabPanel>
       <CustomTabPanel value={tabValue} index={2}>
-        Experiments sharing the same atlas
+        <Experiments />
       </CustomTabPanel>
     </Stack>
   )
