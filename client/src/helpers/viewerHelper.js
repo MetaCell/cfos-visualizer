@@ -12,7 +12,6 @@ export const initRenderer = (viewerContainerRef) => {
     const renderer = new THREE.WebGLRenderer({
         antialias: false,
     });
-    // renderer.setClearColor( 0x000000, 0 );
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.sortObjects = false // FIXME: Workaround for the atlas always be on top
