@@ -283,7 +283,7 @@ let theme = createTheme( {
     MuiDivider: {
       styleOverrides: {
         root: {
-          borderColor: gray700
+          borderColor: gray600
         }
       }
     }
