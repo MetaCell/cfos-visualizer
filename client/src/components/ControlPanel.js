@@ -92,7 +92,8 @@ const ControlPanel = () => {
                     colorRange: activityMap.colorRange,
                     intensityRange: [...activityMap.intensityRange],
                     stackIntensityRange: [...activityMap.stack.minMax],
-                    isVisible: activityMap.visibility
+                    isVisible: activityMap.visibility,
+                    isAtlas: false
                 });
             }
 
@@ -107,7 +108,8 @@ const ControlPanel = () => {
                 colorRange: null,
                 intensityRange: [...activeAtlas.stack.minMax],
                 stackIntensityRange: [...activeAtlas.stack.minMax],
-                isVisible: activeAtlas.visibility
+                isVisible: activeAtlas.visibility,
+                isAtlas: true
             });
 
             // Rorder depending on the "order" from the store

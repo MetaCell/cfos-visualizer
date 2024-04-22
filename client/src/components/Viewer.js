@@ -16,9 +16,9 @@ import {DELTA_SLICE_BUTTON, DELTA_SLICE_MOUSE, STACK_HELPER_BORDER_COLOR} from "
 import {DIRECTIONS} from "../constants";
 import {
     getAtlasStackHelper,
-    getNewSliceIndex, makeSliceTransparent, removeBackground, updateStackHelperIndex
+    getNewSliceIndex, makeSliceTransparent, postProcessAtlas, removeBackground, updateStackHelperIndex
 } from "../helpers/stackHelper";
-import {getActivityMapsDiff, postProcessActivityMap, updateLUT} from "../helpers/activityMapHelper";
+import {getActivityMapsDiff, postProcessActivityMap, updateBGLUT, updateLUT} from "../helpers/activityMapHelper";
 import {sceneObjects} from "../redux/constants";
 import {HomeIcon, KeyboardArrowUpIcon, TonalityIcon, ZoomInIcon, ZoomOutIcon} from "../icons";
 
@@ -220,15 +220,9 @@ export const Viewer = (props) => {
                 sceneRef.current.add(stackHelper);
                 sceneRef.current.add(stackHelperWireframe);
 
-                // Set the id for the stackHelpers
-                stackHelper.userData['id'] = activeAtlas.id
-                stackHelperWireframe.userData['id'] = activeAtlas.id
-
-                removeBackground(stackHelper)
-                makeSliceTransparent(stackHelper)
-
-                removeBackground(stackHelperWireframe)
-                makeSliceTransparent(stackHelperWireframe)
+                // Post process the stackHelpers
+                postProcessAtlas(stackHelper, activeAtlas)
+                postProcessAtlas(stackHelperWireframe, activeAtlas)
 
                 currentAtlasStackHelperRef.current = stackHelper;
                 currentAtlasWireframeStackHelperRef.current = stackHelperWireframe;

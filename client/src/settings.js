@@ -14,7 +14,8 @@ export const DEFAULT_LOADING_MESSAGE = "Loading..."
 export const COLOR_RANGES = {
     HOT: [[1, 9 / 255, 9 / 255], [1, 217 / 255, 102 / 255]],
     COOL: [[20 / 255, 0 / 255, 175 / 255], [20 / 255, 147 / 255, 255 / 255]],
-    BLACK_AND_WHITE: [[3 / 255, 2 / 255, 3 / 255], [3 / 255, 2 / 255, 0]]
+    BLACK_AND_WHITE: [[3 / 255, 2 / 255, 3 / 255], [3 / 255, 2 / 255, 0]],
+    GRAY: [[0, 0, 0], [1, 1, 1]]
 }
 
 export const DEFAULT_COLOR_RANGE = COLOR_RANGES.HOT
