@@ -7,7 +7,7 @@ const {gray200, gray700, gray400, gray600} = variables
 const CustomTextField = ({ defaultValue, disabled, typeOfValue, showPercentageAbsolute }) => {
     return (
         <TextField
-            defaultValue={defaultValue}
+            value={defaultValue}
             InputProps={{
                 endAdornment:  typeOfValue === 'percentage' && showPercentageAbsolute && (
                     <InputAdornment position="start">%</InputAdornment>
