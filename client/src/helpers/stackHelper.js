@@ -1,8 +1,9 @@
 import * as AMI from 'ami.js';
 import * as THREE from 'three';
 import {DIRECTIONS} from "../constants";
-import {STACK_HELPER_BORDER_COLOR, STACK_MESH_INDEX} from "../settings";
+import {COLOR_RANGES, STACK_HELPER_BORDER_COLOR, STACK_MESH_INDEX} from "../settings";
 import {getLUTGradients} from "./gradientHelper";
+import { updateLUT } from './activityMapHelper';
 
 const StackHelper = AMI.stackHelperFactory(THREE);
 const HelpersLut = AMI.lutHelperFactory(THREE);
@@ -68,4 +69,12 @@ export function getAtlasStackHelper(stack, name, id, orientation) {
     stackHelper.atlasId = id;
     stackHelper.slice.interpolation = 0 // no interpolation
     return stackHelper;
+}
+
+export function postProcessAtlas(stack, atlas) {
+    stack.userData['id'] = atlas.id
+    removeBackground(stack)
+    makeSliceTransparent(stack)
+    stack.bbox.visible = false
+    updateLUT(COLOR_RANGES.GRAY, atlas.stack.minMax, stack)
 }

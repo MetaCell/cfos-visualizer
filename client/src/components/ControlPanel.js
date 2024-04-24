@@ -92,14 +92,12 @@ const ControlPanel = () => {
                     colorRange: activityMap.colorRange,
                     intensityRange: [...activityMap.intensityRange],
                     stackIntensityRange: [...activityMap.stack.minMax],
-                    isVisible: activityMap.visibility
+                    isVisible: activityMap.visibility,
+                    isAtlas: false
                 });
             }
 
-            // Rorder depending on the "order" from the store
-            viewerObjects.sort((a, b) => activityMapOrder.indexOf(b.id) - activityMapOrder.indexOf(a.id))
-
-            // Atlas should be the last entry in the array
+            // Add the atlas
             const atlasId = activeAtlas.id;
             const atlasMetadata = atlasesMetadata[atlasId];
 
@@ -110,8 +108,12 @@ const ControlPanel = () => {
                 colorRange: null,
                 intensityRange: [...activeAtlas.stack.minMax],
                 stackIntensityRange: [...activeAtlas.stack.minMax],
-                isVisible: activeAtlas.visibility
+                isVisible: activeAtlas.visibility,
+                isAtlas: true
             });
+
+            // Rorder depending on the "order" from the store
+            viewerObjects.sort((a, b) => activityMapOrder.indexOf(b.id) - activityMapOrder.indexOf(a.id))
         }
         return viewerObjects
     }
@@ -143,16 +145,12 @@ const ControlPanel = () => {
     const viewerObjects = getViewerObjectsData()
 
     const onReorder = (source, target) => {
-        // The activityMapOrder in the store is stored in a [lower priority, ..., higher priority] fashion
-        // but it's rendered in the table as [higer priority, ..., lower priority], so the layer the most visible
-        // is set as first element of the table.
-        // Consequently, when moving elements around, we need to first reverse the activityMapOrder to match
-        // the order of the table
-        // then, rebuilding the view order, we place the reordered map, then the first atlas, and finally, we reverse
-        // again to match the [lower priority, ..., higher priority] of the redux store for the viewer order
-        const suborder = activityMapOrder.slice(1, activityMapOrder.length).reverse()
-        move(suborder, source.index, target.index)
-        dispatch(changeViewerOrder([...suborder, activityMapOrder[0]].reverse()))
+        if (source.index === target.index) {
+            return
+        }
+        const reverseOrder = [...activityMapOrder].reverse()
+        move(reverseOrder, source.index, target.index)
+        dispatch(changeViewerOrder(reverseOrder.reverse()))
     }
 
     return (
