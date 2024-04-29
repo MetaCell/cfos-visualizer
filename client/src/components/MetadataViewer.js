@@ -5,6 +5,7 @@ import DetailsTabs from "./MetaDataViewerComponents/DetailsTabs";
 import CustomTabPanel from "./MetaDataViewerComponents/CustomTabPanel";
 import {Details} from "./MetaDataViewerComponents/Details";
 import Experiments from "./MetaDataViewerComponents/Experiments";
+import Images from "./MetaDataViewerComponents/Images";
 
 export const MetadataViewer = () => {
   let [tabValue, setTabValue] = React.useState(0);
@@ -38,7 +39,7 @@ export const MetadataViewer = () => {
         <Details />
       </CustomTabPanel>
       <CustomTabPanel value={tabValue} index={1}>
-        Images
+        <Images />
       </CustomTabPanel>
       <CustomTabPanel value={tabValue} index={2}>
         <Experiments />
