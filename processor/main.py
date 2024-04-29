@@ -25,6 +25,7 @@ server_started_event = threading.Event()
 driver = None
 wireframe = True
 headless = True
+wipe_storage = True
 
 web_directory = os.path.dirname(os.path.abspath(__file__))
 download_dir = os.path.join(web_directory, "process")
