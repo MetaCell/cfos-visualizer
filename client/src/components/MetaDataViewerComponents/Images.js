@@ -28,7 +28,7 @@ const Images = () => {
     
     Object.entries(activityMaps).forEach(([key, value]) => {
       // Convert the hierarchy array into a string to use as a key
-      const hierarchyKey = value?.hierarchy.join(', ');
+      const hierarchyKey = value?.hierarchy?.join(', ');
       
       if (!grouped[hierarchyKey]) {
         grouped[hierarchyKey] = [];
