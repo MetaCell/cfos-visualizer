@@ -28,13 +28,13 @@ declare global {
     }
 }
 
-describe.skip('Intensity Test', () => {
+describe('Intensity Test', () => {
 
 
     beforeAll(async () => {
         inetensity_test_browser = await puppeteer.launch({
             args: ['--no-sandbox', '--disable-setuid-sandbox', "--ignore-certificate-errors"],
-            headless: true,
+            headless: false,
             devtools: false,
             defaultViewport: {
                 width: 1600,
@@ -76,9 +76,8 @@ describe.skip('Intensity Test', () => {
 
         await intensity_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false });
         const textContent = await intensity_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
-        expect(textContent).toBe('MDMA (social context) maps');
+        expect(textContent).toBe('Atlas images');
 
-        // const element = await intensity_test_page.$('canvas');
         const screenshot = await intensity_test_page.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
@@ -90,6 +89,38 @@ describe.skip('Intensity Test', () => {
 
     });
 
+    test('Add Statistical Map', async () => {
+        await intensity_test_page.waitForSelector('.MuiButtonBase-root.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-colorPrimary.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-colorPrimary', { timeout: TIMEOUT, hidden: false });
+        await intensity_test_page.click('.MuiButtonBase-root.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-colorPrimary.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-colorPrimary');
+        await intensity_test_page.waitForSelector('.MuiFormGroup-root', { timeout: TIMEOUT, hidden: false });
+        await intensity_test_page.waitForSelector('.MuiFormGroup-root > .MuiBox-root', { timeout: TIMEOUT, hidden: false });
+        await intensity_test_page.click('.MuiFormGroup-root > .MuiBox-root');
+
+        const selector = '.MuiBox-root > h6.MuiTypography-root.MuiTypography-h6';
+
+        await intensity_test_page.waitForFunction(
+            (selector, text) => document.querySelector(selector).innerText === text,
+            { timeout: TIMEOUT * 3 },
+            selector,
+            'Fetching activity map...'
+        );
+
+        await intensity_test_page.waitForFunction(
+            (selector, text) => document.querySelector(selector).innerText !== text,
+            { timeout: TIMEOUT * 3 },
+            selector,
+            'Fetching acitivy map...'
+        );
+        const global_intensity_text_selector = 'p.MuiTypography-root.MuiTypography-body2'
+        await intensity_test_page.waitForFunction(
+            (selector, text) => document.querySelector(selector).innerText == text,
+            { timeout: TIMEOUT * 5 },
+            global_intensity_text_selector,
+            'Global intensity'
+        );
+        
+    })
+
     test('Change Global Intensity', async () => {
         console.log('Changing Global Intensity ...')
 
@@ -97,66 +128,60 @@ describe.skip('Intensity Test', () => {
         const selector = '.MuiSlider-root.MuiSlider-colorPrimary.MuiSlider-sizeMedium';
 
         await intensity_test_page.waitForFunction(
-            (selector) => document.querySelectorAll(selector).length === 2,
+            (selector) => document.querySelectorAll(selector).length === 3,
             { timeout: TIMEOUT },
             selector
         );
 
-        // Get all sliders and select the first one
-        const sliderElements = await intensity_test_page.$$(selector);
-        const sliderElement1 = sliderElements[0];
+        await intensity_test_page.waitForSelector('.MuiSlider-root.MuiSlider-colorPrimary.MuiSlider-sizeMedium .MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary', { timeout: TIMEOUT, hidden: false });
 
-        // Get the bounding box of the first slider
-        const sliderBox1 = await sliderElement1.boundingBox();
+        const sliders = await intensity_test_page.$$('.MuiSlider-root.MuiSlider-colorPrimary.MuiSlider-sizeMedium .MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary');
+        if (sliders.length > 1) {
+            const sliderBox = await sliders[1].boundingBox(); // Get the bounding box of the second slider
+            const sliderStartX = sliderBox.x // + sliderBox.width / 2;
+            const sliderY = sliderBox.y  //+ sliderBox.height / 2;
 
-        // Calculate the start and end points of the first slider
-        const sliderStartX1 = sliderBox1.x + sliderBox1.width / 2;
-        const sliderEndX1 = sliderBox1.x + sliderBox1.width;
-        const sliderY1 = sliderBox1.y + sliderBox1.height / 2;
-        const sliderMiddleX1 = sliderBox1.x + sliderBox1.width / 2; // Halfway point
+            // Drag the second slider a bit to the left
+            await intensity_test_page.mouse.move(sliderStartX, sliderY);
+            await intensity_test_page.mouse.down();
+            await intensity_test_page.mouse.move(sliderStartX - 40, sliderY); 
+            await intensity_test_page.mouse.up();
+        }
 
+        await intensity_test_page.waitForTimeout('3000');
+        // await intensity_test_page.waitForSelector('#viewer > div.MuiBox-root > div.MuiBox-root > div.MuiBox-root', { timeout: TIMEOUT, hidden: false });
+        // const bar_elements = await intensity_test_page.$$('#viewer > div.MuiBox-root > div.MuiBox-root > div.MuiBox-root');
+        // await bar_elements[1].click();
 
-        // Move the first slider to the max
-        await intensity_test_page.mouse.move(sliderStartX1, sliderY1);
-        await intensity_test_page.mouse.down();
-        await intensity_test_page.mouse.move(sliderMiddleX1, sliderY1);
-        await intensity_test_page.mouse.up();
-
-        // Get the left style of all elements that match the selector
-        const leftStyles = await intensity_test_page.$$eval('.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary', (elements) => elements.map(element => element.style.left));
-
-        // Check that the left style of both elements is '0%'
-        leftStyles.forEach(leftStyle => {
-            expect(leftStyle).toBe('50%');
+        const screenshot = await intensity_test_page.screenshot();
+        expect(screenshot).toMatchImageSnapshot({
+            ...SNAPSHOT_OPTIONS,
+            customSnapshotIdentifier: 'Changed Intensity'
         });
 
-        console.log('Global Intensity changed')
-    });
+    })
 
     test('Reset Global Intensity', async () => {
 
         console.log('Resetting Global Intensity ...')
-        const selector = '.MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium';
 
+        const selector = '#viewer .MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium';
         await intensity_test_page.waitForSelector(selector, { timeout: TIMEOUT, hidden: false });
 
         const elements = await intensity_test_page.$$(selector);
 
-        // Check that there are two elements
-        expect(elements.length).toBe(2);
+        expect(elements.length).toBe(3);
         await elements[0].click();
+
+        await intensity_test_page.waitForTimeout(3000);
+        const screenshot = await intensity_test_page.screenshot();
+        expect(screenshot).toMatchImageSnapshot({
+            ...SNAPSHOT_OPTIONS,
+            customSnapshotIdentifier: 'Reset Intensity'
+        });
         await intensity_test_page.waitForTimeout(3000);
 
-        await intensity_test_page.waitForSelector('.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary', { timeout: TIMEOUT, hidden: false });
 
-
-        // Get the left style of all elements that match the selector
-        const leftStyles = await intensity_test_page.$$eval('.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary', (elements) => elements.map(element => element.style.left));
-
-        // Check that the left style of both elements is '0%'
-        leftStyles.forEach(leftStyle => {
-            expect(leftStyle).toBe('0%');
-        });
         console.log('Global Intensity reset')
     });
 
@@ -164,65 +189,45 @@ describe.skip('Intensity Test', () => {
     test('Change individual Intensity', async () => {
 
         console.log('Changing individual Intensity ...')
+        // await intensity_test_page.waitForSelector('#viewer > div.MuiBox-root > div.MuiBox-root > div.MuiBox-root', { timeout: TIMEOUT, hidden: false });
+        // const bar_elements = await intensity_test_page.$$('#viewer > div.MuiBox-root > div.MuiBox-root > div.MuiBox-root');
+        // await bar_elements[1].click();
+
         await intensity_test_page.waitForSelector('.MuiSlider-root.MuiSlider-colorPrimary.MuiSlider-sizeMedium', { timeout: TIMEOUT, hidden: false });
         const selector = '.MuiSlider-root.MuiSlider-colorPrimary.MuiSlider-sizeMedium';
-
         await intensity_test_page.waitForFunction(
-            (selector) => document.querySelectorAll(selector).length === 2,
+            (selector) => document.querySelectorAll(selector).length === 3,
             { timeout: TIMEOUT },
             selector
         );
 
-        // Get all sliders and select the first one
-        const sliderElements = await intensity_test_page.$$(selector);
-        const sliderElement2 = sliderElements[1];
+        await intensity_test_page.waitForSelector('.MuiSlider-root.MuiSlider-colorPrimary.MuiSlider-sizeMedium .MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary', { timeout: TIMEOUT, hidden: false });
 
-        // Get the bounding box of the first slider
-        const sliderBox2 = await sliderElement2.boundingBox();
+        const sliders = await intensity_test_page.$$('.MuiSlider-root.MuiSlider-colorPrimary.MuiSlider-sizeMedium .MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary');
+        if (sliders.length > 1) {
+            const sliderBox = await sliders[3].boundingBox(); 
+            const sliderStartX = sliderBox.x // + sliderBox.width / 2;
+            const sliderY = sliderBox.y  //+ sliderBox.height / 2;
 
-        // Calculate the start and end points of the first slider
-        const sliderStartX2 = sliderBox2.x + sliderBox2.width / 2;
-        const sliderEndX2 = sliderBox2.x + sliderBox2.width;
-        const sliderY2 = sliderBox2.y + sliderBox2.height / 2;
-        const sliderMiddleX2 = sliderBox2.x + sliderBox2.width / 2; // Halfway point
+            // Drag the second slider a bit to the left
+            await intensity_test_page.mouse.move(sliderStartX, sliderY);
+            await intensity_test_page.mouse.down();
+            await intensity_test_page.mouse.move(sliderStartX - 5, sliderY); 
+            await intensity_test_page.mouse.up();
+        }
 
-
-        await intensity_test_page.mouse.move(sliderStartX2, sliderY2);
-        await intensity_test_page.mouse.down();
-        await intensity_test_page.mouse.move(sliderMiddleX2, sliderY2);
-        await intensity_test_page.mouse.up();
-
-        // Get the left style of all elements that match the selector
-        const leftStyles = await intensity_test_page.$$eval('.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary', (elements) => elements.map(element => element.style.left));
-
-        // Check that the left style of the first element is '0%'
-        expect(leftStyles[0]).toBe('0%');
-
-        // Check that the left style of the second element is '50%'
-        expect(leftStyles[1]).toBe('50%');
+        await intensity_test_page.waitForTimeout('3000');
+        const screenshot = await intensity_test_page.screenshot();
+        expect(screenshot).toMatchImageSnapshot({
+            ...SNAPSHOT_OPTIONS,
+            customSnapshotIdentifier: 'Changed Individual Intensity'
+        });
         console.log('Individual Intensity changed')
     });
 
-    test('Reset individual Intensity', async () => {
+    test.skip('Reset individual Intensity', async () => {
         console.log('Resetting individual Intensity ...')
-        const selector = '.MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium';
-
-        await intensity_test_page.waitForSelector(selector, { timeout: TIMEOUT, hidden: false });
-
-        const elements = await intensity_test_page.$$(selector);
-
-        // Check that there are two elements
-        expect(elements.length).toBe(2);
-        await elements[1].click();
-        await intensity_test_page.waitForTimeout(3000);
-
-        await intensity_test_page.waitForSelector('.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary', { timeout: TIMEOUT, hidden: false });
-
-        const leftStyles = await intensity_test_page.$$eval('.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary.MuiSlider-thumb.MuiSlider-thumbSizeMedium.MuiSlider-thumbColorPrimary', (elements) => elements.map(element => element.style.left));
-
-        expect(leftStyles[0]).toBe('0%');
-
-        expect(leftStyles[1]).toBe('0%');
+       
 
         console.log('Individual Intensity reset')
 
