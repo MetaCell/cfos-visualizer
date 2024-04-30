@@ -16,13 +16,13 @@ export async function fetchModelStructure() {
     }
 }
 
-export async function fetchExperimentMetadata(experimentID) {
+export async function fetchExperimentsMetadata() {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.EXPERIMENT}/${experimentID}`);
+        const response = await fetch(`${BASE_URL}/metadata.json`);
         if (!response.ok) throw new Error('Network response was not ok');
         return await response.json();
     } catch (error) {
-        console.error(`Failed to fetch experiment metadata: ${error.message}`);
+        console.error(`Failed to fetch experiments metadata: ${error.message}`);
         throw error;
     }
 }

@@ -2,7 +2,7 @@ import {
     fetchActivityMapStack,
     fetchAtlasStack,
     fetchAtlasWireframeStack,
-    fetchExperimentMetadata, fetchLUTFile,
+    fetchExperimentMetadata, fetchExperimentsMetadata, fetchLUTFile,
     fetchModelStructure
 } from "../services/fetchService";
 import {
@@ -26,6 +26,7 @@ export const middleware = store => next => async action => {
         case actions.FETCH_MODEL:
             let model = null
             let lut = {}
+            let metadata = {}
 
             try {
                 store.dispatch(startLoading('Fetching model...'))
@@ -46,7 +47,16 @@ export const middleware = store => next => async action => {
                 return
             }
 
-            store.dispatch(setModel({...model, Lut: lut}));
+            try {
+                store.dispatch(startLoading('Fetching experiments metadata...'))
+                metadata = await fetchExperimentsMetadata();
+            } catch (error) {
+                store.dispatch(setError(error.message));
+                store.dispatch(stopLoading());
+                return
+            }
+
+            store.dispatch(setModel({...model, Lut: lut, ExperimentsMetadata: metadata}));
 
             // Extract default experimentID and atlasID
             const experimentAtlasEntries = Object.entries(model.ExperimentsAtlas);
@@ -67,25 +77,24 @@ export const middleware = store => next => async action => {
             const {experimentID, atlasID} = action.payload;
             const currentExperiment = store.getState().currentExperiment;
             const currentAtlas = store.getState().viewer.atlas;
+            const {ExperimentsMetadata, Atlases} = store.getState().model;
+
 
             if (currentExperiment?.id !== experimentID) {
-                let data = null
-                try {
-                    store.dispatch(startLoading('Fetching experiment metadata...'))
-                    data = await fetchExperimentMetadata(experimentID);
-                } catch (error) {
-                    console.warn("No metadata found")
+                let experimentMetadata = ExperimentsMetadata[experimentID];
+                if (!experimentMetadata) {
+                    console.warn(`Metadata for experiment ${experimentID} not found.`);
+                    store.dispatch(setError(`Metadata for experiment id ${experimentID} not found`));
                 }
-                store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
+                store.dispatch(setCurrentExperiment(new Experiment(experimentID, experimentMetadata)));
             }
 
             if (currentAtlas?.id !== atlasID) {
                 let atlasStack = null;
                 let atlasWireframeStack = null;
-                let atlasMetadata = store.getState().model.Atlases[atlasID]
+                let atlasMetadata = Atlases[atlasID]
                 if (!atlasMetadata) {
                     store.dispatch(setError(`Atlas id ${atlasID} not found`));
-                    store.dispatch(stopLoading());
                 }
                 try {
                     store.dispatch(startLoading('Fetching atlas...'));

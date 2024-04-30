@@ -105,6 +105,10 @@ def init_webapp_routes(app):
     def experiment(id):
         return download_as_stream("Experiment", id)
 
+    @app.route('/cfos-visualizer-stanford-dev/metadata.json')
+    def metadata():
+        return download_as_json("metadata.json")
+
     @app.route('/cfos-visualizer-stanford-dev/index.json')
     def index():
         return download_as_json("index.json")
