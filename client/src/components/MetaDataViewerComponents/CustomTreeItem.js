@@ -82,24 +82,24 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
               top: '0',
             },
           }}
-          key={props.label}
+          key={props.itemId}
         >
           <FormControlLabel
             fontWeight="400"
             control={
               <Switch
-                checked={!!activeActivityMaps[props.label]}
+                checked={!!activeActivityMaps[props.itemId]}
                 onChange={(event) => {
                   if (event.target.checked) {
-                    dispatch(fetchAndAddActivityMapToViewer(props.label));
+                    dispatch(fetchAndAddActivityMapToViewer(props.itemId));
                   } else {
-                    dispatch(removeActivityMapFromViewer(props.label));
+                    dispatch(removeActivityMapFromViewer(props.itemId));
                   }
                 }}
               />
             }
             labelPlacement="start"
-            label={activityMapsMetadata[props.label]?.name}
+            label={activityMapsMetadata[props.itemId]?.name}
           />
         </Box> :
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -122,7 +122,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
             {props.label}
           </Typography>
           {
-            showRightSideContent && !props.label.startsWith('activityMaps') && (expanded || hovered) &&
+            showRightSideContent && !props.itemId.startsWith('activityMaps') && (expanded || hovered) &&
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '.65rem'}}>
               <Divider orientation="vertical" variant="middle" flexItem sx={{
                 height: '1.25rem',

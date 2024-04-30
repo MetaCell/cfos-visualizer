@@ -54,12 +54,11 @@ const Images = () => {
       };
       
       if (remainingLevels.length === 0) {
-        node.children = maps.map((activityMap, mapIndex) => ({
-          id: `${activityMap.name}-${mapIndex}`,
+        node.children = maps.map((activityMap) => console.log(activityMap) || ({
+          id: activityMap.key,
           label: activityMap.name
         }));
       } else {
-        console.log(node)
         node.children.push(buildTree(remainingLevels, maps, node.id));
       }
       return node;

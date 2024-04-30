@@ -48,7 +48,7 @@ const Experiments = () => {
     <Stack spacing='1.5rem'>
       <Typography color={gray300} variant='h4' fontWeight={400}>These are the experiments that share the same currently loaded atlas. You may activate the statistical maps from these experiments to the viewer.</Typography>
       <Typography color={gray25} variant='h4' fontWeight={400}>Other experiments associated with the loaded atlas</Typography>
-      <RichTreeView sx={{ mt: '.25rem !important' }} items={experimentsList} slots={{ item: (props) => <CustomTreeItem {...props} handleClickOpenDialogDetails={handleClickOpenDialogDetails} /> }} showRightSideContent={true} />
+      <RichTreeView sx={{ mt: '.25rem !important' }} items={experimentsList} slots={{ item: (props) => <CustomTreeItem {...props} handleClickOpenDialogDetails={handleClickOpenDialogDetails}  showRightSideContent={true}  /> }} />
       <ExperienceDetailsDialog open={openDialogDetails} handleClose={handleDialogDetailsClose} />
     </Stack>
   </>
