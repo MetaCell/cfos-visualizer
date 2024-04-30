@@ -1,23 +1,18 @@
 import React from "react";
 import {
-  Box, Divider, FormControlLabel, Stack, Switch, Typography
+   Divider, Stack, Typography
 } from "@mui/material";
-import {useSelector, useDispatch} from "react-redux";
-import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../../redux/actions";
+import { useSelector } from "react-redux";
 import variables from "../../theme/variables";
 import {RichTreeView} from "@mui/x-tree-view/RichTreeView";
-import {TreeItem} from "@mui/x-tree-view";
+import CustomTreeItem from "./CustomTreeItem";
 
-
-const {primaryActiveColor, headerBorderColor, gray300, gray50, gray200, gray25} = variables;
+const { gray300, gray25} = variables;
 
 const filterDictByKeys = (obj, keys) => Object.fromEntries(Object.entries(obj).filter(([key]) => keys.includes(key)));
 
 const Images = () => {
-  const dispatch = useDispatch();
-  
   const activeAtlas = useSelector(state => state.viewer.atlas);
-  const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
   const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const atlasActivityMaps = useSelector( state => state.model.AtlasActivityMap );
   const groupByHierarchy = (activityMaps, experimentId) => {
@@ -82,96 +77,8 @@ const Images = () => {
       <Typography color={gray300} variant='h4' fontWeight={400}>gubra_ano_combined_25um.nii.gz</Typography>
     </Stack>
     <Divider />
-      <RichTreeView items={getData()} slots={{ item: (props) => <TreeItem
-          {...props}
-          sx={{
-            marginTop: '.25rem',
-            '& .MuiTreeItem-content': {
-              '&:hover': {
-                backgroundColor: 'transparent !important',
-              },
-              '&.Mui-focused': {
-                backgroundColor: 'transparent !important',
-              },
-              '&.Mui-selected': {
-                backgroundColor: 'transparent !important',
-                '&:hover': {
-                  backgroundColor: 'transparent !important',
-                },
-              }
-            }
-          }}
-          label={props.children.length === 0 ? (
-            <Box
-              sx={{
-                position: 'relative',
-                paddingLeft: '0.25rem',
-                '& .MuiTypography-root': {
-                  color: gray200,
-                  fontSize: '0.875rem',
-                  marginLeft: '-1.75rem',
-                },
-                '&:hover': {
-                  '&:before': {
-                    background: primaryActiveColor,
-                  }
-                },
-                '&:before': {
-                  content: '""',
-                  height: '100%',
-                  width: '0.125rem',
-                  background: headerBorderColor,
-                  position: 'absolute',
-                  left: '-1.75rem',
-                  top: '0',
-                },
-              }}
-              key={props.itemId}
-            >
-              <FormControlLabel
-                fontWeight="400"
-                control={
-                  <Switch
-                    checked={!!activeActivityMaps[props.label]}
-                    onChange={(event) => {
-                      if (event.target.checked) {
-                        dispatch(fetchAndAddActivityMapToViewer(props.label));
-                      } else {
-                        dispatch(removeActivityMapFromViewer(props.label));
-                      }
-                    }}
-                  />
-                }
-                labelPlacement="start"
-                label={props.label}
-              />
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography variant='h4' color={gray50} fontWeight={400} sx={{
-                '&:before': {
-                  content: '""',
-                  height: '100%',
-                  width: '0.125rem',
-                  background: headerBorderColor,
-                  position: 'absolute',
-                  left: '-1.8rem',
-                  top: '0',
-                },
-                '&:hover': {
-                  '&:before': {
-                    background: primaryActiveColor,
-                  }
-                },
-              }}>
-                {props.label}
-              </Typography>
-            </Box>
-          )}
-        />
-      }} />
-    </Stack>
- 
+    <RichTreeView items={getData()} slots={{ item: (props) => <CustomTreeItem {...props} /> }} />
+  </Stack>
 }
 
 export default Images
