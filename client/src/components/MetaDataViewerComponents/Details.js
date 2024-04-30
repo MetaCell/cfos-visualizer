@@ -2,9 +2,11 @@ import {Stack} from "@mui/material";
 import React from "react";
 import Detail from "./Detail";
 import {Publications} from "./Publications";
-import details from "../../data/details.json";
+import {useSelector} from "react-redux";
 
 export const Details = () => {
+  const currentExperiment = useSelector(state => state.currentExperiment);
+
   const renderComponent = (key, value) => {
     if (typeof value === 'string') {
       return <Detail title={key} text={value} />;
@@ -16,7 +18,7 @@ export const Details = () => {
   };
   
   const renderDetails = () => {
-    return Object.entries(details).map(([key, value]) => (
+    return currentExperiment?.details && Object.entries(currentExperiment.details).map(([key, value]) => (
       <React.Fragment key={key}>
         {renderComponent(key, value)}
       </React.Fragment>
