@@ -1,7 +1,11 @@
 import React, {useState} from "react";
 import {TreeItem} from "@mui/x-tree-view";
 import {Box, Divider, FormControlLabel, IconButton, Switch, Typography} from "@mui/material";
-import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../../redux/actions";
+import {
+  fetchAndAddActivityMapToViewer,
+  fetchAndSetExperimentAndAtlas,
+  removeActivityMapFromViewer
+} from "../../redux/actions";
 import {InfoIcon} from "../../icons";
 import variables from "../../theme/variables";
 import {useDispatch, useSelector} from "react-redux";
@@ -18,7 +22,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const { showRightSideContent } = props
   const dispatch = useDispatch();
-  
+  const experimentAtlas = useSelector(state => state.model.ExperimentsAtlas);
   const handleMouseEnter = () => {
     setHovered(true);
   };
@@ -29,6 +33,12 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const handleExpand = () => {
     setExpanded(!expanded);
   };
+  
+  const handleClick = (e, p) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch(fetchAndSetExperimentAndAtlas(p.itemId, experimentAtlas[p.itemId][0]))
+  }
   return (
     <TreeItem
       {...props}
@@ -131,10 +141,12 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
               <IconButton onClick={props.handleClickOpenDialogDetails}>
                 <InfoIcon />
               </IconButton>
-              <ArrowForwardIcon sx={{
-                fontSize: '1.25rem',
-                color: gray100
-              }} />
+              <IconButton onClick={(e) => handleClick(e, props)}>
+                <ArrowForwardIcon sx={{
+                  fontSize: '1.25rem',
+                  color: gray100
+                }} />
+              </IconButton>
             </Box>
           }
         
