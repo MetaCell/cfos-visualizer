@@ -1,13 +1,15 @@
 import React from "react";
 import {
-   Box, Divider, FormControlLabel, FormGroup, Stack, Switch, Typography
+  Box, Divider, FormControlLabel, Stack, Switch, Typography
 } from "@mui/material";
 import {useSelector, useDispatch} from "react-redux";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../../redux/actions";
 import variables from "../../theme/variables";
+import {RichTreeView} from "@mui/x-tree-view/RichTreeView";
+import {TreeItem} from "@mui/x-tree-view";
 
 
-const {primaryActiveColor, headerBorderColor, headerBorderLeftColor, headingColor} = variables;
+const {primaryActiveColor, headerBorderColor, gray300, gray50, gray200, gray25} = variables;
 
 const filterDictByKeys = (obj, keys) => Object.fromEntries(Object.entries(obj).filter(([key]) => keys.includes(key)));
 
@@ -40,87 +42,136 @@ const Images = () => {
     
     return grouped;
   }
+  const getData = () => {
+    const atlas = activeAtlas;
+    const selectedAtlasActivityMaps = atlas?.id && atlasActivityMaps[atlas.id] ? atlasActivityMaps[atlas.id] : [];
+    const filteredActivityMaps = filterDictByKeys(activityMapsMetadata, selectedAtlasActivityMaps);
+    const groupByHierarchyActivityMaps = groupByHierarchy(filteredActivityMaps, atlas?.id);
+    const buildTree = (levels, maps, parentId) => {
+      if (levels.length === 0) return null;
+      
+      const [currentLevel, ...remainingLevels] = levels;
+      
+      const node = {
+        id: `${currentLevel}-${parentId}`,
+        label: currentLevel,
+        children: []
+      };
+      
+      if (remainingLevels.length === 0) {
+        node.children = maps.map((activityMap, mapIndex) => ({
+          id: `${activityMap.name}-${mapIndex}`,
+          label: activityMap.name
+        }));
+      } else {
+        console.log(node)
+        node.children.push(buildTree(remainingLevels, maps, node.id));
+      }
+      return node;
+    };
+    
+    return Object.entries(groupByHierarchyActivityMaps).map(([activityMapKey, maps], index) => {
+      const levels =  activityMapKey.split(',');
+      return buildTree(levels, maps, index);
+    });
+  }
   
-  return <>
-    <Stack spacing='1.5rem'>
-      gubra_ano_combined_25um.nii.gz
-      <Box px={2} pt={1.25}>
-        {[activeAtlas].map((atlas, atlasIndex) => {
-          const selectedAtlasActivityMaps = atlas?.id && atlasActivityMaps[atlas.id] ? atlasActivityMaps[atlas.id] : [];
-          const filteredActivityMaps = filterDictByKeys(activityMapsMetadata, selectedAtlasActivityMaps);
-          const groupByHierarchyActivityMaps = groupByHierarchy(filteredActivityMaps, atlas?.id);
-          return Object.keys(groupByHierarchyActivityMaps).map((activityMapKey, activityMapIndex) => (
-            <Box key={activityMapKey + activityMapIndex}>
-              {atlasIndex !== 0 && (
-                <Divider sx={{ mt: 1.5, mb: 1, background: headerBorderLeftColor }} />
-              )}
-              <Box sx={{
-                mt: 1, // Add some top margin for spacing
-                ml: 1, // Start with a base left margin
-                background: headerBorderColor,
-              }}>
-                {activityMapKey.split(',').map((level, index) => (
-                  <Typography
-                    key={index}
-                    sx={{
-                      fontSize: '0.75rem',
-                      fontWeight: 400,
-                      lineHeight: '150%',
-                      color: headingColor,
-                      mt: `${index * 0.5}rem`, // Increment top margin for each new line
-                      ml: `${index * 2}rem`, // Increment left margin to simulate tabbing effect
-                    }}>
-                    {level}
-                  </Typography>
-                ))}
-              </Box>
-              <FormGroup>
-                {groupByHierarchyActivityMaps[activityMapKey].map((activityMap, mapIndex) => (
-                  <Box
-                    key={activityMap.key + mapIndex}
-                    sx={{
-                      position: 'relative',
-                      paddingLeft: '0.25rem',
-                      ml: `${activityMapKey.split(',').length * 2}rem`, // Calculate left margin based on hierarchy depth
-                      '&:hover:before': {
-                        background: primaryActiveColor,
-                      },
-                      '&:before': {
-                        content: '""',
-                        height: '100%',
-                        width: '0.125rem',
-                        background: headerBorderColor,
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                      },
-                    }}
-                  >
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={!!activeActivityMaps[activityMap.key]}
-                          onChange={(event) => {
-                            if (event.target.checked) {
-                              dispatch(fetchAndAddActivityMapToViewer(activityMap.name));
-                            } else {
-                              dispatch(removeActivityMapFromViewer(activityMap.name));
-                            }
-                          }}
-                        />
-                      }
-                      labelPlacement="start"
-                      label={activityMap.name}
-                    />
-                  </Box>
-                ))}
-              </FormGroup>
-            </Box>
-          ));
-        })}
-      </Box>
+  return <Stack spacing='1.5rem'>
+    <Stack spacing='.25rem'>
+      <Typography color={gray25} variant='h4' fontWeight={400}>Atlas</Typography>
+      <Typography color={gray300} variant='h4' fontWeight={400}>gubra_ano_combined_25um.nii.gz</Typography>
     </Stack>
-  </>
+    <Divider />
+      <RichTreeView items={getData()} slots={{ item: (props) => <TreeItem
+          {...props}
+          sx={{
+            marginTop: '.25rem',
+            '& .MuiTreeItem-content': {
+              '&:hover': {
+                backgroundColor: 'transparent !important',
+              },
+              '&.Mui-focused': {
+                backgroundColor: 'transparent !important',
+              },
+              '&.Mui-selected': {
+                backgroundColor: 'transparent !important',
+                '&:hover': {
+                  backgroundColor: 'transparent !important',
+                },
+              }
+            }
+          }}
+          label={props.children.length === 0 ? (
+            <Box
+              sx={{
+                position: 'relative',
+                paddingLeft: '0.25rem',
+                '& .MuiTypography-root': {
+                  color: gray200,
+                  fontSize: '0.875rem',
+                  marginLeft: '-1.75rem',
+                },
+                '&:hover': {
+                  '&:before': {
+                    background: primaryActiveColor,
+                  }
+                },
+                '&:before': {
+                  content: '""',
+                  height: '100%',
+                  width: '0.125rem',
+                  background: headerBorderColor,
+                  position: 'absolute',
+                  left: '-1.75rem',
+                  top: '0',
+                },
+              }}
+              key={props.itemId}
+            >
+              <FormControlLabel
+                fontWeight="400"
+                control={
+                  <Switch
+                    checked={!!activeActivityMaps[props.label]}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        dispatch(fetchAndAddActivityMapToViewer(props.label));
+                      } else {
+                        dispatch(removeActivityMapFromViewer(props.label));
+                      }
+                    }}
+                  />
+                }
+                labelPlacement="start"
+                label={props.label}
+              />
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography variant='h4' color={gray50} fontWeight={400} sx={{
+                '&:before': {
+                  content: '""',
+                  height: '100%',
+                  width: '0.125rem',
+                  background: headerBorderColor,
+                  position: 'absolute',
+                  left: '-1.8rem',
+                  top: '0',
+                },
+                '&:hover': {
+                  '&:before': {
+                    background: primaryActiveColor,
+                  }
+                },
+              }}>
+                {props.label}
+              </Typography>
+            </Box>
+          )}
+        />
+      }} />
+    </Stack>
+ 
 }
 
 export default Images
