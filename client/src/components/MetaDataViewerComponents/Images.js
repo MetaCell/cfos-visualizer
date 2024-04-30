@@ -54,7 +54,7 @@ const Images = () => {
       };
       
       if (remainingLevels.length === 0) {
-        node.children = maps.map((activityMap) => console.log(activityMap) || ({
+        node.children = maps.map((activityMap) => ({
           id: activityMap.key,
           label: activityMap.name
         }));
