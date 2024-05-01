@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import {Box, Divider, IconButton, Tooltip, Typography} from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -14,32 +14,33 @@ import PickerWrapper from './PickerWrapper';
 import {
     changeActivityMapIntensityRange,
     downloadViewerObject,
-    removeActivityMapFromViewer,
+    removeActivityMapFromViewer, toggleIntensityRangeInclusion,
     toggleViewerObjectVisibility
 } from "../redux/actions";
 import {useDispatch} from "react-redux";
 import {normalizedRgbToHex} from "../helpers/gradientHelper";
-import {AtlasIcon, LockIcon, UnlockIcon} from "../icons";
+import {AtlasIcon, LockIcon, SliderIncludeIcon, UnlockIcon} from "../icons";
 
 const {
     headerBorderLeftColor,
     headerButtonColor,
     tooltipBgColor,
-    whiteColor
+    whiteColor,
+    gray600
 } = vars;
 
 
-const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index }) => {
+const TableRow = ({data, isAtlas, onDragStart, onDragEnter, onDragEnd, index}) => {
     const dispatch = useDispatch();
     const [isLocked, setIsLocked] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    const {id, name, intensityRange, stackIntensityRange, colorRange, isVisible, description} = data;
+    const {id, name, intensityRange, stackIntensityRange, isRangeInclusive, colorRange, isVisible, description} = data;
     const minColorHex = colorRange ? normalizedRgbToHex(colorRange[0]) : tooltipBgColor
     const maxColorHex = colorRange ? normalizedRgbToHex(colorRange[1]) : whiteColor
     const min = stackIntensityRange ? stackIntensityRange[0] : 0
     const max = stackIntensityRange ? stackIntensityRange[1] : 100
 
-    const disabledHex = "#000000";
+    const disabledHex = gray600;
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -54,7 +55,7 @@ const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index })
     }
 
     const toggleLock = () => {
-        setIsLocked(!isLocked); 
+        setIsLocked(!isLocked);
     };
 
     const open = Boolean(anchorEl);
@@ -81,17 +82,28 @@ const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index })
                     <Divider sx={{background: headerBorderLeftColor, width: '0.0625rem', height: '100%'}}/>
                     <Tooltip placement='right' title={"Lock"}>
                         <IconButton onClick={toggleLock}>
-                            { isLocked ? <UnlockIcon /> : <LockIcon /> }
+                            {isLocked ? <UnlockIcon/> : <LockIcon/>}
                         </IconButton>
                     </Tooltip>
                     <Tooltip placement='right' title={(isVisible || isLocked) ? "Hide" : "Show"} disabled={isLocked}>
                         <IconButton onClick={() => dispatch(toggleViewerObjectVisibility(id))}>
-                            {isVisible ? <VisibilityOutlinedIcon sx={{color: `${isLocked && disabledHex} !important`}} /> : <VisibilityOffOutlinedIcon/>}
+                            {isVisible ?
+                                <VisibilityOutlinedIcon sx={{color: `${isLocked && disabledHex} !important`}}/> :
+                                <VisibilityOffOutlinedIcon/>}
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip placement='right'
+                             title={isAtlas ? "Not available for atlas" :
+                                 isRangeInclusive ? "Allow min value to be included as part of the intensity range" :
+                                     "Exclude min value from the intensity range"}>
+                        <IconButton onClick={() => dispatch(toggleIntensityRangeInclusion(id))} disabled={isAtlas}>
+                            <SliderIncludeIcon color={(isRangeInclusive || isAtlas) && disabledHex}/>
                         </IconButton>
                     </Tooltip>
                     <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Configure color"}>
                         <IconButton onClick={handleClick} disabled={isAtlas || isLocked}>
-                            <ColorLensOutlinedIcon sx={{color: `${isLocked ? disabledHex : minColorHex} !important`}} disabled={isLocked} />
+                            <ColorLensOutlinedIcon sx={{color: `${(isAtlas || isLocked) ? disabledHex : minColorHex} !important`}}
+                                                   disabled={isLocked}/>
                         </IconButton>
                     </Tooltip>
                     <Tooltip placement='right' title="Download">
@@ -103,7 +115,7 @@ const TableRow = ({ data, isAtlas, onDragStart, onDragEnter, onDragEnd, index })
                 <Box>
                     {
 
-                        isAtlas ? <AtlasIcon /> :  <GrainIcon sx={{color: headerButtonColor, fontSize: '1rem'}}/>
+                        isAtlas ? <AtlasIcon/> : <GrainIcon sx={{color: headerButtonColor, fontSize: '1rem'}}/>
                     }
                     <Typography variant='body1'>
                         {name}
