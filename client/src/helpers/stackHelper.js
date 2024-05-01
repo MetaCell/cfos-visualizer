@@ -1,7 +1,12 @@
 import * as AMI from 'ami.js';
 import * as THREE from 'three';
 import {DIRECTIONS} from "../constants";
-import {COLOR_RANGES, STACK_HELPER_BORDER_COLOR, STACK_MESH_INDEX} from "../settings";
+import {
+    COLOR_RANGES,
+    DEFAULT_IS_INTENSITY_RANGE_INCLUSIVE,
+    STACK_HELPER_BORDER_COLOR,
+    STACK_MESH_INDEX
+} from "../settings";
 import {getLUTGradients} from "./gradientHelper";
 import { updateLUT } from './activityMapHelper';
 
@@ -30,9 +35,9 @@ export const updateStackHelperIndex = (stackHelper, newIndex) => {
     }
 };
 
-export const getLUTHelper = (colorRange, intensityRange, stackIntensityRange) => {
+export const getLUTHelper = (colorRange, intensityRange, isRangeInclusive, stackIntensityRange) => {
     const dummyElement = document.createElement('div');
-    const {colorGradient, opacityGradient} = getLUTGradients(colorRange, intensityRange, stackIntensityRange);
+    const {colorGradient, opacityGradient} = getLUTGradients(colorRange, intensityRange, isRangeInclusive, stackIntensityRange);
     return new HelpersLut(dummyElement, 'custom', 'custom', colorGradient, opacityGradient);
 }
 
@@ -76,5 +81,5 @@ export function postProcessAtlas(stack, atlas) {
     removeBackground(stack)
     makeSliceTransparent(stack)
     stack.bbox.visible = false
-    updateLUT(COLOR_RANGES.GRAY, atlas.stack.minMax, stack)
+    updateLUT(COLOR_RANGES.GRAY, atlas.stack.minMax, true, stack)
 }

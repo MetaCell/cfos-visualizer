@@ -10,17 +10,18 @@ export function postProcessActivityMap(stackHelper, activityMap, orientation) {
     stackHelper.slice.interpolation = 0 // no interpolation
 
     makeSliceTransparent(stackHelper);
-    updateLUT(activityMap.colorRange, activityMap.intensityRange, stackHelper);
+    updateLUT(activityMap.colorRange, activityMap.intensityRange, activityMap.isRangeInclusive, stackHelper);
 
     return stackHelper
 }
 
-export function updateLUT(colorRange, intensityRange, stackHelper) {
-    const helperLut = getLUTHelper(colorRange, intensityRange, [...stackHelper.stack.minMax]);
+export function updateLUT(colorRange, intensityRange, isRangeInclusive, stackHelper) {
+    const helperLut = getLUTHelper(colorRange, intensityRange, isRangeInclusive, [...stackHelper.stack.minMax]);
     stackHelper.slice.lut = helperLut.lut
     stackHelper.slice.lutTexture = helperLut.texture;
     stackHelper.colorRange = JSON.stringify(colorRange)
     stackHelper.intensityRange = JSON.stringify(intensityRange)
+    stackHelper.isRangeInclusive = isRangeInclusive
 }
 
 export function getActivityMapsDiff(activityMaps, activityMapsStackHelpersRef) {

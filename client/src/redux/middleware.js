@@ -14,7 +14,7 @@ import {
 import {actions} from "./constants";
 import {Experiment, ActivityMap, Atlas} from "../model/models";
 import {
-    DEFAULT_COLOR_RANGE,
+    DEFAULT_COLOR_RANGE, DEFAULT_IS_INTENSITY_RANGE_INCLUSIVE,
     DEFAULT_VISIBILITY, INTENSITY_VALUE_ERROR,
 } from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
@@ -143,12 +143,14 @@ export const middleware = store => next => async action => {
             }
 
             const activityMapObject = new ActivityMap(
-                activityMapID,
-                activityMapMetadata.color ? getCustomColorRange(activityMapMetadata.color) : DEFAULT_COLOR_RANGE,
-                [...stack.minMax],
-                DEFAULT_VISIBILITY,
-                stack,
-            );
+                    activityMapID,
+                    activityMapMetadata.color ? getCustomColorRange(activityMapMetadata.color) : DEFAULT_COLOR_RANGE,
+                    [...stack.minMax],
+                    DEFAULT_IS_INTENSITY_RANGE_INCLUSIVE,
+                    DEFAULT_VISIBILITY,
+                    stack,
+                )
+            ;
             store.dispatch(addActivityMapToViewer(activityMapObject));
             store.dispatch(stopLoading());
             break;

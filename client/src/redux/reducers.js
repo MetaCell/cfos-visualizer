@@ -67,6 +67,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                             activityMap.id,
                             activityMap.colorRange,
                             activityMap.intensityRange,
+                            activityMap.isRangeInclusive,
                             !activityMap.visibility,
                             activityMap.stack,
                         )
@@ -87,6 +88,27 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                 return state;
             }
 
+        case actions.TOGGLE_INTENSITY_RANGE_INCLUSION:
+            if (state.activityMaps[action.payload]) {
+                const activityMap = state.activityMaps[action.payload];
+                return {
+                    ...state,
+                    activityMaps: {
+                        ...state.activityMaps,
+                        [action.payload]: new ActivityMap(
+                            activityMap.id,
+                            activityMap.colorRange,
+                            activityMap.intensityRange,
+                            !activityMap.isRangeInclusive,
+                            activityMap.visibility,
+                            activityMap.stack,
+                        )
+                    }
+                };
+            } else {
+                return state;
+            }
+
         case actions.CHANGE_ACTIVITY_MAP_INTENSITY_RANGE:
             if (state.activityMaps[action.payload.id]) {
                 const activityMap = state.activityMaps[action.payload.id];
@@ -98,6 +120,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                             activityMap.id,
                             activityMap.colorRange,
                             action.payload.intensityRange,
+                            activityMap.isRangeInclusive,
                             activityMap.visibility,
                             activityMap.stack,
                         )
@@ -118,6 +141,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                     activityMap.id,
                     activityMap.colorRange,
                     adjustedIntensityRange,
+                    activityMap.isRangeInclusive,
                     activityMap.visibility,
                     activityMap.stack,
                 );
@@ -140,6 +164,7 @@ const viewerReducer = (state = INIT_STATE.viewer, action) => {
                         activityMap.id,
                         action.payload.colorRange,
                         activityMap.intensityRange,
+                        activityMap.isRangeInclusive,
                         activityMap.visibility,
                         activityMap.stack,
                     )

@@ -2,6 +2,7 @@ export const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 
 export const DEFAULT_VISIBILITY = true;
+export const DEFAULT_IS_INTENSITY_RANGE_INCLUSIVE = false;
 
 export const STACK_HELPER_BORDER_COLOR = 0x353535
 
