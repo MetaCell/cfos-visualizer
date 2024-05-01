@@ -15,6 +15,7 @@ const Images = () => {
   const activeAtlas = useSelector(state => state.viewer.atlas);
   const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const atlasActivityMaps = useSelector( state => state.model.AtlasActivityMap );
+
   const groupByHierarchy = (activityMaps, experimentId) => {
     const grouped = {};
     
@@ -54,7 +55,7 @@ const Images = () => {
       };
       
       if (remainingLevels.length === 0) {
-        node.children = maps.map((activityMap) => console.log(activityMap) || ({
+        node.children = maps.map((activityMap) => ({
           id: activityMap.key,
           label: activityMap.name
         }));
@@ -73,7 +74,7 @@ const Images = () => {
   return <Stack spacing='1.5rem'>
     <Stack spacing='.25rem'>
       <Typography color={gray25} variant='h4' fontWeight={400}>Atlas</Typography>
-      <Typography color={gray300} variant='h4' fontWeight={400}>gubra_ano_combined_25um.nii.gz</Typography>
+      <Typography color={gray300} variant='h4' fontWeight={400}>{activeAtlas.id}</Typography>
     </Stack>
     <Divider />
     <RichTreeView items={getData()} slots={{ item: (props) => <CustomTreeItem {...props} /> }} />
