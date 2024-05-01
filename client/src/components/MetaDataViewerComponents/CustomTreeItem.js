@@ -1,13 +1,13 @@
 import React, {useState} from "react";
 import {TreeItem} from "@mui/x-tree-view";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import {Box, Divider, FormControlLabel, IconButton, Switch, Typography} from "@mui/material";
 import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../../redux/actions";
 import {InfoIcon} from "../../icons";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import variables from "../../theme/variables";
 import {useDispatch, useSelector} from "react-redux";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const {   headerBorderColor, primaryActiveColor, gray50, gray200, gray100 } = variables
 
@@ -16,7 +16,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const[hovered, setHovered] = useState(false);
   const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
   const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
-  
+  const { showRightSideContent } = props
   const dispatch = useDispatch();
   
   const handleMouseEnter = () => {
@@ -33,13 +33,13 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
     <TreeItem
       {...props}
       ref={ref}
-      slots={{
-        collapseIcon:  () => props.itemId.startsWith('activityMaps') ? null : <KeyboardArrowUpIcon sx={{ color: gray100 }}/>,
-        expandIcon:  () => props.itemId.startsWith('activityMaps') ? null : <KeyboardArrowRightIcon sx={{ color: gray100 }} />,
-      }}
       onClick={handleExpand}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      slots={{
+        collapseIcon:  () => <KeyboardArrowUpIcon sx={{ color: gray100 }}/>,
+        expandIcon:  () => <KeyboardArrowRightIcon sx={{ color: gray100 }} />,
+      }}
       sx={{
         marginTop: '.25rem',
         '& .MuiTreeItem-content': {
@@ -64,7 +64,8 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
             
             '& .MuiTypography-root': {
               color: gray200,
-              fontSize: '0.875rem'
+              fontSize: '0.875rem',
+              marginLeft: '-1.75rem',
             },
             '&:hover': {
               '&:before': {
@@ -77,8 +78,8 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
               width: '0.125rem',
               background: headerBorderColor,
               position: 'absolute',
-              left: 0,
-              top: 0,
+              left: '-1.75rem',
+              top: '0',
             },
           }}
           key={props.itemId}
@@ -103,28 +104,25 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
         </Box> :
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
           <Typography variant='h4' color={gray50} fontWeight={400} sx={{
-            ...(props.itemId.startsWith('activityMaps') && {
-              paddingLeft: '1rem',
+            '&:before': {
+              content: '""',
+              height: '100%',
+              width: '0.125rem',
+              background: headerBorderColor,
+              position: 'absolute',
+              left: '-1.8rem',
+              top: '0',
+            },
+            '&:hover': {
               '&:before': {
-                content: '""',
-                height: '100%',
-                width: '0.125rem',
-                background: headerBorderColor,
-                position: 'absolute',
-                left: 0,
-                top: 0,
-              },
-              '&:hover': {
-                '&:before': {
-                  background: primaryActiveColor,
-                }
-              },
-            }),
+                background: primaryActiveColor,
+              }
+            },
           }}>
             {props.label}
           </Typography>
           {
-            !props.itemId.startsWith('activityMaps') && (expanded || hovered) &&
+            showRightSideContent && !props.itemId.startsWith('activityMaps') && (expanded || hovered) &&
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '.65rem'}}>
               <Divider orientation="vertical" variant="middle" flexItem sx={{
                 height: '1.25rem',
