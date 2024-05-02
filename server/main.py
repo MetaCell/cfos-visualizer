@@ -99,7 +99,7 @@ def init_webapp_routes(app):
 
     @app.route('/cfos-visualizer-stanford-dev/ActivityMap/<id>')
     def activity_map(id):
-        return mock_download_as_stream("ActivityMap", id)
+        return download_as_stream("ActivityMap", id)
 
     @app.route('/cfos-visualizer-stanford-dev/Experiment/<id>')
     def experiment(id):
