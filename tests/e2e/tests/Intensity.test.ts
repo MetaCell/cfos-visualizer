@@ -34,7 +34,7 @@ describe('Intensity Test', () => {
     beforeAll(async () => {
         inetensity_test_browser = await puppeteer.launch({
             args: ['--no-sandbox', '--disable-setuid-sandbox', "--ignore-certificate-errors"],
-            headless: false,
+            headless: true,
             devtools: false,
             defaultViewport: {
                 width: 1600,
@@ -225,9 +225,23 @@ describe('Intensity Test', () => {
         console.log('Individual Intensity changed')
     });
 
-    test.skip('Reset individual Intensity', async () => {
+    test('Reset individual Intensity', async () => {
         console.log('Resetting individual Intensity ...')
-       
+        const selector = '#viewer .MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium.MuiButton-root.MuiButton-text.MuiButton-textPrimary.MuiButton-sizeMedium.MuiButton-textSizeMedium';
+        await intensity_test_page.waitForSelector(selector, { timeout: TIMEOUT, hidden: false });
+
+        const elements = await intensity_test_page.$$(selector);
+
+        expect(elements.length).toBe(3);
+        await elements[1].click();
+
+        await intensity_test_page.waitForTimeout(3000);
+        const screenshot = await intensity_test_page.screenshot();
+        expect(screenshot).toMatchImageSnapshot({
+            ...SNAPSHOT_OPTIONS,
+            customSnapshotIdentifier: 'Reset Intensity'
+        });
+        await intensity_test_page.waitForTimeout(3000);
 
         console.log('Individual Intensity reset')
 
