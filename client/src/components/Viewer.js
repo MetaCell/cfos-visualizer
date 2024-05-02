@@ -271,8 +271,9 @@ export const Viewer = (props) => {
                 }
                 // change LUT
                 if (activityMapStackHelper.colorRange !== JSON.stringify(activityMap.colorRange) ||
+                    activityMapStackHelper.isRangeInclusive !== activityMap.isRangeInclusive  ||
                     activityMapStackHelper.intensityRange !== JSON.stringify(activityMap.intensityRange)) {
-                    updateLUT(activityMap.colorRange, activityMap.intensityRange, activityMapStackHelper)
+                    updateLUT(activityMap.colorRange, activityMap.intensityRange, activityMap.isRangeInclusive, activityMapStackHelper)
                 }
             }
         })

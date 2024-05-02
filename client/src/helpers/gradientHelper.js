@@ -1,6 +1,6 @@
 import {DEFAULT_COLOR_RANGE} from "../settings";
 
-export function getLUTGradients(colorRange, intensityRange, stackIntensityRange) {
+export function getLUTGradients(colorRange, intensityRange, isRangeInclusive, stackIntensityRange) {
 
     // Adjust intensityRange if it's outside stackIntensityRange
     if (intensityRange[0] < stackIntensityRange[0] || intensityRange[1] > stackIntensityRange[1]) {
@@ -9,7 +9,7 @@ export function getLUTGradients(colorRange, intensityRange, stackIntensityRange)
     }
 
     // Normalize the intensity range
-    const epsilon = 0.01; // A small value to ensure min is non-inclusive
+    const epsilon = isRangeInclusive ? 0 : 0.01; // A small value to ensure min is non-inclusive
     const normalizedMinIntensity = Math.min((intensityRange[0] - stackIntensityRange[0]) / (stackIntensityRange[1] - stackIntensityRange[0]) + epsilon, 1);
     const normalizedMaxIntensity = (intensityRange[1] - stackIntensityRange[0]) / (stackIntensityRange[1] - stackIntensityRange[0]);
 
