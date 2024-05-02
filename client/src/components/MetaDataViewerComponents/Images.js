@@ -73,7 +73,7 @@ const Images = () => {
   return <Stack spacing='1.5rem'>
     <Stack spacing='.25rem'>
       <Typography color={gray25} variant='h4' fontWeight={400}>Atlas</Typography>
-      <Typography color={gray300} variant='h4' fontWeight={400}>gubra_ano_combined_25um.nii.gz</Typography>
+      <Typography color={gray300} variant='h4' fontWeight={400}>{activeAtlas.id}</Typography>
     </Stack>
     <Divider />
     <RichTreeView items={getData()} slots={{ item: (props) => <CustomTreeItem {...props} /> }} />
