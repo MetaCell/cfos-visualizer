@@ -6,10 +6,12 @@ import CustomTabPanel from "./MetaDataViewerComponents/CustomTabPanel";
 import {Details} from "./MetaDataViewerComponents/Details";
 import Experiments from "./MetaDataViewerComponents/Experiments";
 import Images from "./MetaDataViewerComponents/Images";
+import {useSelector} from "react-redux";
 
 export const MetadataViewer = () => {
   let [tabValue, setTabValue] = React.useState(0);
   const [openAlert, setOpenAlert] = React.useState(true);
+  const currentExperiment = useSelector(state => state.currentExperiment);
   
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);
@@ -17,8 +19,6 @@ export const MetadataViewer = () => {
   const viewOtherExperiences = () => {
     setTabValue(2)
   }
-  
- 
   return (
     <Stack
       id='details'
@@ -36,7 +36,7 @@ export const MetadataViewer = () => {
       }
       <DetailsTabs value={tabValue} handleChange={handleChangeTab} />
       <CustomTabPanel value={tabValue} index={0}>
-        <Details />
+        <Details experiment={currentExperiment?.details} />
       </CustomTabPanel>
       <CustomTabPanel value={tabValue} index={1}>
         <Images />

@@ -8,9 +8,18 @@ import variables from "../../theme/variables";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import {Details} from "./Details";
+import {fetchAndSetExperimentAndAtlas} from "../../redux/actions";
+import {useDispatch, useSelector} from "react-redux";
 const {gray400, gray600, gray100, gray700} = variables
-const ExperienceDetailsDialog = ({open, handleClose}) =>{
-  
+const ExperienceDetailsDialog = ({open, handleClose, experiment, name}) =>{
+  const experimentAtlas = useSelector(state => state.model.ExperimentsAtlas);
+  const dispatch = useDispatch();
+  const handleClickExperiment = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch(fetchAndSetExperimentAndAtlas(name, experimentAtlas[name][0]))
+    handleClose()
+  }
   return (
     <React.Fragment>
       <Dialog
@@ -22,7 +31,8 @@ const ExperienceDetailsDialog = ({open, handleClose}) =>{
         PaperProps={{
           sx: {
             minWidth: '64rem',
-            maxWidth: '64rem'
+            maxWidth: '64rem',
+            minHeight: '30rem'
           }
         }}
       >
@@ -41,12 +51,14 @@ const ExperienceDetailsDialog = ({open, handleClose}) =>{
               marginRight: '.50rem'
             }} />
             <DialogTitle id="scroll-dialog-title" color='#FCFCFD' variant='h4' margin={0} padding={'0 !important'}>
-              Comparative Analysis of Mouse Brain c-Fos-IF Expression under LSD and DMT
+              {name}
             </DialogTitle>
-            <ArrowForwardIcon sx={{
-              fontSize: '1.25rem',
-              color: gray100
-            }} />
+            <IconButton onClick={handleClickExperiment}>
+              <ArrowForwardIcon sx={{
+                fontSize: '1.25rem',
+                color: gray100
+              }} />
+            </IconButton>
           </Box>
          
           <IconButton
@@ -82,7 +94,7 @@ const ExperienceDetailsDialog = ({open, handleClose}) =>{
             <Box sx={{
               padding: '0.75rem 1.5rem'
             }}>
-              <Details />
+              <Details experiment={experiment} />
             </Box>
         </DialogContent>
       </Dialog>

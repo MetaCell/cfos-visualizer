@@ -34,10 +34,10 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
     setExpanded(!expanded);
   };
   
-  const handleClick = (e, p) => {
+  const handleClickExperiment = (e, experiment) => {
     e.stopPropagation();
     e.preventDefault();
-    dispatch(fetchAndSetExperimentAndAtlas(p.itemId, experimentAtlas[p.itemId][0]))
+    dispatch(fetchAndSetExperimentAndAtlas(experiment.itemId, experimentAtlas[experiment.itemId][0]))
   }
   
   return (
@@ -139,10 +139,10 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
                 height: '1.25rem',
                 margin: 0
               }} />
-              <IconButton onClick={props.handleClickOpenDialogDetails}>
+              <IconButton onClick={(e) => props.handleClickOpenDialogDetails(e, props)}>
                 <InfoIcon />
               </IconButton>
-              <IconButton onClick={(e) => handleClick(e, props)}>
+              <IconButton onClick={(e) => handleClickExperiment(e, props)}>
                 <ArrowForwardIcon sx={{
                   fontSize: '1.25rem',
                   color: gray100
