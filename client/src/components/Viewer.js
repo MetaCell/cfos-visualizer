@@ -62,7 +62,6 @@ export const Viewer = (props) => {
     const resizeObserverRef = useRef(null);
 
 
-    // On Mount
     useEffect(() => {
         initViewer();
         animate();
