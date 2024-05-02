@@ -15,17 +15,21 @@ const Images = () => {
   const activeAtlas = useSelector(state => state.viewer.atlas);
   const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const atlasActivityMaps = useSelector( state => state.model.AtlasActivityMap );
+  const currentExperiment = useSelector(state => state.currentExperiment);
+  const ExperimentsActivityMap = useSelector(state => state.model.ExperimentsActivityMap);
+  
+  const experimentsIds = Object.keys(ExperimentsActivityMap)
   const groupByHierarchy = (activityMaps, experimentId) => {
     const grouped = {};
-    
-    Object.entries(activityMaps).forEach(([_, value]) => {
-      if ( value.experiment && experimentId && value.hierarchy.indexOf(experimentId) === -1 )
-        value.hierarchy.unshift(experimentId);
-    });
-    
+
     Object.entries(activityMaps).forEach(([key, value]) => {
-      // Convert the hierarchy array into a string to use as a key
-      const hierarchyKey = value?.hierarchy?.join(', ');
+      let hierarchy = value.hierarchy.filter((exp) => !experimentsIds.includes(exp))
+      
+      if ( value.experiment && experimentId ) {
+        hierarchy.unshift(experimentId);
+      }
+      
+      const hierarchyKey = hierarchy?.join(', ');
       
       if (!grouped[hierarchyKey]) {
         grouped[hierarchyKey] = [];
@@ -41,7 +45,7 @@ const Images = () => {
     const atlas = activeAtlas;
     const selectedAtlasActivityMaps = atlas?.id && atlasActivityMaps[atlas.id] ? atlasActivityMaps[atlas.id] : [];
     const filteredActivityMaps = filterDictByKeys(activityMapsMetadata, selectedAtlasActivityMaps);
-    const groupByHierarchyActivityMaps = groupByHierarchy(filteredActivityMaps, atlas?.id);
+    const groupByHierarchyActivityMaps = groupByHierarchy(filteredActivityMaps, currentExperiment?.id);
     const buildTree = (levels, maps, parentId) => {
       if (levels.length === 0) return null;
       
