@@ -91,9 +91,11 @@ const ControlPanel = () => {
                     description: activityMapMetadata.description || messages.NO_DESCRIPTION,
                     colorRange: activityMap.colorRange,
                     intensityRange: [...activityMap.intensityRange],
+                    isRangeInclusive: activityMap.isRangeInclusive,
                     stackIntensityRange: [...activityMap.stack.minMax],
                     isVisible: activityMap.visibility,
                     isAtlas: false
+
                 });
             }
 
