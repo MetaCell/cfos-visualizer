@@ -103,7 +103,7 @@ const CustomSlider = ({
             <Button
                 disableRipple
                 disabled={disabled}
-                onClick={() => setSliderValue([min, max])}
+                onClick={(e) => handleSliderChange(e,[min, max])}
                 sx={{
                     ...styles.button,
                     color: `${disabled ? resetButtonColor : resetButtonActiveColor} !important`,

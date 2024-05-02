@@ -185,9 +185,13 @@ if __name__ == "__main__":
 
     process_bucket_upload(bucket_name, output_directory)
 
-    #last call for index file
+    # Upload index.json file to the bucket root
     index_location = os.path.join(data_dir, "index.json")
     upload_file_to_bucket_root(bucket_name, index_location)
+
+    # Upload metadata.json file to the bucket root
+    metadata_location = os.path.join(data_dir, "metadata.json")
+    upload_file_to_bucket_root(bucket_name, metadata_location)
 
     driver.quit()
     print("Process completed. Now exiting...")

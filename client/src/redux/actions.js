@@ -30,6 +30,11 @@ export const toggleViewerObjectVisibility = (id) => ({
     payload: id
 });
 
+export const toggleIntensityRangeInclusion = (id) => ({
+    type: actions.TOGGLE_INTENSITY_RANGE_INCLUSION,
+    payload: id
+});
+
 export const changeActivityMapIntensityRange = (id, intensityRange) => ({
     type: actions.CHANGE_ACTIVITY_MAP_INTENSITY_RANGE,
     payload: { id, intensityRange }

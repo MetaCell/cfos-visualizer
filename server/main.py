@@ -99,11 +99,15 @@ def init_webapp_routes(app):
 
     @app.route('/cfos-visualizer-stanford-dev/ActivityMap/<id>')
     def activity_map(id):
-        return mock_download_as_stream("ActivityMap", id)
+        return download_as_stream("ActivityMap", id)
 
     @app.route('/cfos-visualizer-stanford-dev/Experiment/<id>')
     def experiment(id):
         return download_as_stream("Experiment", id)
+
+    @app.route('/cfos-visualizer-stanford-dev/metadata.json')
+    def metadata():
+        return download_as_json("metadata.json")
 
     @app.route('/cfos-visualizer-stanford-dev/index.json')
     def index():
