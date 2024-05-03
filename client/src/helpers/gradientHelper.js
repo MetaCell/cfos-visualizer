@@ -118,3 +118,8 @@ function getComplementaryColor(rgb) {
 export function rgbaObjectToNormalizedRgb(rgba) {
     return [rgba.r / 255, rgba.g / 255, rgba.b / 255];
 }
+
+export function hexToNormalizedRGBA(hex) {
+    const rgbArray = hexToRgb(hex)
+    return rgbaObjectToNormalizedRgb({r: rgbArray[0], g: rgbArray[1], b: rgbArray[2]})
+}
