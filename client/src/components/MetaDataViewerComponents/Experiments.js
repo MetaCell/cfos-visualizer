@@ -31,7 +31,7 @@ const Experiments = () => {
   
   const orderedExperiments = [currentExperiment?.id, ...Object.keys(experimentsActivityMaps)
     .filter(experiment => experiment !== currentExperiment?.id)].filter(row =>
-    experimentAtlas[row][0] === activeAtlas.id && currentExperiment.id !== row);
+    experimentAtlas[row].includes(activeAtlas.id) && currentExperiment.id !== row);
   
   const experimentsList = orderedExperiments.map((experimentName, index) => {
     const experimentActivityMaps = experimentsActivityMaps[experimentName] || [];

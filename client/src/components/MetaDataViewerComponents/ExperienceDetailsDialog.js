@@ -12,12 +12,13 @@ import {fetchAndSetExperimentAndAtlas} from "../../redux/actions";
 import {useDispatch, useSelector} from "react-redux";
 const {gray400, gray600, gray100, gray700} = variables
 const ExperienceDetailsDialog = ({open, handleClose, experiment, name}) =>{
-  const experimentAtlas = useSelector(state => state.model.ExperimentsAtlas);
+  const activeAtlas = useSelector(state => state.viewer.atlas);
+  
   const dispatch = useDispatch();
   const handleClickExperiment = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    dispatch(fetchAndSetExperimentAndAtlas(name, experimentAtlas[name][0]))
+    dispatch(fetchAndSetExperimentAndAtlas(name, activeAtlas.id))
     handleClose()
   }
   return (

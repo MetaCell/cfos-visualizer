@@ -22,7 +22,8 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const { showRightSideContent } = props
   const dispatch = useDispatch();
-  const experimentAtlas = useSelector(state => state.model.ExperimentsAtlas);
+  const activeAtlas = useSelector(state => state.viewer.atlas);
+  
   const handleMouseEnter = () => {
     setHovered(true);
   };
@@ -37,7 +38,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const handleClickExperiment = (e, experiment) => {
     e.stopPropagation();
     e.preventDefault();
-    dispatch(fetchAndSetExperimentAndAtlas(experiment.itemId, experimentAtlas[experiment.itemId][0]))
+    dispatch(fetchAndSetExperimentAndAtlas(experiment.itemId, activeAtlas.id))
   }
   
   return (
