@@ -101,6 +101,6 @@ export function rgbaObjectToNormalizedRgb(rgba) {
 }
 
 export function hexToNormalizedRGBA(hex) {
-    const rgbArray = hexToRgb(hex)
-    return rgbaObjectToNormalizedRgb({r: rgbArray[0], g: rgbArray[1], b: rgbArray[2]})
+    const [r, g, b] = hexToRgb(hex)
+    return rgbaObjectToNormalizedRgb({r, g, b})
 }
