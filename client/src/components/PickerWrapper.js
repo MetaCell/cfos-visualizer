@@ -5,7 +5,7 @@ import vars from '../theme/variables';
 import {useDispatch} from "react-redux";
 import {changeActivityMapColor} from "../redux/actions";
 import {COLOR_RANGES} from "../settings";
-import {getCustomColorRange, hexToNormalizedRGBA, rgbaObjectToNormalizedRgb} from "../helpers/gradientHelper";
+import {hexToNormalizedRGBA, rgbaObjectToNormalizedRgb} from "../helpers/gradientHelper";
 import CustomTabs from "./CustomTabs";
 import ColorPicker from "./ColorPicker";
 import Tooltip from '@mui/material/Tooltip';

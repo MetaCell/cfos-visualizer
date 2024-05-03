@@ -18,7 +18,6 @@ import {
     DEFAULT_VISIBILITY, INTENSITY_VALUE_ERROR,
 } from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
-import {getCustomColorRange} from "../helpers/gradientHelper";
 
 export const middleware = store => next => async action => {
 
@@ -153,7 +152,7 @@ export const middleware = store => next => async action => {
 
             const activityMapObject = new ActivityMap(
                     activityMapID,
-                    activityMapMetadata.color ? getCustomColorRange(activityMapMetadata.color) : DEFAULT_COLOR_RANGE,
+                    DEFAULT_COLOR_RANGE,
                     [...stack.minMax],
                     DEFAULT_IS_INTENSITY_RANGE_INCLUSIVE,
                     DEFAULT_VISIBILITY,
