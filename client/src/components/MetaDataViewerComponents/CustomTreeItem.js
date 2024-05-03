@@ -1,7 +1,11 @@
 import React, {useState} from "react";
 import {TreeItem} from "@mui/x-tree-view";
 import {Box, Divider, FormControlLabel, IconButton, Switch, Typography} from "@mui/material";
-import {fetchAndAddActivityMapToViewer, removeActivityMapFromViewer} from "../../redux/actions";
+import {
+  fetchAndAddActivityMapToViewer,
+  fetchAndSetExperimentAndAtlas,
+  removeActivityMapFromViewer
+} from "../../redux/actions";
 import {InfoIcon} from "../../icons";
 import variables from "../../theme/variables";
 import {useDispatch, useSelector} from "react-redux";
@@ -18,6 +22,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const { showRightSideContent } = props
   const dispatch = useDispatch();
+  const activeAtlas = useSelector(state => state.viewer.atlas);
   
   const handleMouseEnter = () => {
     setHovered(true);
@@ -29,6 +34,13 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const handleExpand = () => {
     setExpanded(!expanded);
   };
+  
+  const handleClickExperiment = (e, experiment) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch(fetchAndSetExperimentAndAtlas(experiment.itemId, activeAtlas.id))
+  }
+  
   return (
     <TreeItem
       {...props}
@@ -128,13 +140,15 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
                 height: '1.25rem',
                 margin: 0
               }} />
-              <IconButton onClick={props.handleClickOpenDialogDetails}>
+              <IconButton onClick={(e) => props.handleClickOpenDialogDetails(e, props)}>
                 <InfoIcon />
               </IconButton>
-              <ArrowForwardIcon sx={{
-                fontSize: '1.25rem',
-                color: gray100
-              }} />
+              <IconButton onClick={(e) => handleClickExperiment(e, props)}>
+                <ArrowForwardIcon sx={{
+                  fontSize: '1.25rem',
+                  color: gray100
+                }} />
+              </IconButton>
             </Box>
           }
         
