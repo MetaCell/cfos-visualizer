@@ -102,8 +102,9 @@ const TableRow = ({data, isAtlas, onDragStart, onDragEnter, onDragEnd, index}) =
                     </Tooltip>
                     <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Configure color"}>
                         <IconButton onClick={handleClick} disabled={isAtlas || isLocked}>
-                            <ColorLensOutlinedIcon sx={{color: `${(isAtlas || isLocked) ? disabledHex : minColorHex} !important`}}
-                                                   disabled={isLocked}/>
+                            <ColorLensOutlinedIcon
+                                sx={{color: `${(isAtlas || isLocked) ? disabledHex : minColorHex} !important`}}
+                                disabled={isLocked}/>
                         </IconButton>
                     </Tooltip>
                     <Tooltip placement='right' title="Download">
@@ -139,7 +140,9 @@ const TableRow = ({data, isAtlas, onDragStart, onDragEnter, onDragEnd, index}) =
             </Box>
 
 
-            <PickerWrapper onClose={handleClose} id={id} open={open} anchorEl={anchorEl} selectedColor={minColorHex}/>
+            <PickerWrapper onClose={handleClose} id={id} open={open} anchorEl={anchorEl}
+                           minColor={minColorHex}
+                           maxColor={maxColorHex}/>
         </>
     );
 };
