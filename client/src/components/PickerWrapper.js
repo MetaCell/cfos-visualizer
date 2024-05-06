@@ -5,7 +5,7 @@ import vars from '../theme/variables';
 import {useDispatch} from "react-redux";
 import {changeActivityMapColor} from "../redux/actions";
 import {COLOR_RANGES} from "../settings";
-import {getCustomColorRange, rgbaObjectToNormalizedRgb} from "../helpers/gradientHelper";
+import {hexToNormalizedRGBA, rgbaObjectToNormalizedRgb} from "../helpers/gradientHelper";
 import CustomTabs from "./CustomTabs";
 import ColorPicker from "./ColorPicker";
 import Tooltip from '@mui/material/Tooltip';
@@ -55,7 +55,7 @@ const templateArr = [
     }
 ]
 
-const PickerWrapper = ({open, id, anchorEl, selectedColor, onClose}) => {
+const PickerWrapper = ({open, id, anchorEl, minColor, maxColor, onClose}) => {
     const dispatch = useDispatch();
     const [tab, setTab] = React.useState(0);
     const [pickerTab, setPickerTab] = React.useState(0);
@@ -68,10 +68,17 @@ const PickerWrapper = ({open, id, anchorEl, selectedColor, onClose}) => {
         setPickerTab(newValue);
     };
 
-    const handleColorChange = (color) => {
+    const handleMinColorChange = (color) => {
         dispatch(changeActivityMapColor(id, [
             rgbaObjectToNormalizedRgb(color.rgb),
-            getCustomColorRange(color.rgb)
+            hexToNormalizedRGBA(maxColor),
+        ]));
+    };
+
+    const handleMaxColorChange = (color) => {
+        dispatch(changeActivityMapColor(id, [
+            hexToNormalizedRGBA(minColor),
+            rgbaObjectToNormalizedRgb(color.rgb)
         ]));
     };
 
@@ -108,7 +115,7 @@ const PickerWrapper = ({open, id, anchorEl, selectedColor, onClose}) => {
                 }
             }}
         >
-            <CustomTabs value={tab} onChange={handleTabChange} labels={['Template', 'Custom']} />
+            <CustomTabs value={tab} onChange={handleTabChange} labels={['Template', 'Custom']}/>
             <CustomTabPanel value={tab} index={0}>
                 <Box display='flex' flexDirection='column' gap={1.5}>
                     {templateArr?.map((template, index) => (
@@ -136,26 +143,27 @@ const PickerWrapper = ({open, id, anchorEl, selectedColor, onClose}) => {
                 </Box>
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={1}>
-                <Stack direction='row' alignItems='center' justifyContent='space-between' width={1} >
-                    <CustomTabs value={pickerTab} onChange={handlePickerTabChange} labels={['Min.', 'Max.']} sx={{ padding: '0 0.5rem 0.5rem 0.25rem', borderBottom: 0 }} />
+                <Stack direction='row' alignItems='center' justifyContent='space-between' width={1}>
+                    <CustomTabs value={pickerTab} onChange={handlePickerTabChange} labels={['Min.', 'Max.']}
+                                sx={{padding: '0 0.5rem 0.5rem 0.25rem', borderBottom: 0}}/>
                     <Tooltip title="Select the colour for min. and max. intensity">
                         <IconButton>
                             <HelpOutlineOutlinedIcon sx={{
                                 '&.MuiSvgIcon-root': {
-                                    color:'#5A5A5E',
+                                    color: '#5A5A5E',
                                     fontSize: '1rem'
                                 }
-                            }} />
+                            }}/>
                         </IconButton>
                     </Tooltip>
                 </Stack>
 
-                <CustomTabPanel value={pickerTab} index={0} sx={{ '&.MuiBox-root': { padding: 0 } }}>
-                    <ColorPicker selectedColor={selectedColor} onChange={handleColorChange} />
+                <CustomTabPanel value={pickerTab} index={0} sx={{'&.MuiBox-root': {padding: 0}}}>
+                    <ColorPicker selectedColor={minColor} onChange={handleMinColorChange}/>
                 </CustomTabPanel>
 
-                <CustomTabPanel value={pickerTab} index={1} sx={{ '&.MuiBox-root': { padding: 0 } }}>
-                    <ColorPicker selectedColor={selectedColor} onChange={handleColorChange} />
+                <CustomTabPanel value={pickerTab} index={1} sx={{'&.MuiBox-root': {padding: 0}}}>
+                    <ColorPicker selectedColor={maxColor} onChange={handleMaxColorChange}/>
                 </CustomTabPanel>
             </CustomTabPanel>
         </Popover>

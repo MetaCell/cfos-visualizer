@@ -69,20 +69,6 @@ export function normalizedRgbToHex(rgbArray) {
     return `#${hex}`;
 }
 
-export function getCustomColorRange(inputColor) {
-    let rgb = [];
-
-    if (typeof inputColor === 'string' && isValidHex(inputColor)) {
-        rgb = hexToRgb(inputColor);
-    } else if (isValidRgba(inputColor)) {
-        rgb = [inputColor.r, inputColor.g, inputColor.b]; // Ignoring alpha for complementary calculation
-    } else {
-        return DEFAULT_COLOR_RANGE; // Default normalized color range for invalid input
-    }
-
-    return getComplementaryColor(rgb);
-}
-
 function isValidHex(hex) {
     return /^#([0-9A-F]{3}){1,2}$/i.test(hex) || /^#([0-9A-F]{4}){2}$/i.test(hex);
 }
@@ -110,11 +96,11 @@ function hexToRgb(hex) {
     return [r, g, b];
 }
 
-function getComplementaryColor(rgb) {
-    // Calculate complementary color, then normalize the RGB values
-    return rgb.map(c => (255 - c) / 255);
-}
-
 export function rgbaObjectToNormalizedRgb(rgba) {
     return [rgba.r / 255, rgba.g / 255, rgba.b / 255];
+}
+
+export function hexToNormalizedRGBA(hex) {
+    const [r, g, b] = hexToRgb(hex)
+    return rgbaObjectToNormalizedRgb({r, g, b})
 }
