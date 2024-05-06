@@ -1,12 +1,12 @@
-import {Stack} from "@mui/material";
+import {Box, Stack, Typography} from "@mui/material";
 import React from "react";
 import Detail from "./Detail";
 import {Publications} from "./Publications";
-import {useSelector} from "react-redux";
+import variables from "../../theme/variables";
 
-export const Details = () => {
-  const currentExperiment = useSelector(state => state.currentExperiment);
+const { gray100 } = variables
 
+export const Details = ({experiment}) => {
   const renderComponent = (key, value) => {
     if (typeof value === 'string') {
       return <Detail title={key} text={value} />;
@@ -16,15 +16,22 @@ export const Details = () => {
       return null;
     }
   };
-  
   const renderDetails = () => {
-    return currentExperiment?.details && Object.entries(currentExperiment.details).map(([key, value]) => (
+    return experiment && Object.entries(experiment).map(([key, value]) => (
       <React.Fragment key={key}>
+        <Stack spacing='1.5rem'>
         {renderComponent(key, value)}
+        </Stack>
       </React.Fragment>
     ));
   };
-  return <Stack spacing='1.5rem'>
-    {renderDetails()}
-  </Stack>
+  return <>
+    {
+      experiment ? renderDetails() : <Box textAlign='center' mt='15%'>
+        <Typography variant='h4' fontWeight={600} color={gray100}> No metadata for this experiment</Typography>
+      </Box>
+    }
+  </>
+  
+  
 }
