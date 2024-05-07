@@ -63,13 +63,13 @@ const TableRow = ({data, isAtlas, onDragStart, onDragEnter, onDragEnd, index}) =
     return (
         <>
             <Box sx={tableStyles.root}
-                 draggable
+                 draggable={!isLocked}
                  onDragStart={e => onDragStart(id, index, e)}
                  onDragEnter={e => onDragEnter(id, index, e)}
                  onDragEnd={onDragEnd}>
                 <Box sx={{gap: '0.25rem !important'}}>
                     <Tooltip placement='right' title={"Move up/down"}>
-                        <IconButton>
+                        <IconButton disabled={isLocked}>
                             <DragIndicatorIcon/>
                         </IconButton>
                     </Tooltip>
