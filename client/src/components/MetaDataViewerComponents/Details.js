@@ -19,15 +19,13 @@ export const Details = ({experiment}) => {
   const renderDetails = () => {
     return experiment && Object.entries(experiment).map(([key, value]) => (
       <React.Fragment key={key}>
-        <Stack spacing='1.5rem'>
         {renderComponent(key, value)}
-        </Stack>
       </React.Fragment>
     ));
   };
   return <>
     {
-      experiment ? renderDetails() : <Box textAlign='center' mt='15%'>
+      experiment ?  <Stack spacing='1.5rem'>{renderDetails()}</Stack> : <Box textAlign='center' mt='15%'>
         <Typography variant='h4' fontWeight={600} color={gray100}> No metadata for this experiment</Typography>
       </Box>
     }
