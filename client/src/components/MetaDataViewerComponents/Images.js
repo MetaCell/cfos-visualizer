@@ -23,10 +23,10 @@ const Images = () => {
     const grouped = {};
 
     Object.entries(activityMaps).forEach(([key, value]) => {
-      let hierarchy = value.hierarchy.filter((exp) => !experimentsIds.includes(exp))
+      let hierarchy = value?.hierarchy?.filter((exp) => !experimentsIds.includes(exp))
       
       if ( value.experiment && experimentId ) {
-        hierarchy.unshift(experimentId);
+        hierarchy?.unshift(experimentId);
       }
       
       const hierarchyKey = hierarchy?.join(', ');
