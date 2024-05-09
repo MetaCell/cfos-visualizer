@@ -13,7 +13,7 @@ spec:
         app: cfos
     spec:
       containers:
-        - name: sckanner
+        - name: cfos_viz
           image: "gcr.io/metacellllc/cfos_viz:{{CF_SHORT_REVISION}}"
           imagePullPolicy: "IfNotPresent"
           ports:
