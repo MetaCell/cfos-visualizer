@@ -64,8 +64,8 @@ const CustomSlider = ({
                 />
             )}
             <CustomTextField
-                defaultValue={sliderValue[0]} // Use state for value
-                onChange={(e) => setSliderValue([Number(e.target.value), sliderValue[1]])} // Update state when field changes
+                value={sliderValue[0]}
+                onChange={(e) => handleSliderChange(e, [Number(e.target.value), sliderValue[1]])}
                 disabled={disabled}
                 typeOfValue={typeOfValue}
                 showPercentageAbsolute={showPercentageAbsolute}
@@ -94,8 +94,8 @@ const CustomSlider = ({
                 disabled={disabled}
             />
             <CustomTextField
-                defaultValue={sliderValue[1]} // Use state for value
-                onChange={(e) => setSliderValue([sliderValue[0], Number(e.target.value)])} // Update state when field changes
+                value={sliderValue[1]}
+                onChange={(e) => handleSliderChange(e, [sliderValue[0], Number(e.target.value)])}
                 disabled={disabled}
                 typeOfValue={typeOfValue}
                 showPercentageAbsolute={showPercentageAbsolute}

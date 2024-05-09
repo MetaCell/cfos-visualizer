@@ -95,7 +95,7 @@ def init_webapp_routes(app):
 
     @app.route('/cfos-visualizer-stanford-dev/Atlas/<id>')
     def download_atlas(id):
-        return mock_download_as_stream("Atlas", id)
+        return download_as_stream("Atlas", id)
 
     @app.route('/cfos-visualizer-stanford-dev/ActivityMap/<id>')
     def activity_map(id):

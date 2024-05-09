@@ -2,14 +2,16 @@ import React from 'react';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import variables from "../theme/variables";
+
 const {gray200, gray700, gray400, gray600} = variables
 
-const CustomTextField = ({ defaultValue, disabled, typeOfValue, showPercentageAbsolute }) => {
+const CustomTextField = ({value, onChange, disabled, typeOfValue, showPercentageAbsolute}) => {
     return (
         <TextField
-            value={defaultValue}
+            value={value}
+            onChange={onChange}
             InputProps={{
-                endAdornment:  typeOfValue === 'percentage' && showPercentageAbsolute && (
+                endAdornment: typeOfValue === 'percentage' && showPercentageAbsolute && (
                     <InputAdornment position="start">%</InputAdornment>
                 ),
             }}

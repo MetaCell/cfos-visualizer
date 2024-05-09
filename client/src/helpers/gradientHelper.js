@@ -1,4 +1,3 @@
-import {DEFAULT_COLOR_RANGE} from "../settings";
 
 export function getLUTGradients(colorRange, intensityRange, isRangeInclusive, stackIntensityRange) {
 
