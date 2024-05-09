@@ -79,6 +79,7 @@ describe('Control Panel Test', () => {
         await cp_test_page.waitForSelector('#geppetto-menu-btn', { timeout: TIMEOUT, hidden: false });
         const textContent = await cp_test_page.$eval('#geppetto-menu-btn', el => el.textContent);
         expect(textContent).toBe('Atlas images');
+        await cp_test_page.waitForSelector('#simple-tabpanel-0  .MuiStack-root', { timeout: TIMEOUT, hidden: false});
 
         // const element = await cp_test_page.$('canvas');
         const screenshot = await cp_test_page.screenshot();
@@ -96,6 +97,8 @@ describe('Control Panel Test', () => {
         await cp_test_page.waitForSelector('button[aria-label="Hide"]', { timeout: TIMEOUT, hidden: false });
         await cp_test_page.click('button[aria-label="Hide"]');
         // const element = await cp_test_page.$('canvas');
+        await cp_test_page.waitForSelector('#simple-tabpanel-0  .MuiStack-root', { timeout: TIMEOUT, hidden: false});
+
         const screenshot = await cp_test_page.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
@@ -113,6 +116,8 @@ describe('Control Panel Test', () => {
         await cp_test_page.waitForSelector('button[aria-label="Show"]', { timeout: TIMEOUT, hidden: false });
         await cp_test_page.click('button[aria-label="Show"]');
         // const element = await cp_test_page.$('canvas');
+        await cp_test_page.waitForSelector('#simple-tabpanel-0  .MuiStack-root', { timeout: TIMEOUT, hidden: false});
+
         const screenshot = await cp_test_page.screenshot();
 
         expect(screenshot).toMatchImageSnapshot({
