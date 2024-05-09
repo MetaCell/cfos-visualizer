@@ -81,5 +81,5 @@ export function postProcessAtlas(stack, atlas) {
     removeBackground(stack)
     makeSliceTransparent(stack)
     stack.bbox.visible = false
-    updateLUT(COLOR_RANGES.GRAY, atlas.stack.minMax, true, stack)
+    updateLUT(COLOR_RANGES.GRAY, atlas.stack.minMax, false, stack)
 }
