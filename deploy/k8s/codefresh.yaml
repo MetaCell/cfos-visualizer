@@ -18,8 +18,10 @@ steps:
     tag: "${{CF_SHORT_REVISION}}"
     dockerfile: Dockerfile
     working_directory: ./cfos-visualizer
-    buildkit: true    
+    buildkit: true
     registry: "${{CODEFRESH_REGISTRY}}"
+    arguments:
+      BUILD_MODE: "${{BUILD_MODE}}"
   deploy:
     stage: "deploy"
     title: "Deploying CFOS VIZ"
