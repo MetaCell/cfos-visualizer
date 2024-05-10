@@ -63,18 +63,18 @@ const TableRow = ({data, isAtlas, onDragStart, onDragEnter, onDragEnd, index}) =
     return (
         <>
             <Box sx={tableStyles.root}
-                 draggable
+                 draggable={!isLocked}
                  onDragStart={e => onDragStart(id, index, e)}
                  onDragEnter={e => onDragEnter(id, index, e)}
                  onDragEnd={onDragEnd}>
                 <Box sx={{gap: '0.25rem !important'}}>
                     <Tooltip placement='right' title={"Move up/down"}>
-                        <IconButton>
+                        <IconButton disabled={isLocked}>
                             <DragIndicatorIcon/>
                         </IconButton>
                     </Tooltip>
                     <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Unload image"}>
-                        <IconButton disabled={isAtlas} onClick={() => dispatch(removeActivityMapFromViewer(id))}>
+                        <IconButton disabled={isAtlas || isLocked} onClick={() => dispatch(removeActivityMapFromViewer(id))}>
                             <RemoveCircleOutlineIcon/>
                         </IconButton>
                     </Tooltip>
@@ -96,8 +96,8 @@ const TableRow = ({data, isAtlas, onDragStart, onDragEnter, onDragEnd, index}) =
                              title={isAtlas ? "Not available for atlas" :
                                  isRangeInclusive ? "Allow min value to be included as part of the intensity range" :
                                      "Exclude min value from the intensity range"}>
-                        <IconButton onClick={() => dispatch(toggleIntensityRangeInclusion(id))} disabled={isAtlas}>
-                            <SliderIncludeIcon color={(isRangeInclusive || isAtlas) && disabledHex}/>
+                        <IconButton onClick={() => dispatch(toggleIntensityRangeInclusion(id))} disabled={isAtlas || isLocked}>
+                            <SliderIncludeIcon color={(isRangeInclusive || isAtlas || isLocked) && disabledHex}/>
                         </IconButton>
                     </Tooltip>
                     <Tooltip placement='right' title={isAtlas ? "Not available for atlas" : "Configure color"}>

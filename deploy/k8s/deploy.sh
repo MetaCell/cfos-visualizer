@@ -8,7 +8,7 @@ kubectl config set-context $CLUSTER_NAME --namespace=$NAMESPACE
 cp cfos_tpl.yaml cfos.yaml
 cp ingress_tpl.yaml ingress.yaml
 
-# sckanner service and deployment
+# cfos service and deployment
 sed -ie 's/{{TAG}}/'$CF_BUILD_ID'/i' cfos.yaml
 sed -ie 's|{{REGISTRY}}|'$REGISTRY'|i' cfos.yaml
 kubectl apply -f cfos.yaml

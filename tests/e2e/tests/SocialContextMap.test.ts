@@ -121,6 +121,8 @@ describe('Social Context Map Test', () => {
             '#geppetto-menu-btn',
             'Psilocybin (HC; EE) maps'
           );
+          await scm_test_page.waitForSelector('#simple-tabpanel-0  .MuiStack-root', { timeout: TIMEOUT, hidden: false});
+
 
           console.log('Social Context Map Changed')
     });
