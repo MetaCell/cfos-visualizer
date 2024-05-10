@@ -20,8 +20,8 @@ steps:
     working_directory: ./cfos-visualizer
     buildkit: true
     registry: "${{CODEFRESH_REGISTRY}}"
-    arguments:
-      BUILD_MODE: "${{BUILD_MODE}}"
+    build_arguments:
+      - BUILD_MODE=${{BUILD_MODE}}
   deploy:
     stage: "deploy"
     title: "Deploying CFOS VIZ"
