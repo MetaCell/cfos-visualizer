@@ -17,6 +17,7 @@ export const Details = ({experiment}) => {
     }
   };
   const renderDetails = () => {
+
     return experiment && Object.entries(experiment).map(([key, value]) => (
       <React.Fragment key={key}>
         {renderComponent(key, value)}
