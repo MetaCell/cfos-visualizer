@@ -18,16 +18,16 @@ export const tableStyles = {
         p: '0.75rem 0 0.5rem',
 
         '& > .MuiBox-root': {
-            width: 'calc(65% - 5.625rem)',
+            width: 'calc(55% - 5.625rem)',
             px: '0.75rem',
             '& + .MuiBox-root': {
                 borderLeft: `0.0625rem solid ${headerBorderLeftColor}`
             },
             '&:first-of-type': {
-                width: '13.25rem'
+                width: '16rem'
             },
             '&:last-of-type': {
-                width: 'calc(35% - 5.625rem)'
+                width: 'calc(45% - 5.625rem)'
             },
         },
         '& .MuiTypography-root': {
@@ -104,15 +104,15 @@ export const tableStyles = {
                 borderColor: headerBorderLeftColor,
             },
             '& > .MuiBox-root': {
-                width: 'calc(65% - 5.625rem)',
+                width: 'calc(55% - 5.625rem)',
                 gap: '0.5rem',
                 px: '0.75rem',
 
                 '&:first-of-type': {
-                    width: '13.25rem'
+                    width: '16rem'
                 },
                 '&:last-of-type': {
-                    width: 'calc(35% - 5.625rem)'
+                    width: 'calc(45% - 5.625rem)'
                 },
                 '& + .MuiBox-root': {
                     borderLeft: `0.0625rem solid ${headerBorderLeftColor}`
