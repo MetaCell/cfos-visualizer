@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import vars from "../theme/variables";
-import { Box, Button, Slider, Typography } from "@mui/material";
-import { CustomToggleButton } from "./CustomToggleButton";
+import {Box, Button, Slider, Typography} from "@mui/material";
+import {CustomToggleButton} from "./CustomToggleButton";
 import CustomTextField from "./CustomTextField";
 
-const { resetButtonColor, labelColor, resetButtonActiveColor, tooltipBgColor, whiteColor } = vars;
+const {resetButtonColor, labelColor, resetButtonActiveColor, tooltipBgColor, whiteColor} = vars;
 
 const styles = {
     heading: {
@@ -27,29 +27,42 @@ const styles = {
 const formatValueLabel = (value) => `${Number(value).toFixed(2)}`;
 
 const CustomSlider = ({
-    heading,
-    width = 1,
-    onChange,
-    value,
-    min = 0,
-    max = 100,
-    minColor = tooltipBgColor,
-    maxColor = whiteColor,
-    numberOfSteps = 100,
-    disabled = false,
-    showPercentageAbsolute = false
-}) => {
-    const [sliderValue, setSliderValue] = useState(value);  
+                          heading,
+                          width = 1,
+                          onChange,
+                          value,
+                          min = 0,
+                          max = 100,
+                          minColor = tooltipBgColor,
+                          maxColor = whiteColor,
+                          numberOfSteps = 100,
+                          disabled = false,
+                          showPercentageAbsolute = false
+                      }) => {
+    const [sliderValue, setSliderValue] = useState(value);
+    const [minInputValue, setMinInputValue] = useState(value[0]);
+    const [maxInputValue, setMaxInputValue] = useState(value[1]);
     const [typeOfValue, setTypeOfValue] = React.useState('percentage');
     const step = (max - min) / numberOfSteps;
 
     const handleSliderChange = (event, newValue) => {
-        if (disabled)
+        if (disabled) {
             return;
-        if (newValue[0] >= newValue[1])
-          return;
-        setSliderValue(newValue);  
-        onChange(newValue);  
+        }
+        if (newValue[0] >= newValue[1]) {
+            setMinInputValue(sliderValue[0]);
+            setMaxInputValue(sliderValue[1]);
+            return;
+        }
+
+        const newMaxValue = Math.min(newValue[1], max);
+        const newMinValue = Math.max(newValue[0], min);
+        const newValueInRange = [newMinValue, newMaxValue]
+
+        setSliderValue(newValueInRange);
+        setMinInputValue(newMinValue);
+        setMaxInputValue(newMaxValue);
+        onChange(newValueInRange);
     };
 
     return (
@@ -64,8 +77,9 @@ const CustomSlider = ({
                 />
             )}
             <CustomTextField
-                defaultValue={sliderValue[0]} // Use state for value
-                onChange={(e) => setSliderValue([Number(e.target.value), sliderValue[1]])} // Update state when field changes
+                value={minInputValue}
+                onChange={setMinInputValue}
+                onConfirm={(value) => handleSliderChange(null, [Number(value), sliderValue[1]])}
                 disabled={disabled}
                 typeOfValue={typeOfValue}
                 showPercentageAbsolute={showPercentageAbsolute}
@@ -94,8 +108,9 @@ const CustomSlider = ({
                 disabled={disabled}
             />
             <CustomTextField
-                defaultValue={sliderValue[1]} // Use state for value
-                onChange={(e) => setSliderValue([sliderValue[0], Number(e.target.value)])} // Update state when field changes
+                value={maxInputValue}
+                onChange={setMaxInputValue}
+                onConfirm={(value) => handleSliderChange(null, [sliderValue[0], Number(value)])}
                 disabled={disabled}
                 typeOfValue={typeOfValue}
                 showPercentageAbsolute={showPercentageAbsolute}
@@ -103,7 +118,7 @@ const CustomSlider = ({
             <Button
                 disableRipple
                 disabled={disabled}
-                onClick={(e) => handleSliderChange(e,[min, max])}
+                onClick={(e) => handleSliderChange(e, [min, max])}
                 sx={{
                     ...styles.button,
                     color: `${disabled ? resetButtonColor : resetButtonActiveColor} !important`,

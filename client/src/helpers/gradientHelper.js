@@ -1,4 +1,3 @@
-import {DEFAULT_COLOR_RANGE} from "../settings";
 
 export function getLUTGradients(colorRange, intensityRange, isRangeInclusive, stackIntensityRange) {
 
@@ -67,19 +66,6 @@ export function normalizedRgbToHex(rgbArray) {
     }).join('');
 
     return `#${hex}`;
-}
-
-function isValidHex(hex) {
-    return /^#([0-9A-F]{3}){1,2}$/i.test(hex) || /^#([0-9A-F]{4}){2}$/i.test(hex);
-}
-
-function isValidRgba(rgba) {
-    return typeof rgba === 'object' &&
-        rgba !== null &&
-        'r' in rgba && rgba.r >= 0 && rgba.r <= 255 &&
-        'g' in rgba && rgba.g >= 0 && rgba.g <= 255 &&
-        'b' in rgba && rgba.b >= 0 && rgba.b <= 255 &&
-        'a' in rgba && rgba.a >= 0 && rgba.a <= 1;
 }
 
 function hexToRgb(hex) {
