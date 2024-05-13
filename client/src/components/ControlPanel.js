@@ -88,7 +88,7 @@ const ControlPanel = () => {
                 viewerObjects.push({
                     id: activityMapId,
                     name: activityMapMetadata.name,
-                    description: activityMapMetadata.description || messages.NO_DESCRIPTION,
+                    description: activityMapMetadata.description || '',
                     colorRange: activityMap.colorRange,
                     intensityRange: [...activityMap.intensityRange],
                     isRangeInclusive: activityMap.isRangeInclusive,
@@ -106,7 +106,7 @@ const ControlPanel = () => {
             viewerObjects.push({
                 id: atlasId,
                 name: atlasMetadata.name,
-                description: atlasMetadata.description || messages.NO_DESCRIPTION,
+                description: atlasMetadata.description || '',
                 colorRange: null,
                 intensityRange: [...activeAtlas.stack.minMax],
                 stackIntensityRange: [...activeAtlas.stack.minMax],
