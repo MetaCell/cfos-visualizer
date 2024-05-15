@@ -111,7 +111,7 @@ def init_webapp_routes(app):
 
     @app.route('/cfos-visualizer-stanford-dev/index.json')
     def index():
-        return download_as_json("index_95v3.json")
+        return download_as_json("index.json")
 
     @app.errorhandler(404)
     def page_not_found(error):

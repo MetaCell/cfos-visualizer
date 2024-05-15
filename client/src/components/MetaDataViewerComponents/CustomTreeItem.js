@@ -19,11 +19,10 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const [expanded, setExpanded] = useState(false);
   const[hovered, setHovered] = useState(false);
   const activeActivityMaps = useSelector(state => state.viewer.activityMaps);
-  const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const { showRightSideContent } = props
   const dispatch = useDispatch();
   const activeAtlas = useSelector(state => state.viewer.atlas);
-  
+  const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const handleMouseEnter = () => {
     setHovered(true);
   };
@@ -40,7 +39,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
     e.preventDefault();
     dispatch(fetchAndSetExperimentAndAtlas(experiment.itemId, activeAtlas.id))
   }
-  
+
   return (
     <TreeItem
       {...props}
@@ -48,6 +47,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
       onClick={handleExpand}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      id={props.itemId}
       slots={{
         collapseIcon:  () => <KeyboardArrowUpIcon sx={{ color: gray100 }}/>,
         expandIcon:  () => <KeyboardArrowRightIcon sx={{ color: gray100 }} />,
