@@ -14,30 +14,22 @@ export const DoDataPreprocessing = (filteredActivityMaps, currentExperimentName)
    * Target is : we have the hierarchy array for each object
    */
   Object.values(filteredActivityMaps).map(obj => {
-    // if experiment key exists
-    if (obj.experiment !== undefined) {
-      if(obj.experiment === true){
-        // experiment is true
-        if(obj.hierarchy === undefined){ // no hierarchy key
-          obj.hierarchy = [currentExperimentName]
-        }else{
-          // hierarchy key exists
-          obj.hierarchy = obj.hierarchy.includes(currentExperimentName) ? obj.hierarchy : [currentExperimentName,...obj.hierarchy]
-        }
-      }else {
-        // experiment is false
-        obj.hierarchy = ['others']
+    if (obj.experiment === undefined || obj.experiment === true) {
+      // Experiment is true or experiment key doesn't exist
+      if(obj.hierarchy === undefined){ // no hierarchy key
+        obj.hierarchy = [currentExperimentName]
+      } else {
+        // hierarchy key exists
+        obj.hierarchy = obj.hierarchy.includes(currentExperimentName) ? obj.hierarchy : [currentExperimentName,...obj.hierarchy]
       }
     } else {
-      // experiment key not exists
-      if(obj.hierarchy === undefined){
-        obj.hierarchy =[currentExperimentName]
-      } else {
-        obj.hierarchy = obj.hierarchy.includes(currentExperimentName) ? obj.hierarchy : [currentExperimentName,...obj.hierarchy]
+      // Experiment is false and no hierarchy key exists
+      if (!obj.hierarchy) {
+        obj.hierarchy = ['others'];
       }
     }
     
-    return obj;
+    return obj
   });
   
   /**
@@ -52,7 +44,6 @@ export const DoDataPreprocessing = (filteredActivityMaps, currentExperimentName)
   
   return filteredActivityMaps;
 };
-
 
 export const GetUniqueHierarchyRoots = (processedFilteredActivityMaps) => {
   // Get unique roots of the tree
