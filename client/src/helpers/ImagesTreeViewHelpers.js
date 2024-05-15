@@ -13,42 +13,41 @@ export const DoDataPreprocessing = (filteredActivityMaps, currentExperimentName)
    * If the experiment key or hierarchy key are not exists then add hierarchy array with one element "Experiment Name"
    * Target is : we have the hierarchy array for each object
    */
-  for(const obj of Object.values(filteredActivityMaps)){
+  Object.values(filteredActivityMaps).map(obj => {
     // if experiment key exists
-    if(obj.experiment !== undefined){
-      if(obj.experiment === true){
+    if (obj.experiment !== undefined) {
+      if (obj.experiment === true) {
         // experiment is true
-        if(obj.hierarchy === undefined){ // no hierarchy key
-          obj.hierarchy = [currentExperimentName]
-        }else{
-          // hierarchy key exists
-          obj.hierarchy =[currentExperimentName,...obj.hierarchy]
-        }
-      }else {
+        obj.hierarchy = obj.hierarchy === undefined || obj.hierarchy.includes(currentExperimentName)
+          ? obj.hierarchy
+          : [currentExperimentName, ...obj.hierarchy];
+      } else {
         // experiment is false
-        obj.hierarchy = ['others']
+        obj.hierarchy = ['others'];
       }
-    }else {
+    } else {
       // experiment key not exists
-      if(obj.hierarchy === undefined){
-        obj.hierarchy =[currentExperimentName]
-      }else {
-        obj.hierarchy =[currentExperimentName,...obj.hierarchy]
-      }
+      obj.hierarchy = obj.hierarchy === undefined || obj.hierarchy.includes(currentExperimentName)
+        ? obj.hierarchy
+        : [currentExperimentName, ...obj.hierarchy];
     }
-  }
-  
+    
+    return obj;
+  });
   
   /**
    * Set the level key for each object and the level
    * Convert map to array
    */
-  for(const [key, value] of Object.entries(filteredActivityMaps)) {
-    value.key = key
-  }
+  Object.entries(filteredActivityMaps).reduce((acc, [key, value]) => {
+    value.key = key;
+    acc[key] = value;
+    return acc;
+  }, {});
   
-  return filteredActivityMaps
-}
+  return filteredActivityMaps;
+};
+
 
 export const GetUniqueHierarchyRoots = (processedFilteredActivityMaps) => {
   // Get unique roots of the tree
