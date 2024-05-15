@@ -16,20 +16,25 @@ export const DoDataPreprocessing = (filteredActivityMaps, currentExperimentName)
   Object.values(filteredActivityMaps).map(obj => {
     // if experiment key exists
     if (obj.experiment !== undefined) {
-      if (obj.experiment === true) {
+      if(obj.experiment === true){
         // experiment is true
-        obj.hierarchy = obj.hierarchy === undefined || obj.hierarchy.includes(currentExperimentName)
-          ? obj.hierarchy
-          : [currentExperimentName, ...obj.hierarchy];
-      } else {
+        if(obj.hierarchy === undefined){ // no hierarchy key
+          obj.hierarchy = [currentExperimentName]
+        }else{
+          // hierarchy key exists
+          obj.hierarchy = obj.hierarchy.includes(currentExperimentName) ? obj.hierarchy : [currentExperimentName,...obj.hierarchy]
+        }
+      }else {
         // experiment is false
-        obj.hierarchy = ['others'];
+        obj.hierarchy = ['others']
       }
     } else {
       // experiment key not exists
-      obj.hierarchy = obj.hierarchy === undefined || obj.hierarchy.includes(currentExperimentName)
-        ? obj.hierarchy
-        : [currentExperimentName, ...obj.hierarchy];
+      if(obj.hierarchy === undefined){
+        obj.hierarchy =[currentExperimentName]
+      } else {
+        obj.hierarchy = obj.hierarchy.includes(currentExperimentName) ? obj.hierarchy : [currentExperimentName,...obj.hierarchy]
+      }
     }
     
     return obj;
