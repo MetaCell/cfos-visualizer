@@ -11,7 +11,6 @@ const { gray300, gray25 } = variables;
 const Experiments = () => {
   const currentExperiment = useSelector(state => state.currentExperiment);
   const experimentsActivityMaps = useSelector(state => state.model.ExperimentsActivityMap);
-  const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const experimentAtlas = useSelector(state => state.model.ExperimentsAtlas);
   const activeAtlas = useSelector(state => state.viewer.atlas);
   const ExperimentsMetadata = useSelector(state => state.model.ExperimentsMetadata);
@@ -50,7 +49,7 @@ const Experiments = () => {
         label: 'Activity Maps',
         children: experimentActivityMaps.map(activityMapID => ({
           id: activityMapID,
-          label:activityMapsMetadata[activityMapID]?.name
+          label:activityMapID
         })),
       }]
     };

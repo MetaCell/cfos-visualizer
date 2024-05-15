@@ -22,7 +22,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
   const { showRightSideContent } = props
   const dispatch = useDispatch();
   const activeAtlas = useSelector(state => state.viewer.atlas);
-  
+  const activityMapsMetadata = useSelector(state => state.model.ActivityMaps);
   const handleMouseEnter = () => {
     setHovered(true);
   };
@@ -111,7 +111,7 @@ const CustomTreeItem = React.forwardRef(function MyTreeItem(props, ref) {
               />
             }
             labelPlacement="start"
-            label={props.itemId}
+            label={activityMapsMetadata[props.itemId]?.name}
           />
         </Box> :
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
