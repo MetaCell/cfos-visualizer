@@ -1,4 +1,4 @@
-
+import { v4 as uuidv4 } from 'uuid';
 export const filterDictByKeys = (obj, keys) => Object.fromEntries(Object.entries(obj).filter(([key]) => keys.includes(key)));
 export const getCurrentExperimentActivityMaps = (activityMapsMetadata, experimentActivityMaps) => Object.keys(activityMapsMetadata)
   .filter(key => experimentActivityMaps.includes(key))
@@ -49,7 +49,7 @@ export const GetUniqueHierarchyRoots = (processedFilteredActivityMaps) => {
   // Get unique roots of the tree
   const hierarchyRoots= new Set()
   for(const obj of Object.values(processedFilteredActivityMaps)){
-    if(obj.hierarchy.length > 0){
+    if(obj?.hierarchy?.length > 0){
       hierarchyRoots.add(obj.hierarchy[0])
     }
   }
@@ -74,7 +74,7 @@ export const BuildHierarchyTree = (hierarchyTreeAllData,hierarchyTreeMaxLevel, d
   
   // create the new level of the tree
   tree.push({
-    id: deepestHierarchyArray[hierarchyArrayCurrentIndex],
+    id: deepestHierarchyArray[hierarchyArrayCurrentIndex] + uuidv4(),
     label: deepestHierarchyArray[hierarchyArrayCurrentIndex],
     children: [...levelChildren, ...BuildHierarchyTree(hierarchyTreeAllData, hierarchyTreeMaxLevel, deepestHierarchyArray, hierarchyArrayCurrentIndex+1)]
   })
