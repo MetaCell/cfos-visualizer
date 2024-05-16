@@ -34,27 +34,33 @@ const Images = () => {
     );
     const processedFilteredActivityMaps = DoDataPreprocessing(filteredActivityMaps, currentExperiment?.id);
     const hierarchyRoots = GetUniqueHierarchyRoots(processedFilteredActivityMaps);
-    // build the tree
-    let finalTree = []
-    for(let hierarchyRoot of hierarchyRoots){
-      // Filter the data for the current hierarchy root which represents the root of the hierarchy tree
-      const hierarchyTreeAllData = Object.values(processedFilteredActivityMaps).filter(obj => obj.hierarchy[0] === hierarchyRoot)
-      
-      // Get the max level of the hierarchy tree of the current hierarchy root
-      const hierarchyTreeMaxLevel = hierarchyTreeAllData.reduce((acc, obj) => Math.max(acc, obj.hierarchy.length), 0)
-      
-      // Get max hierarchy array for the current hierarchy root
-      const deepestHierarchyArray = hierarchyTreeAllData.reduce((acc, obj) => {
-        if(obj.hierarchy.length > acc.length){
-          return obj.hierarchy
-        }
-        return acc
-      }, [])
-      // Build the hierarchy tree for the current hierarchy root
-      finalTree.push(...BuildHierarchyTree(hierarchyTreeAllData, hierarchyTreeMaxLevel, deepestHierarchyArray, 0))
+    
+    let finalTree = [];
+    for (const hierarchyRoot of hierarchyRoots) {
+      if (hierarchyRoot === 'others') {
+        // Directly push objects to the final tree without creating a node for 'others'
+        const hierarchyTreeAllData = Object.values(processedFilteredActivityMaps).filter(obj => obj.hierarchy[0] === hierarchyRoot);
+        finalTree.push(...hierarchyTreeAllData.map(obj => ({
+          id: obj.key,
+          label: obj.key
+        })));
+      } else {
+        // Build hierarchy tree for other hierarchy roots
+        const hierarchyTreeAllData = Object.values(processedFilteredActivityMaps).filter(obj => obj.hierarchy[0] === hierarchyRoot);
+        const hierarchyTreeMaxLevel = hierarchyTreeAllData.reduce((acc, obj) => Math.max(acc, obj.hierarchy.length), 0);
+        const deepestHierarchyArray = hierarchyTreeAllData.reduce((acc, obj) => {
+          if(obj.hierarchy.length > acc.length){
+            return obj.hierarchy;
+          }
+          return acc;
+        }, []);
+        finalTree.push(...BuildHierarchyTree(hierarchyTreeAllData, hierarchyTreeMaxLevel, deepestHierarchyArray, 0));
+      }
     }
-    return finalTree
+    
+    return finalTree;
   };
+  
   
   useEffect(() => {
     const newData = getData();
