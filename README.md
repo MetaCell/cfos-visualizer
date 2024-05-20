@@ -17,7 +17,7 @@ cd processor
 mkdir data
 ```
 
-Inside the data folder create 2 more folders, one to store all the activity maps (ActivityMap) )and one to store all the atlases (Atlas).
+Inside the data folder create 2 more folders, one to store all the activity maps (ActivityMap) and one to store all the atlases (Atlas).
 
 ```
 cd data
@@ -31,6 +31,10 @@ Copy all the atlases nifti files inside the Atlas folder, and as well copy all t
 cp *atlas.nii.gz ./Atlas/
 cp *maps.nii.gz ./ActivityMap/
 ```
+
+For each atlas file copied inside the Atlas folder, copy also the wireframe version being sure to use the same file name followed by a capital W before the dot extension of the atlas.
+
+```Example: if the atlas file is gubra_ano_combined_25um.nii.gz the wireframe file should be called gubra_ano_combined_25umW.nii.gz (capital W before the .nii.gz).```
 
 #### Prepare the index.json and metadata.json inside the data folder
 
