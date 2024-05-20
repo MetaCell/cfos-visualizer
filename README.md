@@ -251,7 +251,7 @@ Inside the processor folder, create the 2 files .env and application_default_cre
 ```
 cd processor
 touch .env
-echo "GCLOUD_PROJECT=cfos-visualizer-stanford-dev" > .env
+echo "GCLOUD_PROJECT=cfos-visualizer-stanford" > .env
 echo "GOOGLE_APPLICATION_CREDENTIALS=./application_default_credentials.json" >> .env
 touch application_default_credentials.json
 ```
@@ -292,7 +292,7 @@ Create the files application_default_credentials.json and .env
 ```
 cd server
 touch .env
-echo "GCLOUD_PROJECT=cfos-visualizer-stanford-dev" > .env
+echo "GCLOUD_PROJECT=cfos-visualizer-stanford" > .env
 echo "GOOGLE_APPLICATION_CREDENTIALS=./application_default_credentials.json" >> .env
 touch application_default_credentials.json
 ```
