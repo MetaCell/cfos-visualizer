@@ -1,9 +1,10 @@
 import sys
 import os
+from pathlib import Path
 import http.server
 import socketserver
 import threading
-import time 
+import time
 from datetime import datetime  # Import the datetime module
 import shutil
 
@@ -13,9 +14,7 @@ from helpers.wireframe import process_nifti_file
 from helpers.ingest import process_bucket_upload, upload_file_to_bucket_root
 
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
 
 load_dotenv()
 
@@ -26,6 +25,7 @@ server_started_event = threading.Event()
 driver = None
 wireframe = True
 headless = True
+wipe_storage = True
 
 web_directory = os.path.dirname(os.path.abspath(__file__))
 download_dir = os.path.join(web_directory, "process")
@@ -43,7 +43,7 @@ sub_folders_process_wireframe = ["Atlas"]
 def wait_for_file(filename, directory_path, timeout_seconds=300):
     """
     Wait for a specific file to appear in a directory or until the timeout is reached.
-    
+
     Args:
         filename (str): The name of the file to wait for.
         directory_path (str): The path to the directory to watch.
@@ -102,14 +102,28 @@ def process(target_dir, file_name, process_wireframe):
     print(f"Process completed for { file_name }")
     return processed_file_names
 
+
+def remove_hiddenfiles(dir: Path):
+    for file in dir.rglob("[.]*"):
+        if file.is_dir():
+            print(f"Removing hidden directory {file}")
+            try:
+                shutil.rmtree(file)
+            except Exception as e:
+                print(f"Could not remove {file}, skipping it (reasons: {e.args})")
+        else:
+            print(f"Removing hidden file {file}")
+            file.unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
 
     port = 8888
     # Create a thread for the HTTP server
-    http_server_thread = threading.Thread(target=start_http_server, args=(web_directory, port))
+    http_server_thread = threading.Thread(target=start_http_server, args=(web_directory, port), daemon=True)
     http_server_thread.start()
-  
-    #wait for the server to start
+
+    # wait for the server to start
     server_started_event.wait()
 
     options = Options()
@@ -128,6 +142,10 @@ if __name__ == "__main__":
 
     driver = webdriver.Chrome(options=options)
 
+    # Remove hidden files from data_dir and output_directory
+    remove_hiddenfiles(Path(data_dir))
+    # remove_hiddenfiles(Path(output_directory))
+
     for sub_folder in sub_folders:
         source_sub_dir = os.path.normpath(os.path.join(data_dir, sub_folder))
         target_sub_dir = os.path.normpath(os.path.join(output_directory, sub_folder))
@@ -138,7 +156,8 @@ if __name__ == "__main__":
         # Filter out only the files (excluding directories)
         files = [file for file in files if os.path.isfile(os.path.join(source_sub_dir, file))]
 
-        should_sub_folders_process_wireframe = sub_folder in sub_folders_process_wireframe
+        # should_sub_folders_process_wireframe = sub_folder in sub_folders_process_wireframe
+        should_sub_folders_process_wireframe = False
 
         # Print the list of files
         for file in files:
@@ -167,9 +186,13 @@ if __name__ == "__main__":
 
     process_bucket_upload(bucket_name, output_directory)
 
-    #last call for index file
+    # Upload index.json file to the bucket root
     index_location = os.path.join(data_dir, "index.json")
     upload_file_to_bucket_root(bucket_name, index_location)
+
+    # Upload metadata.json file to the bucket root
+    metadata_location = os.path.join(data_dir, "metadata.json")
+    upload_file_to_bucket_root(bucket_name, metadata_location)
 
     driver.quit()
     print("Process completed. Now exiting...")

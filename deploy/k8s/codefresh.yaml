@@ -1,0 +1,36 @@
+version: "1.0"
+stages:
+  - "clone"
+  - "build"
+  - "deploy"
+steps:
+  clone:
+    stage: "clone"
+    title: "Cloning CFOS"
+    type: "git-clone"
+    repo: "metacell/cfos-visualizer"
+    revision: "${{CF_BRANCH}}"
+  build:
+    stage: "build"
+    title: "Building CFOS"
+    type: "build"
+    image_name: "cfos"
+    tag: "${{CF_SHORT_REVISION}}"
+    dockerfile: Dockerfile
+    working_directory: ./cfos-visualizer
+    buildkit: true
+    registry: "${{CODEFRESH_REGISTRY}}"
+    build_arguments:
+      - BUILD_MODE=${{BUILD_MODE}}
+  deploy:
+    stage: "deploy"
+    title: "Deploying CFOS VIZ"
+    image: codefresh/cf-deploy-kubernetes
+    tag: latest
+    working_directory: ./cfos-visualizer/deploy/k8s
+    commands:
+      - /cf-deploy-kubernetes cfos.yaml
+      - /cf-deploy-kubernetes ingress.yaml
+    environment:
+      - KUBECONTEXT=${{CLUSTER_NAME}}
+      - KUBERNETES_NAMESPACE=${{NAMESPACE}}

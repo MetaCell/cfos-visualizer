@@ -7,13 +7,14 @@ import {SNACKBAR_TIMEOUT} from "../settings";
 import {setError} from "../redux/actions";
 import CircularProgress from "@mui/material/CircularProgress";
 
-export const ViewerDashboard = ( props ) =>
+export const ViewerDashboard = () =>
 {
     const dispatch = useDispatch();
     const isLoading = useSelector(state => state.ui.isLoading);
     const loadingMessage = useSelector(state => state.ui.loadingMessage);
     const error = useSelector(state => state.ui.errors);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+
     useEffect(() => {
         if (error) {
             setOpenSnackbar(true);
@@ -25,7 +26,7 @@ export const ViewerDashboard = ( props ) =>
     }, [error, dispatch]);
     return (
         <>
-            <Box
+            <Box id='viewer'
                 sx={ { display: 'flex', flexDirection: 'column', height: '100%', width: '100%' } }
             >
 

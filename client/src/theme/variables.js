@@ -15,7 +15,17 @@ const vars = {
   accordianTextColor: '#8D8D91',
   resetButtonColor: '#737378',
   resetButtonActiveColor: '#8274EC',
-  whiteColor: '#fff'
+  whiteColor: '#ffffff',
+  
+  gray100: '#D6D5D7',
+  gray300: '#8D8D91',
+  gray400: '#737378',
+  gray25: '#FCFCFD',
+  gray200: '#B1B1B4',
+  gray700: '#1E1E1F',
+  gray800: '#0F0F10',
+  gray600: '#302F31',
+  gray50: '#EFEFF0'
 };
 
 export default vars;

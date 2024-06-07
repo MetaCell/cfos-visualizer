@@ -37,6 +37,20 @@ def upload_file_to_bucket_root(bucket_name, local_file_path):
             finally:
                 pbar.close()
 
+def delete_bucket_contents(bucket_name):
+    # Create a Cloud Storage client
+    storage_client = storage.Client()
+
+    # Get the bucket object
+    bucket = storage_client.get_bucket(bucket_name)
+
+    # List all objects in the bucket and delete each
+    blobs = bucket.list_blobs()
+    for blob in blobs:
+        blob.delete()
+
+    print(f"All objects in the bucket '{bucket_name}' have been deleted.")
+
 def upload_local_folder_to_bucket(bucket_name, local_folder_path):
     # Initialize a client using Application Default Credentials
     client = storage.Client()
@@ -86,7 +100,9 @@ def list_bucket_files(bucket_name, prefix=None):
   return file_list
 
 
-def process_bucket_upload(bucket_name, local_folder_path):
+def process_bucket_upload(bucket_name, local_folder_path, wipe_storage=False):
+    if wipe_storage:
+        delete_bucket_contents(bucket_name)
     upload_local_folder_to_bucket(bucket_name, local_folder_path)
     #handle wireframe conversion
     files = list_bucket_files(bucket_name)

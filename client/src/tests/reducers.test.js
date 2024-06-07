@@ -3,7 +3,7 @@ import {currentExperimentReducer, modelReducer, uiReducer, viewerReducer} from "
 import {
     addActivityMapToViewer,
     changeAllViewerObjectsOpacity,
-    changeViewerObjectOpacity,
+    changeActivityMapIntensityRange,
     removeActivityMapFromViewer,
     setError,
     setModel,
@@ -15,7 +15,7 @@ import {
     startLoading
 } from "../redux/actions";
 import {INIT_STATE} from "../redux/store";
-import {DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT} from "../settings";
+import {DEFAULT_COLOR_RANGE, DEFAULT_OPACITY_RANGE} from "../settings";
 
 
 describe('viewerReducer', () => {
@@ -40,7 +40,7 @@ describe('viewerReducer', () => {
     });
 
     it('should handle ADD_ACTIVITY_MAP_TO_VIEWER', () => {
-        const newActivityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, true, 'stack');
+        const newActivityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_RANGE, DEFAULT_OPACITY_RANGE, true, 'stack');
         const expectedState = {
             ...initialState,
             activityMaps: {
@@ -54,7 +54,7 @@ describe('viewerReducer', () => {
 
 
     it('should handle REMOVE_ACTIVITY_MAP_FROM_VIEWER', () => {
-        const objectToRemove = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, true, 'stack', 'wireframeStack');
+        const objectToRemove = new ActivityMap(activityMapID, DEFAULT_COLOR_RANGE, DEFAULT_OPACITY_RANGE, true, 'stack', 'wireframeStack');
         const setupState = {
             activityMaps: {
                 [activityMapID]: objectToRemove,
@@ -72,7 +72,7 @@ describe('viewerReducer', () => {
     });
 
     it('should handle TOGGLE_VIEWER_OBJECT_VISIBILITY for activityMap', () => {
-        const activityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, true, 'stack');
+        const activityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_RANGE, DEFAULT_OPACITY_RANGE, true, 'stack');
         const setupState = {
             ...initialState,
             activityMaps: {
@@ -83,7 +83,7 @@ describe('viewerReducer', () => {
         const expectedState = {
             ...setupState,
             activityMaps: {
-                [activityMapID]: new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, false, 'stack')
+                [activityMapID]: new ActivityMap(activityMapID, DEFAULT_COLOR_RANGE, DEFAULT_OPACITY_RANGE, false, 'stack')
             }
         };
 
@@ -102,7 +102,7 @@ describe('viewerReducer', () => {
 
 
     it('should handle CHANGE_ACTIVITY_MAP_OPACITY_GRADIENT ', () => {
-        const activityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, true, 'stack');
+        const activityMap = new ActivityMap(activityMapID, DEFAULT_COLOR_RANGE, DEFAULT_OPACITY_RANGE, true, 'stack');
         const setupState = {
             ...initialState,
             activityMaps: {
@@ -114,11 +114,11 @@ describe('viewerReducer', () => {
         const expectedState = {
             ...setupState,
             activityMaps: {
-                [activityMapID]: new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, other_opacity_gradient, true, 'stack')
+                [activityMapID]: new ActivityMap(activityMapID, DEFAULT_COLOR_RANGE, other_opacity_gradient, true, 'stack')
             }
         };
 
-        expect(viewerReducer(setupState, changeViewerObjectOpacity(activityMapID, 100))).toEqual(expectedState);
+        expect(viewerReducer(setupState, changeActivityMapIntensityRange(activityMapID, 100))).toEqual(expectedState);
     });
 
     // it('should handle CHANGE_VIEWER_OBJECT_OPACITY for atlas', () => {
@@ -133,7 +133,7 @@ describe('viewerReducer', () => {
 
     it('should handle CHANGE_ALL_VIEWER_OBJECTS_OPACITY', () => {
         const newOpacity = 0.7
-        const object1 = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, true, 'stack');
+        const object1 = new ActivityMap(activityMapID, DEFAULT_COLOR_RANGE, DEFAULT_OPACITY_RANGE, true, 'stack');
         const setupState = {
             ...initialState,
             activityMaps: {
@@ -153,7 +153,7 @@ describe('viewerReducer', () => {
     });
 //
     it('should handle CHANGE_ACTIVITY_MAP_COLOR', () => {
-        const initialObject = new ActivityMap(activityMapID, DEFAULT_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, true, 'stack');
+        const initialObject = new ActivityMap(activityMapID, DEFAULT_COLOR_RANGE, DEFAULT_OPACITY_RANGE, true, 'stack');
         const setupState = {
             activityMaps: {
                 [activityMapID]: initialObject
@@ -167,7 +167,7 @@ describe('viewerReducer', () => {
 
         const expectedState = {
             activityMaps: {
-                [activityMapID]: new ActivityMap(activityMapID, OTHER_COLOR_GRADIENT, DEFAULT_OPACITY_GRADIENT, true, 'stack')
+                [activityMapID]: new ActivityMap(activityMapID, OTHER_COLOR_GRADIENT, DEFAULT_OPACITY_RANGE, true, 'stack')
             }
         };
 
@@ -224,7 +224,7 @@ describe('modelReducer', () => {
         experimentsAtlas: {},
         atlasActivityMap: {},
         experimentsActivityMap: {},
-        luts: {}
+        lut: {}
     };
 
     it('should handle FETCH_MODEL_DATA_SUCCESS', async () => {

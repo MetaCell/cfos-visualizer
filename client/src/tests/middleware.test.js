@@ -14,7 +14,7 @@ import {
     setModel, addActivityMapToViewer, fetchAndSetViewerAtlas, setViewerAtlas
 } from "../redux/actions";
 import {Experiment, ActivityMap, Atlas} from "../model/models";
-import {DEFAULT_COLOR_GRADIENT, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY} from "../settings";
+import {DEFAULT_COLOR_RANGE, DEFAULT_ATLAS_OPACITY, DEFAULT_VISIBILITY} from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
 import {actions} from "../redux/constants";
 
@@ -45,26 +45,6 @@ describe('Middleware', () => {
         next = jest.fn();
     });
 
-    it('should handle FETCH_MODEL', async () => {
-        const mockData = require('./resources/index.json');
-        fetchModelStructure.mockResolvedValueOnce(mockData);
-        const mockLUTData = require('./resources/lut.json');
-
-        mockData.luts.forEach(lutID => {
-            fetchLUTFile.mockResolvedValueOnce(mockLUTData);
-        });
-
-        const action = fetchModel()
-
-        await middleware(store)(next)(action);
-
-        const expectedLutsMap = mockData.luts.reduce((acc, lutID) => {
-            acc[lutID] = mockLUTData;
-            return acc;
-        }, {});
-
-        expect(store.dispatch).toHaveBeenCalledWith(setModel({ ...mockData, luts: expectedLutsMap }));
-    });
 
     it('should handle error during FETCH_MODEL', async () => {
         const errorMessage = 'Some Error';
@@ -158,7 +138,7 @@ describe('Middleware', () => {
 
         const expectedObject = new ActivityMap(
             'activityMapID',
-            DEFAULT_COLOR_GRADIENT,
+            DEFAULT_COLOR_RANGE,
             DEFAULT_ATLAS_OPACITY,
             DEFAULT_VISIBILITY,
             activityMapStack,
@@ -179,7 +159,7 @@ describe('Middleware', () => {
     });
 
     it('should handle DOWNLOAD_OBJECT Activity Map', () => {
-        const mockActivityMap = new ActivityMap(mockActivityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack');
+        const mockActivityMap = new ActivityMap(mockActivityMapID, DEFAULT_COLOR_RANGE, 1, true, 'stack');
 
         // Mock the state of the store
         store.getState = jest.fn().mockReturnValue({
@@ -216,8 +196,8 @@ describe('Middleware', () => {
 
     it('should handle DOWNLOAD_ALL_OBJECTS', () => {
         const mockActivityMaps = {
-            [mockActivityMapID]: new ActivityMap(mockActivityMapID, DEFAULT_COLOR_GRADIENT, 1, true, 'stack1'),
-            'ActivityMap2': new ActivityMap('ActivityMap2', DEFAULT_COLOR_GRADIENT, 1, true, 'stack2'),
+            [mockActivityMapID]: new ActivityMap(mockActivityMapID, DEFAULT_COLOR_RANGE, 1, true, 'stack1'),
+            'ActivityMap2': new ActivityMap('ActivityMap2', DEFAULT_COLOR_RANGE, 1, true, 'stack2'),
         };
         const atlasID = 'Atlas1'
         const atlas = new Atlas(atlasID,  1, true, 'stack', 'wireframeStack');

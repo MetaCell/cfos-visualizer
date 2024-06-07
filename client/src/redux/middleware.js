@@ -2,7 +2,7 @@ import {
     fetchActivityMapStack,
     fetchAtlasStack,
     fetchAtlasWireframeStack,
-    fetchExperimentMetadata, fetchLUTFile,
+    fetchExperimentMetadata, fetchExperimentsMetadata, fetchLUTFile,
     fetchModelStructure
 } from "../services/fetchService";
 import {
@@ -14,43 +14,48 @@ import {
 import {actions} from "./constants";
 import {Experiment, ActivityMap, Atlas} from "../model/models";
 import {
-    DEFAULT_COLOR_GRADIENT,
-    DEFAULT_ATLAS_OPACITY,
-    DEFAULT_VISIBILITY, DEFAULT_OPACITY_GRADIENT,
+    DEFAULT_COLOR_RANGE, DEFAULT_IS_INTENSITY_RANGE_INCLUSIVE,
+    DEFAULT_VISIBILITY, INTENSITY_VALUE_ERROR,
 } from "../settings";
 import {downloadActivityMap, downloadAllViewerObjects, downloadAtlas} from "../services/downloadService";
-import {getColorGradient} from "../helpers/gradientHelper";
 
 export const middleware = store => next => async action => {
 
     switch (action.type) {
         case actions.FETCH_MODEL:
             let model = null
-            // let fetchedLuts = null
+            let lut = {}
+            let metadata = {}
 
             try {
                 store.dispatch(startLoading('Fetching model...'))
                 model = await fetchModelStructure();
 
-                // TODO: to be added later @afonsobspinto
-
-                // const lutPromises = model.luts.map(async lutID => {
-                //     const lutData = await fetchLUTFile(lutID);
-                //     return { lutID, lutData };
-                // });
-                //
-                // fetchedLuts = await Promise.all(lutPromises);
             } catch (error) {
                 store.dispatch(setError(error.message));
                 store.dispatch(stopLoading());
                 return
             }
-            // const lutsMap = fetchedLuts.reduce((acc, { lutID, lutData }) => {
-            //     acc[lutID] = lutData;
-            //     return acc;
-            // }, {});
 
-            store.dispatch(setModel({...model, Luts: {}}));
+            try {
+                store.dispatch(startLoading('Fetching look up table...'))
+                lut = await fetchLUTFile();
+            } catch (error) {
+                store.dispatch(setError(error.message));
+                store.dispatch(stopLoading());
+                return
+            }
+
+            try {
+                store.dispatch(startLoading('Fetching experiments metadata...'))
+                metadata = await fetchExperimentsMetadata();
+            } catch (error) {
+                store.dispatch(setError(error.message));
+                store.dispatch(stopLoading());
+                return
+            }
+
+            store.dispatch(setModel({...model, Lut: lut, ExperimentsMetadata: metadata}));
 
             // Extract default experimentID and atlasID
             const experimentAtlasEntries = Object.entries(model.ExperimentsAtlas);
@@ -71,25 +76,24 @@ export const middleware = store => next => async action => {
             const {experimentID, atlasID} = action.payload;
             const currentExperiment = store.getState().currentExperiment;
             const currentAtlas = store.getState().viewer.atlas;
+            const {ExperimentsMetadata, Atlases} = store.getState().model;
+
 
             if (currentExperiment?.id !== experimentID) {
-                let data = null
-                try {
-                    store.dispatch(startLoading('Fetching experiment metadata...'))
-                    data = await fetchExperimentMetadata(experimentID);
-                } catch (error) {
-                    console.warn("No metadata found")
+                let experimentMetadata = ExperimentsMetadata[experimentID];
+                if (!experimentMetadata) {
+                    console.warn(`Metadata for experiment ${experimentID} not found.`);
+                    store.dispatch(setError(`Metadata for experiment id ${experimentID} not found`));
                 }
-                store.dispatch(setCurrentExperiment(new Experiment(experimentID, data)));
+                store.dispatch(setCurrentExperiment(new Experiment(experimentID, experimentMetadata)));
             }
 
             if (currentAtlas?.id !== atlasID) {
                 let atlasStack = null;
                 let atlasWireframeStack = null;
-                let atlasMetadata = store.getState().model.Atlases[atlasID]
+                let atlasMetadata = Atlases[atlasID]
                 if (!atlasMetadata) {
                     store.dispatch(setError(`Atlas id ${atlasID} not found`));
-                    store.dispatch(stopLoading());
                 }
                 try {
                     store.dispatch(startLoading('Fetching atlas...'));
@@ -98,6 +102,12 @@ export const middleware = store => next => async action => {
                     store.dispatch(setError(error.message));
                     store.dispatch(stopLoading());
                     return;
+                }
+
+                if (atlasStack.minMax[0] === Infinity) {
+                    store.dispatch(setError(INTENSITY_VALUE_ERROR));
+                    store.dispatch(stopLoading());
+                    return
                 }
                 try {
                     atlasWireframeStack = await fetchAtlasWireframeStack(atlasMetadata.file);
@@ -108,7 +118,6 @@ export const middleware = store => next => async action => {
 
                 const atlas = new Atlas(
                     atlasID,
-                    DEFAULT_ATLAS_OPACITY,
                     DEFAULT_VISIBILITY,
                     atlasStack,
                     atlasWireframeStack
@@ -135,13 +144,21 @@ export const middleware = store => next => async action => {
                 return
             }
 
+            if (stack.minMax[0] === Infinity) {
+                store.dispatch(setError(INTENSITY_VALUE_ERROR));
+                store.dispatch(stopLoading());
+                return
+            }
+
             const activityMapObject = new ActivityMap(
-                activityMapID,
-                activityMapMetadata.color ? getColorGradient(activityMapMetadata.color) : DEFAULT_COLOR_GRADIENT,
-                DEFAULT_OPACITY_GRADIENT,
-                DEFAULT_VISIBILITY,
-                stack,
-            );
+                    activityMapID,
+                    DEFAULT_COLOR_RANGE,
+                    [...stack.minMax],
+                    DEFAULT_IS_INTENSITY_RANGE_INCLUSIVE,
+                    DEFAULT_VISIBILITY,
+                    stack,
+                )
+            ;
             store.dispatch(addActivityMapToViewer(activityMapObject));
             store.dispatch(stopLoading());
             break;

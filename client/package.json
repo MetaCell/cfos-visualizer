@@ -1,6 +1,6 @@
 {
   "name": "cfos-visualizer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -15,6 +15,7 @@
     "@mui/icons-material": "^5.14.9",
     "@mui/material": "^5.14.10",
     "@mui/styles": "^5.14.6",
+    "@mui/x-tree-view": "^7.2.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^12.8.3",
@@ -28,6 +29,7 @@
     "react-scripts": "5.0.1",
     "seamless-immutable": "^7.1.4",
     "three": "0.118.0",
+    "uuid": "^9.0.1",
     "web-vitals": "^2.1.4",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
@@ -36,6 +38,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:dev": "env-cmd -f .env.development npm run build",
+    "build:prod": "env-cmd -f .env.production npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -74,6 +78,7 @@
     "compression-webpack-plugin": "^7.1.2",
     "copy-webpack-plugin": "^6.2.1",
     "css-loader": "^3.4.2",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.37.0",
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-react": "^7.32.2",

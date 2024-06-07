@@ -1,8 +1,8 @@
-import {Box, Typography, Link} from "@mui/material";
-import React from "react";
+import {Box, Typography} from "@mui/material";
+import React, { useRef } from "react";
 import vars from "../theme/variables";
 import TableRow from "./TableRow";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+
 
 const {
     headerBorderLeftColor,
@@ -18,16 +18,16 @@ export const tableStyles = {
         p: '0.75rem 0 0.5rem',
 
         '& > .MuiBox-root': {
-            width: 'calc(65% - 5.625rem)',
+            width: 'calc(55% - 5.625rem)',
             px: '0.75rem',
             '& + .MuiBox-root': {
                 borderLeft: `0.0625rem solid ${headerBorderLeftColor}`
             },
             '&:first-of-type': {
-                width: '11.25rem'
+                width: '16rem'
             },
             '&:last-of-type': {
-                width: 'calc(35% - 5.625rem)'
+                width: 'calc(45% - 5.625rem)'
             },
         },
         '& .MuiTypography-root': {
@@ -104,15 +104,15 @@ export const tableStyles = {
                 borderColor: headerBorderLeftColor,
             },
             '& > .MuiBox-root': {
-                width: 'calc(65% - 5.625rem)',
+                width: 'calc(55% - 5.625rem)',
                 gap: '0.5rem',
                 px: '0.75rem',
 
                 '&:first-of-type': {
-                    width: '11.25rem'
+                    width: '16rem'
                 },
                 '&:last-of-type': {
-                    width: 'calc(35% - 5.625rem)'
+                    width: 'calc(45% - 5.625rem)'
                 },
                 '& + .MuiBox-root': {
                     borderLeft: `0.0625rem solid ${headerBorderLeftColor}`
@@ -122,8 +122,23 @@ export const tableStyles = {
     }
 };
 
-const Table = ({tableHeader, tableContent}) => {
+const Table = ({tableHeader, tableContent, onReorder}) => {
     const hasNoActivityMaps = tableContent.length < 2
+    const targetRow = useRef()
+    const sourceRow = useRef()
+
+    const dragStart = (id, index) => {
+        sourceRow.current = {id, index}
+    }
+
+    const dragEnter = (id, index) => {
+        targetRow.current = {id, index}
+    }
+
+    const dragEnd = () => {
+        onReorder(sourceRow.current, targetRow.current)
+    }
+
     return (
         <Box pb={1.5}>
             <Box sx={tableStyles.head}>
@@ -136,7 +151,8 @@ const Table = ({tableHeader, tableContent}) => {
 
             <Box sx={tableStyles.body}>
                 {tableContent?.map((row, index) =>
-                    <TableRow key={index} data={row} index={index} isAtlas={index === tableContent?.length - 1}/>)
+                    <TableRow key={row.id} data={row} index={index} isAtlas={row.isAtlas}
+                              onDragStart={dragStart} onDragEnter={dragEnter} onDragEnd={dragEnd}/>)
                 }
                 {
                     hasNoActivityMaps &&

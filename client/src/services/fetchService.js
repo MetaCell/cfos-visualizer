@@ -1,6 +1,6 @@
 import {decode} from '@msgpack/msgpack';
 import {BASE_URL, COMPRESSED_EXTENSION, WIREFRAME_IDENTIFIER} from "../settings";
-import {deserializeStack} from "../helpers/stackHelper";
+import {deserializeStack} from "../helpers/deserializerHelper";
 import {Entities} from "../model/models";
 import {originalFilenameToNewExtension} from "../utils";
 
@@ -16,13 +16,13 @@ export async function fetchModelStructure() {
     }
 }
 
-export async function fetchExperimentMetadata(experimentID) {
+export async function fetchExperimentsMetadata() {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.EXPERIMENT}/${experimentID}`);
+        const response = await fetch(`${BASE_URL}/metadata.json`);
         if (!response.ok) throw new Error('Network response was not ok');
         return await response.json();
     } catch (error) {
-        console.error(`Failed to fetch experiment metadata: ${error.message}`);
+        console.error(`Failed to fetch experiments metadata: ${error.message}`);
         throw error;
     }
 }
@@ -69,7 +69,7 @@ export async function fetchActivityMapStack(filename) {
 
 export async function fetchLUTFile(lutID) {
     try {
-        const response = await fetch(`${BASE_URL}/${Entities.LUT}/${lutID}`);
+        const response = await fetch('/CCFv3_info_by_id.json');
         if (!response.ok) throw new Error('Network response was not ok');
         return await response.json();
     } catch (error) {

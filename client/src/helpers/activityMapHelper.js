@@ -1,27 +1,27 @@
 import {getLUTHelper, makeSliceTransparent, removeBackground} from "./stackHelper";
 import {STACK_HELPER_BORDER_COLOR} from "../settings";
 
-export function postProcessActivityMap(stackHelper, activityMap, orientation, index) {
+export function postProcessActivityMap(stackHelper, activityMap, orientation) {
     removeBackground(stackHelper);
 
     stackHelper.bbox.visible = false;
     stackHelper.border.color = STACK_HELPER_BORDER_COLOR;
-    stackHelper.index = index;
     stackHelper.orientation = orientation
+    stackHelper.slice.interpolation = 0 // no interpolation
 
     makeSliceTransparent(stackHelper);
-    updateLUT(activityMap.colorGradient, activityMap.opacityGradient, stackHelper);
+    updateLUT(activityMap.colorRange, activityMap.intensityRange, activityMap.isRangeInclusive, stackHelper);
 
     return stackHelper
 }
 
-export function updateLUT(colorGradient, opacityGradient, stackHelper) {
-    const helperLut = getLUTHelper(colorGradient, opacityGradient);
+export function updateLUT(colorRange, intensityRange, isRangeInclusive, stackHelper) {
+    const helperLut = getLUTHelper(colorRange, intensityRange, isRangeInclusive, [...stackHelper.stack.minMax]);
     stackHelper.slice.lut = helperLut.lut
-    stackHelper.slice.lutO = helperLut.lutO
     stackHelper.slice.lutTexture = helperLut.texture;
-    stackHelper.colorGradient = JSON.stringify(colorGradient)
-    stackHelper.opacityGradient = JSON.stringify(opacityGradient)
+    stackHelper.colorRange = JSON.stringify(colorRange)
+    stackHelper.intensityRange = JSON.stringify(intensityRange)
+    stackHelper.isRangeInclusive = isRangeInclusive
 }
 
 export function getActivityMapsDiff(activityMaps, activityMapsStackHelpersRef) {
@@ -37,11 +37,4 @@ export function getActivityMapsDiff(activityMaps, activityMapsStackHelpersRef) {
     const activityMapsToRemove = oldActivityMapState.filter(amId => !newActivityMapsState.includes(amId));
 
     return {activityMapsToAdd, activityMapsToRemove};
-}
-
-export const updateVisibility = (activityMapsStackHelpersRef, activeActivityMaps) => {
-    Object.keys(activityMapsStackHelpersRef.current).forEach(amId => {
-        const stackHelper = activityMapsStackHelpersRef.current[amId];
-        stackHelper.visible = activeActivityMaps[amId]?.visibility
-    });
 }

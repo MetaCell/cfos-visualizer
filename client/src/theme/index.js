@@ -1,13 +1,24 @@
 import vars from "./variables";
 import { createTheme } from "@mui/material/styles";
 
-const { primaryFont, primaryBgColor, primaryActiveColor, headerBorderLeftColor, switchTrackColor, headerBorderColor, switchTrackActiveBg, labelColor, chipBg, tooltipBgColor, whiteColor } = vars;
+const { primaryFont, primaryBgColor, primaryActiveColor, headerBorderLeftColor, switchTrackColor, headerBorderColor, switchTrackActiveBg, labelColor, chipBg, tooltipBgColor, whiteColor, gray700,
+gray400,gray600} = vars;
 
-let theme = createTheme();
-
-theme = createTheme( {
+let theme = createTheme( {
   typography: {
     fontFamily: primaryFont,
+    h4: {
+      fontSize: '0.875rem',
+      fontWeight: 500,
+      lineHeight: '1.25rem',
+      whiteSpace: 'normal'
+    },
+    h5: {
+      fontSize: '0.75rem',
+      whiteSpace: 'normal',
+      fontWeight: 400,
+      lineHeight: '1.125rem'
+    }
   },
 
   components: {
@@ -29,8 +40,8 @@ theme = createTheme( {
       styleOverrides: {
         paper: {
           borderRadius: '0.5rem',
-          border: '0.0625rem solid var(--gray-600, #302F31)',
-          background: '#1E1E1F',
+          border: `0.0625rem solid ${gray600}`,
+          background: gray700,
           boxShadow: '0rem 0.5rem 0.5rem -0.25rem rgba(16, 24, 40, 0.03), 0rem 1.25rem 1.5rem -0.25rem rgba(16, 24, 40, 0.08)',
         },
         paperWidthXs: {
@@ -181,7 +192,7 @@ theme = createTheme( {
         },
         rail: {
           opacity: 1,
-          background: 'linear-gradient(90deg, #FFF 0%, #030203 100%)'
+          background: '#000'
         },
         track: {
           border: 'none',
@@ -223,7 +234,7 @@ theme = createTheme( {
           '&.MuiButtonBase-root': {
             minHeight: '0.0625rem',
             textTransform: 'none',
-            color: '#737378',
+            color: gray400,
             fontSize: '0.75rem',
             fontWeight: 500,
             lineHeight: '150%',
@@ -260,10 +271,19 @@ theme = createTheme( {
           borderRadius: '0.5rem',
           backgroundColor: tooltipBgColor,
           fontWeight: 600,
-          fontSize: '0.75rem'
+          fontSize: '0.75rem',
+          maxWidth: 'none',
         },
         tooltipPlacementRight: {
           margin: '0 0 0 0.5rem !important'
+        }
+      }
+    },
+    
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: gray600
         }
       }
     }
